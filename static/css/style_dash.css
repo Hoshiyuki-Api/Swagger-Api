@@ -1,0 +1,333 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    height: 100%;
+    width: 250px;
+    background-color: #1e1e2f;
+    padding-top: 60px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar li {
+    margin-bottom: 0;
+  }
+
+  .sidebar a {
+    color: #dcdcdc;
+    text-decoration: none;
+    display: block;
+    padding: 8px;
+    transition: color 0.3s ease;
+  }
+
+  .sidebar a:hover {
+    color: #ff5c5c;
+  }
+
+  .sidebar i {
+    margin-right: 10px;
+    transition: color 0.3s ease;
+  }
+
+  .sidebar a.active {
+    color: #ff5c5c;
+  }
+
+  .sidebar a.active i {
+    color: #ff5c5c;
+  }
+
+  .logo {
+    padding: 10px 0;
+    text-align: center;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 1px solid #3b3b52;
+  }
+
+  .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+
+  .logo span {
+    display: block;
+    font-size: 18px;
+    font-weight: normal;
+  }
+
+  .logo2 {
+    border-bottom: 1px solid #3b3b52;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 30px;
+    background-color: #1e1e2f;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+  }
+
+  .header .menu-toggle {
+    cursor: pointer;
+    color: #fff;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #1e1e2f;
+    transition: background-color 0.3s ease;
+  }
+
+  .header .title {
+    font-size: 24px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .header .theme-toggle {
+    cursor: pointer;
+    color: #fff;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #1e1e2f;
+    transition: background-color 0.3s ease;
+  }
+
+  .header .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ff5c5c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .content {
+    margin-top: 60px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .card-custom {
+    position: relative;
+    padding: 20px;
+    background-color: #1e1e2f;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(50% - 10px);
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+
+  .card-custom h5 {
+    font-size: 18px;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+  }
+
+  .card-custom .card-icon {
+    position: absolute;
+    top: 90px;
+    left: 20px;
+    font-size: 24px;
+    color: #f44336;
+  }
+
+  .card-custom .card-content {
+    font-size: 36px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: right;
+  }
+
+  .card-custom .card-description {
+    font-size: 14px;
+    color: #b0b0b0;
+    text-align: right;
+  }
+
+  .terms {
+    padding: 20px;
+    background-color: #1e1e2f;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+
+  .terms h5 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+
+  .terms ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .terms ul li {
+    font-size: 14px;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+  }
+  
+  .sticky-footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #1e1e2f; /* Sesuaikan dengan warna latar belakang Anda */
+  border-radius: 10px;
+  color: #ffffff; /* Sesuaikan dengan warna teks Anda */
+  padding: 10px 0; /* Sesuaikan padding sesuai kebutuhan */
+  text-align: center;
+}
+
+  .light-theme {
+    background-color: #f0f0f0;
+    color: #000;
+  }
+
+  .light-theme .header,
+  .light-theme .sidebar,
+  .light-theme .content,
+  .light-theme .card-custom,
+  .light-theme .terms,
+  .light-theme .sticky-footer {
+    background-color: #ffffff;
+    color: #000;
+  }
+
+  .light-theme .header .menu-toggle,
+  .light-theme .header .theme-toggle,
+  .light-theme .logo span,
+  .light-theme .profile-options {
+    background-color: #ffffff;
+    color: #000;
+  }
+
+  .light-theme .sidebar a,
+  .light-theme .card-custom .card-icon,
+  .light-theme .card-custom .card-content,
+  .light-theme .card-custom .card-description,
+  .light-theme .terms ul li {
+    color: #000;
+  }
+
+  .light-theme .header .menu-toggle,
+  .light-theme .header .theme-toggle,
+  .light-theme .logo span,
+  .light-theme .terms h5 {
+    background-color: #ffffff;
+    color: #000;
+  }
+
+  .light-theme .sidebar a:hover,
+  .light-theme .sidebar a.active,
+  .light-theme .profile-options a:hover {
+    color: #ff5c5c;
+  }
+
+  .profile-options {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: #1e1e2f;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+    display: none;
+  }
+
+  .profile-options.show {
+    display: block;
+  }
+
+  .profile-options a {
+    display: block;
+    color: #ffffff;
+    padding: 8px 20px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .light-theme .profile-options a {
+    color: #000;
+  }
+
+  .profile-options a:hover {
+    color: #ff5c5c;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 60%;
+      left: -60%;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .content {
+      margin-top: 100px;
+      padding: 10px;
+    }
+
+    .card-custom {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .card-custom .card-content {
+      font-size: 24px;
+    }
+
+    .card-custom .card-description {
+      font-size: 12px;
+    }
+  }
