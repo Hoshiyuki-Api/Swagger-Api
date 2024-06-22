@@ -1,0 +1,479 @@
+import requests, re, json, os, base64, urllib.parse
+from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as parser
+from flask import Blueprint, jsonify, request
+from datetime import datetime
+
+tiktok_bp = Blueprint('tiktokdl', __name__)
+igdl_bp = Blueprint('igdl', __name__)
+twitter_bp = Blueprint('twitter', __name__)
+facebook_bp = Blueprint('facebook', __name__)
+mediafire_bp = Blueprint('mediafir', __name__)
+pinterestvid_bp = Blueprint('pinterestvid', __name__)#
+laheludl_bp = Blueprint('lahelu', __name__)
+
+# Path ke file database users
+users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
+
+
+# Helper function to check if apikey is expired
+def check_apikey_expiry(apikey):
+    # Read existing users data
+    with open(users_db, 'r') as f:
+        users = json.load(f)
+
+    username = None
+    for user, data in users.items():
+        if data.get('api_key') == apikey:
+            username = user
+            break
+
+    if username is None:
+        return {"error": "API key tidak valid", "error_code": 401}, 401
+
+    user = users.get(username)
+    if not user:
+        return {"error": "Pengguna tidak ditemukan", "error_code": 404}, 404
+
+    # Check if the apikey has expired
+    expired_date = datetime.strptime(user['expired_date'], '%d-%m-%Y').date()
+    today = datetime.now().date()
+    if expired_date < today:
+        return {"error": "Apikey Anda Telah Kadaluarsa", "error_code": 403}, 403
+
+    return None
+
+# Helper function to check and update request limit
+def check_and_update_request_limit(apikey):
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    # Check if apikey is expired
+    expiry_error = check_apikey_expiry(apikey)
+    if expiry_error:
+        return expiry_error
+
+    # Read existing users data
+    with open(users_db, 'r') as f:
+        users = json.load(f)
+
+    username = None
+    for user, data in users.items():
+        if data.get('api_key') == apikey:
+            username = user
+            break
+
+    if username is None:
+        return {"error": "API key tidak valid", "error_code": 401}, 401
+
+    user = users.get(username)
+    if not user:
+        return {"error": "Pengguna tidak ditemukan", "error_code": 404}, 404
+
+    # Initialize request limits if not present
+    if 'request_limit' not in user:
+        user['request_limit'] = {'date': today, 'count': 0}
+
+    # Check if the request count needs to be reset
+    if user['request_limit']['date'] != today:
+        user['request_limit'] = {'date': today, 'count': 0}
+
+    # Check if the limit has been exceeded
+    if user['request_limit']['count'] >= 30:
+        return {"error": "Apikey anda telah mencapai Limit", "error_code": 429}, 429
+
+    # Increment the request count
+    user['request_limit']['count'] += 1
+
+    # Write the updated users data back to the database file
+    with open(users_db, 'w') as f:
+        json.dump(users, f, indent=4)
+
+    return None
+
+@tiktok_bp.route('/api/download/tiktok', methods=['GET'])
+def tiktok_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    # Periksa dan perbarui batas permintaan
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    
+    tikmate = "https://api.tikmate.app/api/lookup"
+    payload = {
+        "url": url
+    }
+    
+    head_tikmate = {
+        "Sec-Ch-Ua-Platform": "\"Windows\"",
+        "Sec-Ch-Ua-Mobile": "?0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36",
+        "Accept": "/",
+        "Origin": "https://tikmate.app",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Priority": "u=1, i",
+        "Connection": "keep-alive",
+    }
+    response = requests.post(tikmate, headers=head_tikmate, data=payload)
+    getres = response.json()
+
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'origin': 'https://lovetik.com',
+        'priority': 'u=1, i',
+        'referer': 'https://lovetik.com/id',
+        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Linux"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+    }
+    
+    data = {
+        'query': url
+    }
+    
+    try:
+        res = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
+        res.raise_for_status()  # Raise an error for bad status codes
+        response_json = res.json()
+        username  = response_json.get('author')
+        profile = response_json.get('author_a')
+        fullname = response_json.get('author_name')
+        thumbnail = response_json.get('cover')
+        description = response_json.get('desc')
+        links = response_json.get('links', [])
+        url_result = []
+        for link in links:
+            url_result.append(link.get('a', ''))
+        mp4 = url_result[8] if len(url_result) > 8 else ''
+        mp3 = url_result[9] if len(url_result) > 9 else ''
+        
+        if getres['success']:
+            comment_count = getres.get("comment_count")
+            like_count = getres.get("like_count")
+            share_count = getres.get("share_count")
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': {
+                    'username': username,
+                    'profile': profile,
+                    'fullname': fullname,
+                    'thumbnail': thumbnail,
+                    'description': description,
+                    'total_comment': comment_count,
+                    'total_like': like_count,
+                    'total_share': share_count,
+                    'mp4': mp4,
+                    'mp3': mp3
+                }
+            })
+    except requests.exceptions.RequestException as e:
+        return jsonify({"creator": "AmmarBN", "error": str(e)})
+
+
+
+@igdl_bp.route('/api/download/instagram', methods=['GET'])
+def instagram_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    # Periksa dan perbarui batas permintaan
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    
+    api_url = "https://v3.saveig.app/api/ajaxSearch"
+    payload = {
+        "q": url,
+        "t": "media",
+        "lang": "en"
+    }
+    
+    headers = {
+        "accept": "/",
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+        "origin": "https://saveig.app",
+        "referer": "https://saveig.app/"
+    }
+    
+    response = requests.post(api_url, data=payload, headers=headers)
+    
+    # Memeriksa status permintaan
+    if response.status_code == 200:
+        response_data = response.json()
+        if response_data["status"] == "ok":
+            # Menemukan URL unduhan video dalam respon
+            start_idx = response_data["data"].find('href="') + len('href="')
+            end_idx = response_data["data"].find('"', start_idx)
+            download_url = response_data["data"][start_idx:end_idx]
+            return jsonify(
+                {
+                    'creator': 'AmmarBN',
+                    'result': download_url,
+                    'status': True
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    'creator': 'AmmarBN',
+                    'result': 'Gagal, Silakan coba lagi nanti',
+                    'status': False
+                }
+            )
+    else:
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'result': 'Gagal, Silakan coba lagi nanti',
+                'status': False
+            }
+        )
+        
+@twitter_bp.route('/api/download/twitter', methods=['GET'])
+def instagram_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    # Periksa dan perbarui batas permintaan
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    
+    try:
+        data = {'URL': url}
+        req = requests.post('https://twdown.net/download.php',data=data).text
+        
+        kl_vd = req.split('download href="')[2];
+        id_vid = kl_vd.split('"')[0];
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': {
+                    'url': id_vid
+                }
+            }
+        )
+    except requests.exceptions.RequestException as e:
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'result': 'error',
+                'status': False
+            }
+        )
+        
+@facebook_bp.route('/api/download/fbdl', methods=['GET'])
+def fb_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    
+    try:
+        api = requests.get(f'https://aemt.me/download/fbdl?url={url}')
+        res = api.json()
+        if res.get('status'):
+            normal = res.get('result', {}).get('Normal_video')
+            high = res.get('result', {}).get('HD')
+            audio = res.get('result', {}).get('audio')
+            if normal or high or audio:
+                return jsonify(
+                    {
+                        'creator': 'AmmarBN',
+                        'status': True,
+                        'result': {
+                            'normal': normal,
+                            'high_vid': high,
+                            'audio': audio
+                        }
+                    }
+                )
+            else:
+                return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
+        else:
+            return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
+    except requests.exceptions.RequestException as e:
+        return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+    
+@mediafire_bp.route('/api/download/mediafire', methods=['GET'])
+def mediafire_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    type = soup.find('div', {'class': 'filename'}).text.strip()
+    name = soup.find('div', {'class': 'dl-btn-label'}).text.strip()
+    for b in soup.find_all('ul', {'class':'details'}):
+        size   = re.search('<li>File size: <span>(.*?)</span></li>', str(b)).group(1)
+        upload = re.search('<li>Uploaded: <span>(.*?)</span></li>', str(b)).group(1)
+
+    media = soup.find('a', {'class': 'input popsok'}).get('href')
+    return jsonify(
+        {
+            'creator': 'AmmarBN',
+            'ststus': True,
+            'url': media
+        }
+    )
+
+@pinterestvid_bp.route('/api/download/pinvid', methods=['GET'])
+def pindl_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+
+    c = requests.post('https://pinterestvideodownloader.com/download.php',
+	headers={
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cookie": "_ga_966QNV4G77=GS1.1.1718265709.1.1.1718265710.0.0.0; _ga=GA1.2.431955486.1718265710; _gid=GA1.2.1691914427.1718265710; __gads=ID=a768755ea54ad065:T=1718265744:RT=1718265744:S=ALNI_MYhy1D7j7Sk-L38lY0gCrvHslkj9w; __gpi=UID=00000e4a44effcb5:T=1718265744:RT=1718265744:S=ALNI_MYlyVI3dB_rxdfiktijz5hqjdFh3A; __eoi=ID=bcaa659e3f755205:T=1718265744:RT=1718265744:S=AA-AfjaNqVe1HORKDn3EorxJl5TE; FCNEC=%5B%5B%22AKsRol-DFkw9G-FS4szSzz5S-Zy-awxxF02UE3axThxkDqbMdR-KD0ss2AkukIaNNXn-fXts6XPmkNEPhKLEh-MWatFyvpof-XZuWVyQDQIAatU_iGwEIPl3TYlsnsZdyNvsNGsr0w0yz2xNc-o7rSwnGm5sWti7ag%3D%3D%22%5D%5D",
+            "Origin": "https://pinterestvideodownloader.com",
+            "Referer": "https://pinterestvideodownloader.com/id/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+	},
+	data={
+		"url": url
+	}
+    ).text
+    d = re.search('<video style="width: 100%;height:450px;" src="(.*?)" controls autoplay>', str(c)).group(1)
+    return jsonify(
+        {
+            'creator': 'AmmarBN',
+            'status': True,
+            'result': d
+        }
+    )
+    
+@laheludl_bp.route('/api/download/lahelu', methods=['GET'])
+def laheludl_dl():
+    url = request.args.get('url')
+    apikey = request.args.get('apikey')
+    
+    if not url:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+    if apikey is None:
+        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+    
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    
+    headers = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'accept-language': 'en-US,en;q=0.9',
+    'cache-control': 'max-age=0',
+    #'cookie': '_ga_ZD1YG9MSQ3=GS1.1.1718548942.1.0.1718548942.0.0.0; _gcl_au=1.1.1186587033.1718548943; stpdOrigin={"origin":"direct"}; _sharedID=ac0f93da-c23d-47e8-8463-742b93c505d6; _sharedID_cst=zix7LPQsHA%3D%3D; cto_bidid=y2-ZQV9JYTdKOVhDbU5hWnhjRng0SzNtb3pmS283Q3o0cXRUUG85U1ZmQUI0Wkw1OGZWQkpDaHJJdFN4NHMyR3M2bE10UUdoJTJCdEJydUpyOGZDU3FIdHY5SFd3JTNEJTNE; _cc_id=ac8d725d2061a8118abac3156abc7614; panoramaId_expiry=1718635367072; __gads=ID=3d4f3d41c0f344db:T=1718548967:RT=1718548967:S=ALNI_MYabpBjSDmxnkz_AzqFWLzYd3KBoA; __gpi=UID=00000e4f7116c6b3:T=1718548967:RT=1718548967:S=ALNI_MYXZTJ8sz_K-qnfsDFfuGm9KGgzcg; __eoi=ID=1a5112c16d3c0ed4:T=1718548967:RT=1718548967:S=AA-AfjbSbU0ht3H-gIudkb1x2pCV; _au_1d=AU1D-0100-001718548969-W0J9KTKH-916F; _ga=GA1.2.1010614677.1718548943; _gid=GA1.2.273983052.1718548972; cto_bundle=IGTbU185aGo0SERZSW4lMkJjUW1iSmtMdkRPaVI2VlF1QlRmNzclMkI3TkpXQ2klMkZDN0olMkJ5SXM3WXdJYTh4T2l6TG1Hc0ZabEtybWhvViUyQjRqZVFRSUpqRlpBNUQlMkJ5U1FlbXVUQVhSZ2clMkZyRkpBVVhyOHdRTDNzZGVwZlVDb3gxZXhYYVduVG1q',
+    'priority': 'u=0, i',
+    'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Linux"',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'none',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    }
+
+    response = requests.get(url, headers=headers).text
+    pattern = r"window\.atob\('([^']+)'\)"
+    match = re.search(pattern, response)
+    if match:
+        base64_string = match.group(1)  # Mengambil nilai yang terdapat dalam tanda kurung tunggal
+        decoded_bytes = base64.b64decode(base64_string)  # Mendekode string dari base64
+        encoded_string = decoded_bytes.decode('utf-8')  # Mengubah bytes menjadi string UTF-8
+    # Dekode URL encoding
+        decoded_string = urllib.parse.unquote(encoded_string)
+    # Parse JSON ke dalam bentuk dictionary
+        data = json.loads(decoded_string)
+        username = data['postInfo']['userUsername']
+        title = data['postInfo']['title']
+        postid = data['postInfo']['postID']
+        userid = data['postInfo']['userID']
+        totalcomment = data['postInfo']['totalComments']
+        createtime = data['postInfo']['createTime']
+        data_url = data['postInfo']['media']
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': {
+                    'a_username': username,
+                    'b_title': title,
+                    'c_postid': postid,
+                    'd_userid': userid,
+                    'e_totalcomment': totalcomment,
+                    'f_create': createtime,
+                    'g_url': f'https://cache.lahelu.com/{data_url}'
+                }
+            }
+        )
+    else:
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'status': False,
+                'result': {}
+            }
+        )
