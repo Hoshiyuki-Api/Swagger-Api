@@ -136,7 +136,26 @@ class DownloadttResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         
+        headers = {
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'origin': 'https://lovetik.com',
+        'priority': 'u=1, i',
+        'referer': 'https://lovetik.com/id',
+        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Linux"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+        }
         
+        data = {
+            'query': url
+        }
         try:
             res = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
             res.raise_for_status()  # Raise an error for bad status codes
