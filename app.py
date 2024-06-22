@@ -43,4 +43,4 @@ api.add_namespace(lahelu_ns, path='/api/lahelu')  # NameSpace Untuk Lahelu
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=7777)
+    app.run(debug=True)
