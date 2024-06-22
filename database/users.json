@@ -1,0 +1,13 @@
+{
+    "AmmarBN": {
+        "id": 1,
+        "email": "akusalto@gmail.com",
+        "password": "AmmarBN",
+        "expired_date": "07-08-2024",
+        "api_key": "yk",
+        "request_limit": {
+            "date": "2024-06-22",
+            "count": 11
+        }
+    }
+}
