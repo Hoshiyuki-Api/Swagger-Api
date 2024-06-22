@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar UI</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://indrijunanda.github.io/RuangAdmin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="/static/css/style_dash.css">
+</head>
+<body>
+<script src="https://cdn.rawgit.com/bungfrangki/efeksalju/2a7805c7/efek-salju.js"></script>
+<script src="https://cdn.rawgit.com/bungfrangki/efeksalju/2a7805c7/green-bintang-jatuh.js"></script>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="https://telegra.ph/file/16b75e2bb3ab3d101a452.jpg" alt="Logo">
+    <span>Hoshiyuki-API</span>
+  </div>
+  <ul>
+    <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li><a href="#"><i class="fas fa-dollar-sign"></i> Pricing</a></li>
+    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+  </ul>
+  <div class="logo2">
+  <ul>
+  </ul>
+  </div>
+  <div class="logo3">
+  <ul>
+  	<!--<i class="fas fa-fw fa-arrow-down" aria-hidden="true"></i>--!>
+  	<li><a href="#"><i class="fas fa-fw fa-arrow-down"></i> Downloader Menu</a></li>
+  </ul>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header" id="header">
+  <div class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle sidebar">
+    <i class="fas fa-bars"></i>
+  </div>
+  <div class="title">Dashboard</div>
+  <div class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <i class="fas fa-sun"></i>
+  </div>
+  <div class="profile-icon" onclick="toggleProfileOptions()">G</div>
+  <div class="profile-options" id="profile-options">
+    <a href="#">Profile</a>
+    <a href="#">Log Out</a>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content" id="content">
+  <div class="card-custom">
+    <i class="fas fa-user card-icon"></i>
+    <h5>Visitor</h5>
+    <div class="card-content">5</div> <!-- Placeholder untuk nilai total visitor -->
+    <div class="card-description">Total Visitor</div>
+  </div>
+  <div class="card-custom">
+    <i class="fas fa-dollar-sign card-icon"></i>
+    <h5>Revenue</h5>
+    <div class="card-content">$5</div>
+    <div class="card-description">Total Revenue</div>
+  </div>
+  <div class="card-custom">
+    <i class="fas fa-chart-line card-icon"></i>
+    <h5>Growth</h5>
+    <div class="card-content">12%</div>
+    <div class="card-description">Monthly Growth</div>
+  </div>
+  <div class="card-custom">
+    <i class="fas fa-comments card-icon"></i>
+    <h5>Feedback</h5>
+    <div class="card-content">89</div>
+    <div class="card-description">New Feedbacks</div>
+   </div>
+
+  <div class="terms">
+    <h5>S&K</h5>
+    <ul>
+      <li>1. Jangan flooding requests.</li>
+      <li>2. Membuat banyak akun pada IP yang sama maka IP otomatis akan di block.</li>
+      <li>3. Owner dapat sewaktu waktu mengubah ketentuan di website ini, demi menjaga kualitas website.</li>
+      <li>4. Dilarang keras untuk menyebarkan apikey Anda, jika ketahuan. InsyaAllah akan di block :)</li>
+      <li>5. Jangan ditembak atuh, sakit.</li>
+      <li>6. Owner tidak bertanggung jawab atas apa yang Anda lakukan dalam penggunaan website ini.</li>
+    </ul>
+  </div>
+
+  <footer class="sticky-footer">
+    <div class="container my-auto">
+      <div class="copyright text-center my-auto">
+        <span>copyright &copy; 
+          <script>
+            document.write(new Date().getFullYear());
+          </script> <b><a href="https://github.com/AmmarrBN"
+                      target="_blank">Hoshiyuki-API</a></b>
+        </span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script src="/static/js/script_dash.js"></script>
+</body>
+</html>
