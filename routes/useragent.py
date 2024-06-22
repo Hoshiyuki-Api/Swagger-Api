@@ -77,7 +77,7 @@ def check_and_update_request_limit(apikey):
         user['request_limit'] = {'date': today, 'count': 0}
 
     # Check if the limit has been exceeded
-    if user['request_limit']['count'] >= 30:
+    if user['request_limit']['count'] >= 1000:
         return {"error": "Apikey anda telah mencapai Limit", "error_code": 429}, 429
 
     # Increment the request count
