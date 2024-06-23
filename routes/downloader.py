@@ -134,98 +134,56 @@ class DownloadttResource(Resource):
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-        
-        tikmate = "https://api.tikmate.app/api/lookup"
-        payload = {
-            "url": url
+            
+        headers = {
+    'accept': '*/*',
+    'accept-language': 'en-US,en;q=0.9',
+    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    # 'cookie': '_ga=GA1.1.6364207.1717837319; __gads=ID=00bce85d94f977a3:T=1717837319:RT=1717839979:S=ALNI_MZDAjs_SNl6GQkU4whEOmcDoVkTwg; __gpi=UID=00000e443e647ee2:T=1717837319:RT=1717839979:S=ALNI_MYkfsQRA_ZduJ8nwTV9z3eV61pDdg; __eoi=ID=26c8d4ac0c9d33c7:T=1717837319:RT=1717839979:S=AA-AfjYHA7UAR40jPrn-ZJDvTEx_; _ga_30X9VRGZQ4=GS1.1.1717837318.1.1.1717840098.0.0.0; FCNEC=%5B%5B%22AKsRol_uWFsgDh-_YrbPyNvMAQCS2PvIbY1jjqzwVRNTPtBXgL9XFZVjBywWxCCEEuYktubvGuyIdEPMRWTBCOvxbhLDyVGEwq9BgZxUP_cYRUamatpo7OTOJE_ao3dyesMDJLR7IWjz_QZ8_KQu9ETkKGsuc765Ng%3D%3D%22%5D%5D',
+    'origin': 'https://lovetik.com',
+    'priority': 'u=1, i',
+    'referer': 'https://lovetik.com/id',
+    'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Linux"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'x-requested-with': 'XMLHttpRequest',
         }
-        
-        head_tikmate = {
-            "Sec-Ch-Ua-Platform": "\"Windows\"",
-            "Sec-Ch-Ua-Mobile": "?0",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36",
-            "Accept": "/",
-            "Origin": "https://tikmate.app",
-            "Sec-Fetch-Site": "same-site",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Dest": "empty",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Priority": "u=1, i",
-            "Connection": "keep-alive",
+            
+        data = {
+            'query': url
         }
-        
+        resp = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
         try:
-            response = requests.post(tikmate, headers=head_tikmate, data=payload)
-            response.raise_for_status()  # Raise an error for bad status codes
-            try:
-                getres = response.json()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                return jsonify({"creator": "AmmarBN", "error": "Invalid JSON response from Tikmate API"})
-            
-            headers = {
-                'accept': '*/*',
-                'accept-language': 'en-US,en;q=0.9',
-                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'origin': 'https://lovetik.com',
-                'priority': 'u=1, i',
-                'referer': 'https://lovetik.com/id',
-                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Linux"',
-                'sec-fetch-dest': 'empty',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                'x-requested-with': 'XMLHttpRequest',
-            }
-            
-            data = {
-                'query': url
-            }
-            res = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
-            res.raise_for_status()  # Raise an error for bad status codes
-            try:
-                response_json = res.json()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                return jsonify({"creator": "AmmarBN", "error": "Invalid JSON response from Lovetik API"})
-            
-            username  = response_json.get('author')
-            profile = response_json.get('author_a')
-            fullname = response_json.get('author_name')
-            thumbnail = response_json.get('cover')
-            description = response_json.get('desc')
-            links = response_json.get('links', [])
-            url_result = []
-            for link in links:
-                url_result.append(link.get('a', ''))
-            mp4 = url_result[8] if len(url_result) > 8 else ''
-            mp3 = url_result[9] if len(url_result) > 9 else ''
-                
-            if getres.get('success'):
-                comment_count = getres.get("comment_count")
-                like_count = getres.get("like_count")
-                share_count = getres.get("share_count")
-                return jsonify({
+            username  = resp.json()['author']
+            profile   = resp.json()['author_a']
+            fullname  = resp.json()['author_name']
+            thumbnail = resp.json()['cover']
+            deskripsi = resp.json()['desc']
+            url = []
+            for i in resp.json()['links']:
+                url.append(i)
+            mp4 = url[8]['a']
+            mp3 = url[9]['a']
+            return jsonify(
+                {
                     'creator': 'AmmarBN',
                     'result': {
                         'username': username,
                         'profile': profile,
                         'fullname': fullname,
-                        'thumbnail': thumbnail,
-                        'description': description,
-                        'total_comment': comment_count,
-                        'total_like': like_count,
-                        'total_share': share_count,
+                        'thumb': thumbnail,
+                        'desc': deskripsi,
                         'mp4': mp4,
                         'mp3': mp3
                     }
-                })
-            else:
-                return jsonify({"creator": "AmmarBN", "error": "Tikmate API response was not successful"})
+                }
+            )
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
-
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
