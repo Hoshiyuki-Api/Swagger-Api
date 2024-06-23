@@ -323,7 +323,7 @@ class DownloadfbResource(Resource):
     # @api.marshal_with(user_agent_model)
     def get(self):
         """
-        Downloader Twitter Video.
+        Downloader Facebook Video.
 
         Parameters:
         - url: Url Facebook (required)
