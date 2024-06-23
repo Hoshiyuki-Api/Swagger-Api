@@ -113,7 +113,6 @@ class DownloadttResource(Resource):
         'url': 'Url Tiktok',
         'apikey': 'API Key for authentication'
     })
-    # @api.marshal_with(user_agent_model)
     def get(self):
         """
         Downloader Tiktok No WM.
@@ -142,46 +141,55 @@ class DownloadttResource(Resource):
         }
         
         head_tikmate = {
-        "Sec-Ch-Ua-Platform": "\"Windows\"",
-        "Sec-Ch-Ua-Mobile": "?0",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36",
-        "Accept": "/",
-        "Origin": "https://tikmate.app",
-        "Sec-Fetch-Site": "same-site",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Dest": "empty",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Priority": "u=1, i",
-        "Connection": "keep-alive",
-        }
-        response = requests.post(tikmate, headers=head_tikmate, data=payload)
-        getres = response.json()
-        
-        headers = {
-        'accept': '*/*',
-        'accept-language': 'en-US,en;q=0.9',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'origin': 'https://lovetik.com',
-        'priority': 'u=1, i',
-        'referer': 'https://lovetik.com/id',
-        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Linux"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'x-requested-with': 'XMLHttpRequest',
+            "Sec-Ch-Ua-Platform": "\"Windows\"",
+            "Sec-Ch-Ua-Mobile": "?0",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36",
+            "Accept": "/",
+            "Origin": "https://tikmate.app",
+            "Sec-Fetch-Site": "same-site",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Priority": "u=1, i",
+            "Connection": "keep-alive",
         }
         
-        data = {
-            'query': url
-        }
         try:
+            response = requests.post(tikmate, headers=head_tikmate, data=payload)
+            response.raise_for_status()  # Raise an error for bad status codes
+            try:
+                getres = response.json()
+            except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                return jsonify({"creator": "AmmarBN", "error": "Invalid JSON response from Tikmate API"})
+            
+            headers = {
+                'accept': '*/*',
+                'accept-language': 'en-US,en;q=0.9',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'origin': 'https://lovetik.com',
+                'priority': 'u=1, i',
+                'referer': 'https://lovetik.com/id',
+                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Linux"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-origin',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'x-requested-with': 'XMLHttpRequest',
+            }
+            
+            data = {
+                'query': url
+            }
             res = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
             res.raise_for_status()  # Raise an error for bad status codes
-            response_json = res.json()
+            try:
+                response_json = res.json()
+            except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                return jsonify({"creator": "AmmarBN", "error": "Invalid JSON response from Lovetik API"})
+            
             username  = response_json.get('author')
             profile = response_json.get('author_a')
             fullname = response_json.get('author_name')
@@ -191,10 +199,10 @@ class DownloadttResource(Resource):
             url_result = []
             for link in links:
                 url_result.append(link.get('a', ''))
-                mp4 = url_result[8] if len(url_result) > 8 else ''
-                mp3 = url_result[9] if len(url_result) > 9 else ''
+            mp4 = url_result[8] if len(url_result) > 8 else ''
+            mp3 = url_result[9] if len(url_result) > 9 else ''
                 
-            if getres['success']:
+            if getres.get('success'):
                 comment_count = getres.get("comment_count")
                 like_count = getres.get("like_count")
                 share_count = getres.get("share_count")
@@ -213,6 +221,8 @@ class DownloadttResource(Resource):
                         'mp3': mp3
                     }
                 })
+            else:
+                return jsonify({"creator": "AmmarBN", "error": "Tikmate API response was not successful"})
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
