@@ -136,6 +136,28 @@ class DownloadttResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         
+        tikmate = "https://api.tikmate.app/api/lookup"
+        payload = {
+            "url": url
+        }
+        
+        head_tikmate = {
+        "Sec-Ch-Ua-Platform": "\"Windows\"",
+        "Sec-Ch-Ua-Mobile": "?0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36",
+        "Accept": "/",
+        "Origin": "https://tikmate.app",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Priority": "u=1, i",
+        "Connection": "keep-alive",
+        }
+        response = requests.post(tikmate, headers=head_tikmate, data=payload)
+        getres = response.json()
+        
         headers = {
         'accept': '*/*',
         'accept-language': 'en-US,en;q=0.9',
@@ -171,6 +193,11 @@ class DownloadttResource(Resource):
                 url_result.append(link.get('a', ''))
                 mp4 = url_result[8] if len(url_result) > 8 else ''
                 mp3 = url_result[9] if len(url_result) > 9 else ''
+                
+            if getres['success']:
+                comment_count = getres.get("comment_count")
+                like_count = getres.get("like_count")
+                share_count = getres.get("share_count")
                 return jsonify({
                     'creator': 'AmmarBN',
                     'result': {
@@ -179,6 +206,9 @@ class DownloadttResource(Resource):
                         'fullname': fullname,
                         'thumbnail': thumbnail,
                         'description': description,
+                        'total_comment': comment_count,
+                        'total_like': like_count,
+                        'total_share': share_count,
                         'mp4': mp4,
                         'mp3': mp3
                     }
