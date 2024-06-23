@@ -96,7 +96,6 @@ class Resourceigstalk(Resource):
         'username': 'Input Instagram Username',
         'apikey': 'API key for authenticated'
     })
-
     def get(self):
         """
         Tools Stalk Instagram.
@@ -109,8 +108,6 @@ class Resourceigstalk(Resource):
         username = request.args.get('username')
         apikey = request.args.get('apikey')
 
-        Lmao = instaloader.Instaloader()
-        
         if not username:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
         
@@ -122,34 +119,46 @@ class Resourceigstalk(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         
-        # Load Profile Dari Instaloader
-        profile = instaloader.Profile.from_username(Lmao.context, username)
-
-        # Extract necessary fields from the user object
-        username_ = profile.username
-        full_name = profile.full_name
-        id_ = profile.userid
-        bio = profile.biography
-        follower = profile.followers
-        followed = profile.followees
-        profile_pic = profile.profile_pic_url
-        total_post = profile.mediacount
-        blocked = profile.blocked_by_viewer
-        external_url = profile.external_url
-
-        # Ensure all returned data is JSON serializable
-        return jsonify({
-            'a_username': '@'+username_,
-            'b_full_name': full_name,
-            'c_id': id_,
-            'd_biography': bio,
-            'e_total_follower': follower,
-            'f_total_followed': followed,
-            'g_post_total': total_post,
-            'h_profile_pic': profile_pic,
-            'i_block_you': blocked,
-            'j_external_url': external_url
-        })
+        try:
+            url = f'https://www.instagram.com/{username}/'
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            }
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            script_tag = soup.find('script', text=lambda t: t and 'window._sharedData' in t).string
+            shared_data = script_tag.split(' = ', 1)[1].rstrip(';')
+            
+            profile_data = json.loads(shared_data)['entry_data']['ProfilePage'][0]['graphql']['user']
+            
+            username_ = profile_data['username']
+            full_name = profile_data['full_name']
+            id_ = profile_data['id']
+            bio = profile_data['biography']
+            follower = profile_data['edge_followed_by']['count']
+            followed = profile_data['edge_follow']['count']
+            profile_pic = profile_data['profile_pic_url_hd']
+            total_post = profile_data['edge_owner_to_timeline_media']['count']
+            external_url = profile_data.get('external_url')
+            
+            return jsonify({
+                'a_username': '@' + username_,
+                'b_full_name': full_name,
+                'c_id': id_,
+                'd_biography': bio,
+                'e_total_follower': follower,
+                'f_total_followed': followed,
+                'g_post_total': total_post,
+                'h_profile_pic': profile_pic,
+                'i_external_url': external_url
+            })
+        
+        except requests.exceptions.RequestException as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)})
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": "Failed to parse profile data"})
 
 
 @simitool_bp.route('/api/tools/simi', methods=['GET'])
