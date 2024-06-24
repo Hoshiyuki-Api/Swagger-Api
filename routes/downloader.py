@@ -203,17 +203,13 @@ class DownloadigResource(Resource):
 
         url = request.args.get('url')
         apikey = request.args.get('apikey')
+
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
         
         if apikey is None:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        
+
         api_url = "https://v3.saveig.app/api/ajaxSearch"
         payload = {
             "q": url,
@@ -222,7 +218,7 @@ class DownloadigResource(Resource):
         }
         
         headers = {
-            "accept": "/",
+            "accept": "*/*",
             "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
             "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
             "origin": "https://saveig.app",
@@ -235,14 +231,37 @@ class DownloadigResource(Resource):
         if response.status_code == 200:
             response_data = response.json()
             if response_data["status"] == "ok":
-                # Menemukan URL unduhan video dalam respon
-                start_idx = response_data["data"].find('href="') + len('href="')
-                end_idx = response_data["data"].find('"', start_idx)
-                download_url = response_data["data"][start_idx:end_idx]
+                # Parse data respon untuk menemukan URL unduhan media
+                soup = parser(response_data["data"], 'html.parser')
+                media_list = {"video": [], "photo": []}
+
+                for download_item in soup.find_all("div", class_="download-items"):
+                    # Extract thumbnail URLs (image URLs)
+                    media_url = None
+                    for thumb in download_item.find_all("div", class_="download-items__thumb"):
+                        img1 = re.findall('<img alt="saveig" src="(.*?)"/>', str(thumb))
+                        if img1:
+                            media_url = img1[0]
+                        img2 = re.findall('<img alt="saveig" class="lazy" data-src="(.*?)" src=".*?"/>', str(thumb))
+                        if img2:
+                            media_url = img2[0]
+                    
+                    # Extract video URLs
+                    for button in download_item.find_all("div", class_="download-items__btn"):
+                        video = re.findall(
+                            '<a class="abutton is-success is-fullwidth btn-premium mt-3" href="(.*?)" onclick=".*?" rel="nofollow" title="Download Video"><span><i class="icon icon-download"></i><span>Download Video</span></span></a>',
+                            str(button))
+                        if video:
+                            media_list["video"].append(video[0])
+                        else:
+                            if media_url:
+                                media_list["photo"].append(media_url)
+            
+                # Menampilkan URL unduhan media
                 return jsonify(
                     {
                         'creator': 'AmmarBN',
-                        'result': download_url,
+                        'result': media_list,
                         'status': True
                     }
                 )
@@ -253,14 +272,14 @@ class DownloadigResource(Resource):
                         'result': 'Gagal, Silakan coba lagi nanti',
                         'status': False
                     }
-            )
+                )
         else:
             return jsonify(
                 {
                     'creator': 'AmmarBN',
                     'result': 'Gagal, Silakan coba lagi nanti',
                     'status': False
-                    }
+                }
             )
         
 @twitterdlrek.route('')
