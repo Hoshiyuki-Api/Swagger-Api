@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_restx import Api
+# Index
+from routes.index import index_app
 # Routes Downloader
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns
@@ -9,6 +11,8 @@ from routes.dash_check import check_bp, api as check_ns
 
 app = Flask(__name__)
 
+# Index
+app.register_blueprint(index_app)
 # Register Blueprints
 app.register_blueprint(useragent_bp, url_prefix='/api')
 app.register_blueprint(check_bp, url_prefix='/api')
