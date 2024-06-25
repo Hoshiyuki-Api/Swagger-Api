@@ -12,6 +12,7 @@ facebook_bp = Blueprint('facebook', __name__)
 mediafire_bp = Blueprint('mediafir', __name__)
 pinterestvid_bp = Blueprint('pinterestvid', __name__)#
 laheludl_bp = Blueprint('lahelu', __name__)
+ytdl_bp = Blueprint('youtubedl', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -99,6 +100,7 @@ facebookdlrek = Namespace('downloader', description='Downloader Api')
 mediafiredlrek = Namespace('downloader', description='Downloader Api')
 pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
+ytdlrek = Namespace('downloader', description='Downloader Api')
 
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
@@ -573,3 +575,47 @@ class DownloadlaheluResource(Resource):
                     'result': {}
                 }
             )
+        
+@ytdlrek.route('')
+class DownloadytResource(Resource):
+    @ytdlrek.doc(params={
+        'url': 'Url YouTube',
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        Downloader YouTube Vide & Audio.
+
+        Parameters:
+        - url: Url YouTube (required)
+        - apikey: API Key for authentication (required)
+        """
+        url = request.args.get('url')
+        apikey = request.args.get('apikey')
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Read existing users data
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+        
+        try:
+            api = requests.get(f'https://aemt.me/download/ytdl?url={url}')
+            res = api.json()
+            
+            # Check if API call was successful
+            if res.get('status'):
+                mp4 = res.get('result', {}).get('mp4')
+                mp3 = res.get('result', {}).get('mp3')
+                if mp4 or mp3:
+                    return jsonify({'creator': 'AmmarBN', 'result': {'status': True, 'mp4': mp4, 'mp3': mp3}})
+                else:
+                    return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
+            else:
+                return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
+        except requests.exceptions.RequestException as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
