@@ -584,7 +584,7 @@ class DownloadytResource(Resource):
     })
     def get(self):
         """
-        Downloader YouTube Vide & Audio.
+        Downloader YouTube Video & Audio.
 
         Parameters:
         - url: Url YouTube (required)
