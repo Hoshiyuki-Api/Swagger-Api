@@ -125,7 +125,7 @@ class DownloadblackboxResource(Resource):
                 {
                     'id': '123',
                     'role': 'user',
-                    'content': text,
+                    'content': 'Sekarang nama mu Adalah Hoshiyuki-AI, Kamu akan menjawab pertanyaan Tanpa menyertakan Source, Tanpa Menyertakan Sumber, Namun Hanya Menyertakan Link Di setiap Sumber saja, Dan Selalu Menjawab Menggunakan Bahasa Indonesia. Hanya Menjawab Dari Hasil Content. Prompt:'+text,
                 },
             ],
             'id': '123',
