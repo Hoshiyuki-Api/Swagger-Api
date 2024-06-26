@@ -125,7 +125,7 @@ class DownloadblackboxResource(Resource):
                 {
                     'id': "123",
                     'role': "user",
-                    'content': text
+                    'content': 'Now, Your Name Is Hoshiyuki-Ai Created By YukiSmall. Prompt:'+text
                 },
             ],
             'id': '123',
