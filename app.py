@@ -33,7 +33,7 @@ app.register_blueprint(ytdl_bp, url_prefix='/api/ytdl')
 app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 # Register Tools
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
-app.register_blueprint(blackbox_bp, url_prefix='/api/deepai')
+app.register_blueprint(deepai_bp, url_prefix='/api/deepai')
 
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
@@ -56,7 +56,7 @@ api.add_namespace(ytdl_ns, path='/api/ytdl')
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 # NameSpace AI
 api.add_namespace(blackbox_ns, path='/api/blackbox')
-api.add_namespace(blackbox_ns, path='/api/deepai')
+api.add_namespace(deepai_ns, path='/api/deepai')
 
 if __name__ == '__main__':
     app.run(debug=True)
