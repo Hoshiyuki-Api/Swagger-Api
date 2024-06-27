@@ -11,7 +11,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Tools
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import blackbox_bp, blackboxrek as blackbox_ns
+from routes.ai import blackbox_bp, deepai_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns
 
 app = Flask(__name__)
 
@@ -33,6 +33,7 @@ app.register_blueprint(ytdl_bp, url_prefix='/api/ytdl')
 app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 # Register Tools
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
+app.register_blueprint(blackbox_bp, url_prefix='/api/deepai')
 
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
@@ -55,6 +56,7 @@ api.add_namespace(ytdl_ns, path='/api/ytdl')
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 # NameSpace AI
 api.add_namespace(blackbox_ns, path='/api/blackbox')
+api.add_namespace(blackbox_ns, path='/api/deepai')
 
 if __name__ == '__main__':
     app.run(debug=True)
