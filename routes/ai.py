@@ -92,7 +92,7 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 blackboxrek = Namespace('ai', description='AI Api')
 deepairek = Namespace('ai', description='AI Api')
-simirek = NameSpace('ai', description='AI Api')
+simirek = Namespace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
