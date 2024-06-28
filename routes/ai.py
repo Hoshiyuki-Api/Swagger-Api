@@ -8,6 +8,7 @@ from flask_restx import Namespace, Resource
 blackbox_bp = Blueprint('_openai-blackbox', __name__)
 deepai_bp = Blueprint('_openai-deepai', __name__)
 simi_bp = Blueprint('_openai_simi', __name__)
+osmage_bp = Blueprint('osmage', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -93,6 +94,7 @@ def check_and_update_request_limit(apikey):
 blackboxrek = Namespace('ai', description='AI Api')
 deepairek = Namespace('ai', description='AI Api')
 simirek = Namespace('ai', description='AI Api')
+osmagerek = Namespace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
@@ -216,7 +218,7 @@ class DownloadsimiResource(Resource):
     })
     def get(self):
         """
-        ChatGpt Api.
+        SimSimi Api.
 
         Parameters:
         - text: Text (required)
@@ -256,3 +258,85 @@ class DownloadsimiResource(Resource):
                 'result': a
             }
         )
+
+@osmagerek.route('')
+class DownloadosmageResource(Resource):
+    @osmagerek.doc(params={
+        'url': 'Input Url Image',
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        Osint Image Api.
+
+        Parameters:
+        - url: url (required)
+        - apikey: API Key for authentication (required)
+        """
+        url = request.args.get('url')
+        apikey = request.args.get('apikey')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+	headers = {
+    'authority': 'locate-image-7cs5mab6na-uc.a.run.app',
+    'accept': '*/*',
+    'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+    'origin': 'https://geospy.ai',
+    'referer': 'https://geospy.ai/',
+    'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+    'sec-ch-ua-mobile': '?1',
+    'sec-ch-ua-platform': '"Android"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'cross-site',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+	}
+
+	filename = url
+	response = requests.get(filename)
+
+	# Infer the content type from the file extension
+	if filename.endswith('jpg') or filename.endswith('jpeg'):
+		content_type = 'image/jpeg'
+	elif filename.endswith('png'):
+		content_type = 'image/png'
+	else:
+		content_type = 'application/octet-stream'
+	
+	files = {
+		'image': ('image_file', response.content, content_type),
+	}
+	
+	response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
+	data = response.json()
+	    
+	# Extract the required information safely
+	message_lines = data.get("message", "").split("\n")
+	country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
+	state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
+	city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
+	explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
+	coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
+	
+	return jsonify(
+		{
+			'creator': 'AmmarBN',
+			'status': True,
+			'result': {
+				'country': country,
+				'state': state,
+				'city': city,
+				'coordinate': coordinates,
+				'explanation': explanation
+			}
+		}
+	)
