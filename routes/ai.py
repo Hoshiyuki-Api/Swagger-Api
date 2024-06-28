@@ -7,6 +7,7 @@ from flask_restx import Namespace, Resource
 
 blackbox_bp = Blueprint('_openai-blackbox', __name__)
 deepai_bp = Blueprint('_openai-deepai', __name__)
+simi_bp = Blueprint('_openai_simi', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -91,7 +92,7 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 blackboxrek = Namespace('ai', description='AI Api')
 deepairek = Namespace('ai', description='AI Api')
-
+simirek = NameSpace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
@@ -206,3 +207,52 @@ class DownloaddeepaiResource(Resource):
             )
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
+@simirek.route('')
+class DownloadsimiResource(Resource):
+    @simirek.doc(params={
+        'text': 'Input Text',
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        ChatGpt Api.
+
+        Parameters:
+        - text: Text (required)
+        - apikey: API Key for authentication (required)
+        """
+        text = request.args.get('text')
+        apikey = request.args.get('apikey')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        a = requests.post("https://simsimi.vn/web/simtalk",
+        headers={
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'X-Requested-With': 'XMLHttpRequest',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36',
+    'Referer': 'https://simsimi.vn/'
+        },
+
+        data={
+		'text':text,
+		'lc':'id'
+        }).text
+
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': a
+            }
+        )
