@@ -2,6 +2,12 @@ from flask import Flask
 from flask_restx import Api
 # Index
 from routes.index import index_app
+# Login/Register
+from routes.dash_login import dash_app
+from routes.auth import auth_bp
+from routes.dash_check import check_bp
+from routes.dash_regis import regis_app
+from routes.dashboard import dashboard_bp
 # Routes Downloader
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlrek as ytdl_ns
@@ -17,6 +23,11 @@ app = Flask(__name__)
 
 # Index
 app.register_blueprint(index_app)
+# Login, Register, Dash
+app.register_blueprint(regis_app)
+app.register_blueprint(dash_app)
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(dashboard_bp)
 # Register Blueprints
 app.register_blueprint(useragent_bp, url_prefix='/api')
 app.register_blueprint(check_bp, url_prefix='/api')
