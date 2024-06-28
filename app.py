@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_restx import Api
 # Index
@@ -20,6 +21,7 @@ from routes.dash_check import check_bp, api as check_ns
 from routes.ai import blackbox_bp, deepai_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # Index
 app.register_blueprint(index_app)
