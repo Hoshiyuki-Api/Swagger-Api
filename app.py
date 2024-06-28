@@ -18,7 +18,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Tools
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import blackbox_bp, deepai_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns
+from routes.ai import blackbox_bp, deepai_bp, simi_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -47,6 +47,7 @@ app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 # Register Tools
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
 app.register_blueprint(deepai_bp, url_prefix='/api/deepai')
+app.register_blueprint(simi_bp, url_prefix='/api/simi')
 
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
@@ -70,6 +71,7 @@ api.add_namespace(stalkig_ns, path='/api/stalkig')
 # NameSpace AI
 api.add_namespace(blackbox_ns, path='/api/blackbox')
 api.add_namespace(deepai_ns, path='/api/deepai')
+api.add_namespace(simi_ns, path='/api/simi')
 
 if __name__ == '__main__':
     app.run(debug=True)
