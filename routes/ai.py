@@ -276,7 +276,7 @@ class DownloadosmageResource(Resource):
         url = request.args.get('url')
         apikey = request.args.get('apikey')
 
-        if not text:
+        if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
 
         if apikey is None:
@@ -286,57 +286,59 @@ class DownloadosmageResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-	headers = {
-    'authority': 'locate-image-7cs5mab6na-uc.a.run.app',
-    'accept': '*/*',
-    'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-    'origin': 'https://geospy.ai',
-    'referer': 'https://geospy.ai/',
-    'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-    'sec-ch-ua-mobile': '?1',
-    'sec-ch-ua-platform': '"Android"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'cross-site',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-	}
+        headers = {
+            'authority': 'locate-image-7cs5mab6na-uc.a.run.app',
+            'accept': '*/*',
+            'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+            'origin': 'https://geospy.ai',
+            'referer': 'https://geospy.ai/',
+            'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+            'sec-ch-ua-mobile': '?1',
+            'sec-ch-ua-platform': '"Android"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'cross-site',
+            'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+        }
 
-	filename = url
-	response = requests.get(filename)
+        filename = url
+        response = requests.get(filename)
 
-	# Infer the content type from the file extension
-	if filename.endswith('jpg') or filename.endswith('jpeg'):
-		content_type = 'image/jpeg'
-	elif filename.endswith('png'):
-		content_type = 'image/png'
-	else:
-		content_type = 'application/octet-stream'
-	
-	files = {
-		'image': ('image_file', response.content, content_type),
-	}
-	
-	response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
-	data = response.json()
-	    
-	# Extract the required information safely
-	message_lines = data.get("message", "").split("\n")
-	country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
-	state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
-	city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
-	explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
-	coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
-	
-	return jsonify(
-		{
-			'creator': 'AmmarBN',
-			'status': True,
-			'result': {
-				'country': country,
-				'state': state,
-				'city': city,
-				'coordinate': coordinates,
-				'explanation': explanation
-			}
-		}
-	)
+        # Infer the content type from the file extension
+        if filename.endswith('jpg') or filename.endswith('jpeg'):
+            content_type = 'image/jpeg'
+        elif filename.endswith('png'):
+            content_type = 'image/png'
+        elif filename.endswith('webp'):
+            content_type = 'image/webp'
+        else:
+            content_type = 'application/octet-stream'
+
+        files = {
+            'image': ('image_file', response.content, content_type),
+        }
+
+        response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
+        data = response.json()
+
+        # Extract the required information safely
+        message_lines = data.get("message", "").split("\n")
+        country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
+        state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
+        city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
+        explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
+        coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
+
+        return jsonify(
+            {
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': {
+                    'country': country,
+                    'state': state,
+                    'city': city,
+                    'coordinate': coordinates,
+                    'explanation': explanation
+                }
+            }
+        )
