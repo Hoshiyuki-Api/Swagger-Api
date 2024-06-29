@@ -362,7 +362,7 @@ class DownloadtextiResource(Resource):
         prompt = request.args.get('prompt')
         apikey = request.args.get('apikey')
 
-        if not text:
+        if not prompt:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
 
         if apikey is None:
@@ -372,7 +372,7 @@ class DownloadtextiResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-	json_objects = []
+        json_objects = []
         urls = []
 
         def getinpt(prompt):
