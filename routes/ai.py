@@ -2,7 +2,7 @@ import requests, re
 import json
 import os
 from datetime import datetime
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect
 from flask_restx import Namespace, Resource
 
 blackbox_bp = Blueprint('_openai-blackbox', __name__)
@@ -456,8 +456,9 @@ class DownloadtextiResource(Resource):
         for json_obj in json_objects:
             extract_urls(json_obj)
 
-        return jsonify({
-            'creator': 'AmmarBN',
-            'status': True,
-            'result': urls
-        })
+        # Redirect ke URL gambar pertama dari daftar URLs yang ditemukan
+        if urls:
+            first_image_url = urls[0]  # Ambil URL gambar pertama
+            return redirect(first_image_url)
+        else:
+            return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan."})
