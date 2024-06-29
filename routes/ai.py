@@ -9,7 +9,7 @@ blackbox_bp = Blueprint('_openai-blackbox', __name__)
 deepai_bp = Blueprint('_openai-deepai', __name__)
 simi_bp = Blueprint('_openai_simi', __name__)
 osmage_bp = Blueprint('osmage', __name__)
-textti_bp = Blueprint('osmage', __name__)
+textti_bp = Blueprint('textoimg', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
