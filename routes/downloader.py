@@ -241,10 +241,8 @@ class DownloadigResource(Resource):
                 # Iterate through each item in picker
                 for item in picker_data:
                     if item['type'] == 'photo':
-                        media_list['photo'].append({
-                            'url': item['url'],
-                            'thumb': item['thumb']
-                        })
+                        media_list['photo'].append(item['url'])  # Only append the photo URL
+
                     elif item['type'] == 'video':
                         media_list['video'].append(item['url'])
 
