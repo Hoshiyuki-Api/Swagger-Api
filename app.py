@@ -12,10 +12,11 @@ from routes.dashboard import dashboard_bp
 # Routes Downloader
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlrek as ytdl_ns
-from routes.tools import igstalk_bp, stalkigrek as stalkig_ns
+# Routes Tools
+from routes.tools import igstalk_bp, remove_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
-# Routes Tools
+# Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
 from routes.ai import blackbox_bp, deepai_bp, simi_bp, osmage_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
@@ -45,7 +46,8 @@ app.register_blueprint(laheludl_bp, url_prefix='/api/laheludl')
 app.register_blueprint(ytdl_bp, url_prefix='/api/ytdl')
 # Register tools
 app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
-# Register Tools
+app.register_blueprint(remove_bp, url_prefix='/api/removebg')
+# Register Ai
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
 app.register_blueprint(deepai_bp, url_prefix='/api/deepai')
 app.register_blueprint(simi_bp, url_prefix='/api/simi')
@@ -71,6 +73,7 @@ api.add_namespace(lahelu_ns, path='/api/lahelu')  # NameSpace Untuk Lahelu
 api.add_namespace(ytdl_ns, path='/api/ytdl')
 # NameSpace Tools
 api.add_namespace(stalkig_ns, path='/api/stalkig')
+api.add_namespace(removebg_ns, path='/api/removebg')
 # NameSpace AI
 api.add_namespace(blackbox_ns, path='/api/blackbox')
 api.add_namespace(deepai_ns, path='/api/deepai')
