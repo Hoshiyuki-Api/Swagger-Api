@@ -190,99 +190,84 @@ class DownloadttResource(Resource):
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
-        'url': 'Url Instagram',
+        'url': 'Instagram URL',
         'apikey': 'API Key for authentication'
     })
-    # @api.marshal_with(user_agent_model)
     def get(self):
         """
         Downloader Instagram Post.
 
         Parameters:
-        - url: Url Instagram (required)
+        - url: Instagram URL (required)
         - apikey: API Key for authentication (required)
         """
-
         url = request.args.get('url')
         apikey = request.args.get('apikey')
 
         if not url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
         
         if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
 
-        api_url = "https://v3.saveig.app/api/ajaxSearch"
-        payload = {
-            "q": url,
-            "t": "media",
-            "lang": "en"
-        }
-        
+        # New API endpoint and headers
+        api_url = 'https://api.cobalt.tools/api/json'
         headers = {
-            "accept": "*/*",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
-            "origin": "https://saveig.app",
-            "referer": "https://saveig.app/"
+            'accept': 'application/json',
+            'accept-language': 'en-US,en;q=0.9,id;q=0.8',
+            'content-type': 'application/json',
+            'origin': 'https://cobalt.tools',
+            'referer': 'https://cobalt.tools/',
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
         }
-        
-        response = requests.post(api_url, data=payload, headers=headers)
-        
-        # Memeriksa status permintaan
-        if response.status_code == 200:
+
+        # Data payload for the API request
+        data = {
+            'url': url
+        }
+
+        try:
+            # Make the request to the Cobalt API
+            response = requests.post(api_url, headers=headers, json=data)
             response_data = response.json()
-            if response_data["status"] == "ok":
-                # Parse data respon untuk menemukan URL unduhan media
-                soup = parser(response_data["data"], 'html.parser')
+
+            # Check if request was successful
+            if response.status_code == 200 and response_data.get('status') == 'picker':
+                picker_data = response_data.get('picker', [])
+
+                # Prepare media list
                 media_list = {"video": [], "photo": []}
 
-                for download_item in soup.find_all("div", class_="download-items"):
-                    # Extract thumbnail URLs (image URLs)
-                    media_url = None
-                    for thumb in download_item.find_all("div", class_="download-items__thumb"):
-                        img1 = re.findall('<img alt="saveig" src="(.*?)"/>', str(thumb))
-                        if img1:
-                            media_url = img1[0]
-                        img2 = re.findall('<img alt="saveig" class="lazy" data-src="(.*?)" src=".*?"/>', str(thumb))
-                        if img2:
-                            media_url = img2[0]
-                    
-                    # Extract video URLs
-                    for button in download_item.find_all("div", class_="download-items__btn"):
-                        video = re.findall(
-                            '<a class="abutton is-success is-fullwidth btn-premium mt-3" href="(.*?)" onclick=".*?" rel="nofollow" title="Download Video"><span><i class="icon icon-download"></i><span>Download Video</span></span></a>',
-                            str(button))
-                        if video:
-                            media_list["video"].append(video[0])
-                        else:
-                            if media_url:
-                                media_list["photo"].append(media_url)
-            
-                # Menampilkan URL unduhan media
-                return jsonify(
-                    {
-                        'creator': 'AmmarBN',
-                        'result': media_list,
-                        'status': True
-                    }
-                )
-            else:
-                return jsonify(
-                    {
-                        'creator': 'AmmarBN',
-                        'result': 'Gagal, Silakan coba lagi nanti',
-                        'status': False
-                    }
-                )
-        else:
-            return jsonify(
-                {
+                # Iterate through each item in picker
+                for item in picker_data:
+                    if item['type'] == 'photo':
+                        media_list['photo'].append({
+                            'url': item['url'],
+                            'thumb': item['thumb']
+                        })
+                    elif item['type'] == 'video':
+                        media_list['video'].append(item['url'])
+
+                # Return JSON response
+                return jsonify({
                     'creator': 'AmmarBN',
-                    'result': 'Gagal, Silakan coba lagi nanti',
+                    'result': media_list,
+                    'status': True
+                })
+
+            else:
+                return jsonify({
+                    'creator': 'AmmarBN',
+                    'result': 'Failed to fetch media. Please try again later.',
                     'status': False
-                }
-            )
+                })
+
+        except Exception as e:
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': f'Error: {str(e)}',
+                'status': False
+            })
         
 @twitterdlrek.route('')
 class DownloadtwResource(Resource):
