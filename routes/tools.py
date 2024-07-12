@@ -4,10 +4,10 @@ import json, instaloader
 from datetime import datetime
 import os
 from flask_restx import Namespace, Resource, fields
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 igstalk_bp = Blueprint('igstalk', __name__)
-simitool_bp = Blueprint('simi', __name__)
-osmage_bp  = Blueprint('OsintImage', __name__)
+remove_bp = Blueprint('removebg', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -89,6 +89,7 @@ def check_and_update_request_limit(apikey):
 
 # Namespace untuk Flask-RESTX
 stalkigrek = Namespace('tools', description='Tools Api')
+removebgrek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -160,115 +161,92 @@ class Resourceigstalk(Resource):
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": "Failed to parse profile data"})
 
-
-@simitool_bp.route('/api/tools/simi', methods=['GET'])
-def igstalk():
-    text= request.args.get('text')
-    apikey = request.args.get('apikey')
-    
-    if not text:
-        return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
-
-    if apikey is None:
-        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-    
-    # Periksa dan perbarui batas permintaan
-    limit_error = check_and_update_request_limit(apikey)
-    if limit_error:
-        return jsonify(limit_error[0]), limit_error[1]
-    
-    a = requests.post("https://simsimi.vn/web/simtalk",
-	headers={
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    'Accept': 'application/json, text/javascript, */*; q=0.01',
-    'X-Requested-With': 'XMLHttpRequest',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36',
-    'Referer': 'https://simsimi.vn/'
-	},
-	data={
-		'text':text,
-		'lc':'id'
-    }
-    ).text
-
-    return jsonify(
-        {
-            'creator': 'AmmarBN',
-            'status': True,
-            'result': a
-        }
-    )
-
-@osmage_bp.route('/api/tools/osmage', methods=['GET'])
-def osmage():
-    url = request.args.get('url')
-    apikey = request.args.get('apikey')
-    
-    if not url:
-        return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-
-    if apikey is None:
-        return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-    
-    # Periksa dan perbarui batas permintaan
-    limit_error = check_and_update_request_limit(apikey)
-    if limit_error:
-        return jsonify(limit_error[0]), limit_error[1]
-    
-    headers = {
-    'authority': 'locate-image-7cs5mab6na-uc.a.run.app',
-    'accept': '*/*',
-    'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-    'origin': 'https://geospy.ai',
-    'referer': 'https://geospy.ai/',
-    'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-    'sec-ch-ua-mobile': '?1',
-    'sec-ch-ua-platform': '"Android"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'cross-site',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-    }
-    
-    filename = url
-    response = requests.get(filename)
-
-    # Infer the content type from the file extension
-    if filename.endswith('jpg') or filename.endswith('jpeg'):
-        content_type = 'image/jpeg'
-    elif filename.endswith('png'):
-        content_type = 'image/png'
-    else:
-        content_type = 'application/octet-stream'
-
-    files = {
-    'image': ('image_file', response.content, content_type),
-    }
-
-    response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
-    data = response.json()
-
-    # Extract the required information safely
-    message_lines = data.get("message", "").split("\n")
-    country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
-    state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
-    city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
-    explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
-    coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
-    print (coordinates)
-    print (explanation)
-    print (state)
-
-    return jsonify(
-        {
-            'creator': 'AmmarBN',
-            'status': True,
-            'result': {
-                'country': country,
-                'state': state,
-                'city': city,
-                'coordinate': coordinates,
-                'explanation': explanation
+# Function to remove background using remove.bg and upload to Telegraph
+def remove_bg_and_upload(url):
+    try:
+        # Step 1: Remove background using remove.bg API
+        form_data = MultipartEncoder(
+            fields={
+                'size': 'auto',
+                'image_url': url
             }
-        }
-    )
+        )
+        
+        response_bg = requests.post(
+            'https://api.remove.bg/v1.0/removebg',
+            data=form_data,
+            headers={
+                'Content-Type': form_data.content_type,
+                'X-Api-Key': 'jk5Kx17qgyByRmPRiBUSrVo4'
+            }
+        )
+        
+        if response_bg.status_code == 200:
+            # Step 2: Upload processed image to Telegraph
+            url_telegraph = upload_to_telegraph(response_bg.content)
+            return {'status': True, 'image_url': url_telegraph}
+        else:
+            return {'status': False, 'msg': 'Failed to remove background with remove.bg'}
+    
+    except Exception as e:
+        return {'status': False, 'msg': f'Error: {str(e)}'}
+
+# Function to upload image to Telegraph
+def upload_to_telegraph(file):
+    try:
+        url = 'https://telegra.ph/upload'
+        files = {'file': ('image.jpg', file, 'image/jpeg')}
+        response = requests.post(url, files=files)
+
+        if response.status_code == 200:
+            # Get URL from the JSON response
+            image_url = response.json()[0]['src']
+            return image_url
+        else:
+            return None
+    
+    except Exception as e:
+        print(f"Error uploading image to Telegraph: {str(e)}")
+        return None
+
+@removebgrek.route('')
+class Resourcermbg(Resource):
+    @removebg.doc(params={
+        'username': 'Input Url Image',
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Tools Remove Background Image.
+
+        Parameters:
+        - url: Url Image (required)
+        - apikey: API Key for authentication (required)
+        """
+        
+        username = request.args.get('url')
+        apikey = request.args.get('apikey')
+
+        if not username:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+	try:
+		# Process image and upload
+		result = remove_bg_and_upload(image_url)
+		return jsonify(
+			{
+				'creator': 'AmmarBN',
+				'status': True,
+				'result': result
+			}
+		)
+	except Exception as e:
+		return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
