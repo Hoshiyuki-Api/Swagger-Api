@@ -177,13 +177,13 @@ def remove_bg_and_upload(url):
             data=form_data,
             headers={
                 'Content-Type': form_data.content_type,
-                'X-Api-Key': 'jk5Kx17qgyByRmPRiBUSrVo4'
+                'X-Api-Key': 'your_removebg_api_key_here'  # Replace with your actual remove.bg API key
             }
         )
         
         if response_bg.status_code == 200:
-            # Step 2: Upload processed image to Telegraph
-            url_telegraph = upload_to_telegraph(response_bg.content)
+            # Step 2: Upload processed image to Telegraph and return the URL
+            url_telegraph = upload_to_telegraph()
             return {'status': True, 'image_url': url_telegraph}
         else:
             return {'status': False, 'msg': 'Failed to remove background with remove.bg'}
@@ -192,10 +192,10 @@ def remove_bg_and_upload(url):
         return {'status': False, 'msg': f'Error: {str(e)}'}
 
 # Function to upload image to Telegraph
-def upload_to_telegraph(file):
+def upload_to_telegraph():
     try:
         url = 'https://telegra.ph/upload'
-        files = {'file': ('image.jpg', file, 'image/jpeg')}
+        files = {'file': open('image.jpg', 'rb')}
         response = requests.post(url, files=files)
 
         if response.status_code == 200:
@@ -209,9 +209,9 @@ def upload_to_telegraph(file):
         print(f"Error uploading image to Telegraph: {str(e)}")
         return None
 
-@removebgrek.route('')
+@api.route('')
 class Resourcermbg(Resource):
-    @removebgrek.doc(params={
+    @api.doc(params={
         'url': 'Input Url Image',
         'apikey': 'API key for authenticated'
     })
@@ -228,16 +228,13 @@ class Resourcermbg(Resource):
         apikey = request.args.get('apikey')
 
         if not image_url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
         
         if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
         
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-
+        # Perform additional checks or updates on request limit if necessary
+        
         try:
             # Process image and upload
             result = remove_bg_and_upload(image_url)
