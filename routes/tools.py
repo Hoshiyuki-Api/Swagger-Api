@@ -184,9 +184,9 @@ def remove_bg_and_upload(url):
         if response_bg.status_code == 200:
             # Step 2: Upload processed image to Telegraph
             url_telegraph = upload_to_telegraph(response_bg.content)
-            return {'status': True, 'image_url': url_telegraph}
+            return {'image_url': url_telegraph}
         else:
-            return {'status': False, 'msg': 'Failed to remove background with remove.bg'}
+            return {'status': False, 'msg': 'Failed to remove background with remove bg'}
     
     except Exception as e:
         return {'status': False, 'msg': f'Error: {str(e)}'}
@@ -244,7 +244,7 @@ class Resourcermbg(Resource):
             return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
-                'result': result
+                'result': f'https://telegra.ph/{result}'
             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
