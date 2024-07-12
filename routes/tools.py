@@ -211,7 +211,7 @@ def upload_to_telegraph(file):
 
 @removebgrek.route('')
 class Resourcermbg(Resource):
-    @removebg.doc(params={
+    @removebgrek.doc(params={
         'username': 'Input Url Image',
         'apikey': 'API key for authenticated'
     })
