@@ -603,19 +603,41 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         
-        try:
-            api = requests.get(f'https://aemt.me/download/ytdl?url={url}')
-            res = api.json()
-            
-            # Check if API call was successful
-            if res.get('status'):
-                mp4 = res.get('result', {}).get('mp4')
-                mp3 = res.get('result', {}).get('mp3')
-                if mp4 or mp3:
-                    return jsonify({'creator': 'AmmarBN', 'result': {'status': True, 'mp4': mp4, 'mp3': mp3}})
-                else:
-                    return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
-            else:
-                return jsonify({"creator": "AmmarBN", "error": "Gagal memproses permintaan ke API."}), 500
-        except requests.exceptions.RequestException as e:
-            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+        headers = {
+            'authority': 'api.cobalt.tools',
+            'accept': 'application/json',
+            'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+            'content-type': 'application/json',
+            'origin': 'https://cobalt.tools',
+            'referer': 'https://cobalt.tools/',
+            'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+            'sec-ch-ua-mobile': '?1',
+            'sec-ch-ua-platform': '"Android"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-site',
+            'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+        }
+        
+        # Request for audio-only stream
+        json_data_audio = {'url': url, 'isAudioOnly': 'true'}
+        resp_audio = requests.post('https://api.cobalt.tools/api/json', headers=headers, json=json_data_audio)
+        if resp_audio.status_code != 200:
+            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch audio stream."}), 500
+        audio_url = resp_audio.json().get('url')
+
+        # Request for mp4 stream
+        json_data_mp4 = {'url': url}
+        resp_mp4 = requests.post('https://api.cobalt.tools/api/json', headers=headers, json=json_data_mp4)
+        if resp_mp4.status_code != 200:
+            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch mp4 stream."}), 500
+        mp4_url = resp_mp4.json().get('url')
+
+        return jsonify({
+            'creator': 'AmmarBN',
+            'result': {
+                'status': True,
+                'audio': audio_url,
+                'mp4': mp4_url
+            }
+        })
