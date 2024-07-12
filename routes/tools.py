@@ -224,10 +224,10 @@ class Resourcermbg(Resource):
         - apikey: API Key for authentication (required)
         """
         
-        username = request.args.get('url')
+        url = request.args.get('url')
         apikey = request.args.get('apikey')
 
-        if not username:
+        if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
         
         if apikey is None:
@@ -240,7 +240,7 @@ class Resourcermbg(Resource):
 
 	try:
 		# Process image and upload
-		result = remove_bg_and_upload(image_url)
+		result = remove_bg_and_upload(url)
 		return jsonify(
 			{
 				'creator': 'AmmarBN',
