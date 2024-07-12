@@ -227,7 +227,7 @@ class Resourcermbg(Resource):
         image_url = request.args.get('url')
         apikey = request.args.get('apikey')
 
-        if not url:
+        if not image_url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
         
         if apikey is None:
@@ -238,15 +238,13 @@ class Resourcermbg(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-	try:
-		# Process image and upload
-		result = remove_bg_and_upload(image_url)
-		return jsonify(
-			{
-				'creator': 'AmmarBN',
-				'status': True,
-				'result': result
-			}
-		)
-	except Exception as e:
-		return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+        try:
+            # Process image and upload
+            result = remove_bg_and_upload(image_url)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': result
+            })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
