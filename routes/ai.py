@@ -328,24 +328,18 @@ class DownloadosmageResource(Resource):
         data = response.json()
 
         # Extract the required information safely
-        message_lines = data.get("message", "").split("\n")
-        country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
-        state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
-        city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
-        explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
-        coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
+        message_lines = data.get("message", {})
+        #country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
+        #state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
+        #city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
+        #explanation = message_lines[3].split(": ")[1] if len(message_lines) > 3 and ": " in message_lines[3] else "N/A"
+        #coordinates = message_lines[4].split(": ")[1] if len(message_lines) > 4 and ": " in message_lines[4] else "N/A"
 
         return jsonify(
             {
                 'creator': 'AmmarBN',
                 'status': True,
-                'result': {
-                    'country': country,
-                    'state': state,
-                    'city': city,
-                    'coordinate': coordinates,
-                    'explanation': explanation
-                }
+                'result': message_lines
             }
         )
 @texttirek.route('')
