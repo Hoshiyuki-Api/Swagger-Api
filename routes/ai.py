@@ -325,10 +325,19 @@ class DownloadosmageResource(Resource):
         }
 
         response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
-        data = response.json()
+
+        try:
+            data = response.json()
+        except ValueError:
+            return jsonify({"creator": "AmmarBN", "error": "Failed to parse response as JSON."})
 
         # Extract the required information safely
-        message_lines = data.get("message", "").split("\n")
+        message = data.get("message")
+        if isinstance(message, str):
+            message_lines = message.split("\n")
+        else:
+            message_lines = []
+
         country = message_lines[0].split(": ")[1] if len(message_lines) > 0 and ": " in message_lines[0] else "N/A"
         state = message_lines[1].split(": ")[1] if len(message_lines) > 1 and ": " in message_lines[1] else "N/A"
         city = message_lines[2].split(": ")[1] if len(message_lines) > 2 and ": " in message_lines[2] else "N/A"
