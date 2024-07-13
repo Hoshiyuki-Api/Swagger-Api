@@ -104,7 +104,7 @@ class DownloadblackboxResource(Resource):
         'text': 'Input Text',
         'apikey': 'API Key for authentication'
     })
-    def post(self):
+    def get(self):
         """
         ChatGpt Api.
 
@@ -112,16 +112,14 @@ class DownloadblackboxResource(Resource):
         - text: Text (required)
         - apikey: API Key for authentication (required)
         """
-        json_data = request.get_json()
+        text = request.args.get('text')
+        apikey = request.args.get('apikey')
 
-        if not json_data or 'text' not in json_data:
+        if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
-        if 'apikey' not in json_data:
+        if not apikey:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        text = json_data['text']
-        apikey = json_data['apikey']
 
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
@@ -158,7 +156,7 @@ class DownloadblackboxResource(Resource):
 
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
-
+		
 @deepairek.route('')
 class DownloaddeepaiResource(Resource):
     @deepairek.doc(params={
