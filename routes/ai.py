@@ -141,9 +141,11 @@ class DownloadblackboxResource(Resource):
             'id': '123',
         }
         try:
-            response = requests.get(f'https://api.betabotz.eu.org/api/search/blackbox-chat?text={text}&apikey=Hoshiyuki')
+            #https://api.betabotz.eu.org/api/search/blackbox-chat?text={text}&apikey=Hoshiyuki
+            response = requests.post(f'https://indomie.felovy.xyz/ai/blackbox', data=json_data)
             res = response.json()
-            result = res.get('message', '')
+            # result = res.get('message', '')
+            result = res.get('result', '')
             return jsonify(
                 {
                     'creator': 'AmmarBN',
