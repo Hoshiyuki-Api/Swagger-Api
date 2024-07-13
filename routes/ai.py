@@ -104,7 +104,7 @@ class DownloadblackboxResource(Resource):
         'text': 'Input Text',
         'apikey': 'API Key for authentication'
     })
-    def get(self):
+    def post(self):
         """
         ChatGpt Api.
 
@@ -112,14 +112,16 @@ class DownloadblackboxResource(Resource):
         - text: Text (required)
         - apikey: API Key for authentication (required)
         """
-        text = request.args.get('text')
-        apikey = request.args.get('apikey')
+        json_data = request.get_json()
 
-        if not text:
+        if not json_data or 'text' not in json_data:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
-        if apikey is None:
+        if 'apikey' not in json_data:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        text = json_data['text']
+        apikey = json_data['apikey']
 
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
@@ -130,32 +132,32 @@ class DownloadblackboxResource(Resource):
             'Content-Type': 'application/json',
         }
 
-        json_data = {
+        payload = {
             'messages': [
                 {
-                    'id': "123",
-                    'role': "user",
+                    'id': '123',
+                    'role': 'user',
                     'content': text
-                },
-            ],
-            'id': '123',
-        }
-        try:
-            #https://api.betabotz.eu.org/api/search/blackbox-chat?text={text}&apikey=Hoshiyuki
-            response = requests.post(f'https://indomie.felovy.xyz/ai/blackbox', data=json_data)
-            res = response.json()
-            # result = res.get('message', '')
-            result = res.get('result', '')
-            return jsonify(
-                {
-                    'creator': 'AmmarBN',
-                    'result': result,
-                    'status': True
                 }
-            )
+            ],
+            'id': '123'
+        }
+
+        try:
+            response = requests.post('https://indomie.felovy.xyz/ai/blackbox', json=payload, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors (4xx or 5xx)
+
+            res = response.json()
+            result = res.get('result', '')
+
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': result,
+                'status': True
+            })
+
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
-
 
 @deepairek.route('')
 class DownloaddeepaiResource(Resource):
