@@ -189,7 +189,7 @@ class DownloadttResource(Resource):
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
-    @api.doc(params={
+    @instagramdlrek.doc(params={
         'url': 'Instagram URL',
         'apikey': 'API Key for authentication'
     })
