@@ -194,13 +194,6 @@ class DownloadigResource(Resource):
         'apikey': 'API Key for authentication'
     })
     def get(self):
-        """
-        Downloader Instagram Post.
-
-        Parameters:
-        - url: Instagram URL (required)
-        - apikey: API Key for authentication (required)
-        """
         url = request.args.get('url')
         apikey = request.args.get('apikey')
 
@@ -210,7 +203,6 @@ class DownloadigResource(Resource):
         if apikey is None:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
 
-        # New API endpoint and headers
         api_url = 'https://api.cobalt.tools/api/json'
         headers = {
             'accept': 'application/json',
@@ -221,37 +213,53 @@ class DownloadigResource(Resource):
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
         }
 
-        # Data payload for the API request
         data = {
             'url': url
         }
 
         try:
-            # Make the request to the Cobalt API
             response = requests.post(api_url, headers=headers, json=data)
             response_data = response.json()
 
-            # Check if request was successful
-            if response.status_code == 200 and response_data.get('status') == 'picker':
-                picker_data = response_data.get('picker', [])
+            if response.status_code == 200:
+                if response_data.get('status') == 'picker':
+                    picker_data = response_data.get('picker', [])
 
-                # Prepare media list
-                media_list = {"video": [], "photo": []}
+                    media_list = {"video": [], "photo": []}
 
-                # Iterate through each item in picker
-                for item in picker_data:
-                    if item['type'] == 'photo':
-                        media_list['photo'].append(item['url'])  # Only append the photo URL
+                    for item in picker_data:
+                        if item['type'] == 'photo':
+                            media_list['photo'].append(item['url'])
+                        elif item['type'] == 'video':
+                            media_list['video'].append(item['url'])
 
-                    elif item['type'] == 'video':
-                        media_list['video'].append(item['url'])
+                    return jsonify({
+                        'creator': 'AmmarBN',
+                        'result': media_list,
+                        'status': True
+                    })
 
-                # Return JSON response
-                return jsonify({
-                    'creator': 'AmmarBN',
-                    'result': media_list,
-                    'status': True
-                })
+                elif response_data.get('status') == 'redirect' and response_data.get('url'):
+                    # Direct URL response case
+                    direct_url = response_data.get('url')
+
+                    if 'video' in direct_url:
+                        media_list = {"video": [direct_url], "photo": []}
+                    else:
+                        media_list = {"video": [], "photo": [direct_url]}
+
+                    return jsonify({
+                        'creator': 'AmmarBN',
+                        'result': media_list,
+                        'status': True
+                    })
+
+                else:
+                    return jsonify({
+                        'creator': 'AmmarBN',
+                        'result': 'Failed to fetch media. Please try again later.',
+                        'status': False
+                    })
 
             else:
                 return jsonify({
