@@ -271,6 +271,13 @@ class DownloadigResource(Resource):
                     'result': 'Failed to fetch media. Please try again later.',
                     'status': False
                 })
+                
+        except Exception as e:
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': f'Error: {str(e)}',
+                'status': False
+            })
         
 @twitterdlrek.route('')
 class DownloadtwResource(Resource):
