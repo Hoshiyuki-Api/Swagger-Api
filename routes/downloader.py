@@ -224,14 +224,19 @@ class DownloadigResource(Resource):
             if response.status_code == 200:
                 if response_data.get('status') == 'picker':
                     picker_data = response_data.get('picker', [])
-
                     media_list = {"video": [], "photo": []}
 
                     for item in picker_data:
                         if item['type'] == 'photo':
-                            media_list['photo'].append(item['url'])
+                            media_list['photo'].append({
+                                'url': item['url'],
+                                'thumb': item.get('thumb', '')
+                            })
                         elif item['type'] == 'video':
-                            media_list['video'].append(item['url'])
+                            media_list['video'].append({
+                                'url': item['url'],
+                                'thumb': item.get('thumb', '')
+                            })
 
                     return jsonify({
                         'creator': 'AmmarBN',
@@ -240,7 +245,6 @@ class DownloadigResource(Resource):
                     })
 
                 elif response_data.get('status') == 'redirect' and response_data.get('url'):
-                    # Direct URL response case
                     direct_url = response_data.get('url')
 
                     if 'video' in direct_url:
@@ -267,13 +271,6 @@ class DownloadigResource(Resource):
                     'result': 'Failed to fetch media. Please try again later.',
                     'status': False
                 })
-
-        except Exception as e:
-            return jsonify({
-                'creator': 'AmmarBN',
-                'result': f'Error: {str(e)}',
-                'status': False
-            })
         
 @twitterdlrek.route('')
 class DownloadtwResource(Resource):
