@@ -241,8 +241,8 @@ class DownloadigResource(Resource):
                 elif response_data.get('status') == 'redirect' and response_data.get('url'):
                     direct_url = response_data.get('url')
 
-                    # Check if the URL ends with .mp4 to categorize as video
-                    if direct_url.endswith('.mp4'):
+                    # Check if the URL ends with .mp4 and contains specific query parameters to categorize as video
+                    if direct_url.endswith('.mp4') and 'vs=' in direct_url:
                         media_list = {"video": [direct_url], "photo": []}
                     else:
                         media_list = {"video": [], "photo": [direct_url]}
@@ -251,7 +251,7 @@ class DownloadigResource(Resource):
                         'result': media_list,
                         'status': True
                     })
-
+                    
                 else:
                     return jsonify({
                         'Creeator': 'AmmarBN',
