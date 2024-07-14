@@ -228,18 +228,12 @@ class DownloadigResource(Resource):
 
                     for item in picker_data:
                         if item['type'] == 'photo':
-                            media_list['photo'].append({
-                                'url': item['url'],
-                                'thumb': item.get('thumb', '')
-                            })
+                            media_list['photo'].append(item['url'])
                         elif item['type'] == 'video':
-                            media_list['video'].append({
-                                'url': item['url'],
-                                'thumb': item.get('thumb', '')
-                            })
+                            media_list['video'].append(item['url'])
 
                     return jsonify({
-                        'creator': 'AmmarBN',
+                        'Creeator': 'AmmarBN',
                         'result': media_list,
                         'status': True
                     })
@@ -260,22 +254,21 @@ class DownloadigResource(Resource):
 
                 else:
                     return jsonify({
-                        'creator': 'AmmarBN',
-                        'result': 'Failed to fetch media. Please try again later.',
+                        'Creeator': 'AmmarBN',
+                        'error': 'Failed to fetch media. Please try again later.',
                         'status': False
                     })
 
             else:
                 return jsonify({
-                    'creator': 'AmmarBN',
-                    'result': 'Failed to fetch media. Please try again later.',
+                    'Creeator': 'AmmarBN',
+                    'error': 'Failed to fetch media. Please try again later.',
                     'status': False
                 })
-                
+
         except Exception as e:
             return jsonify({
-                'creator': 'AmmarBN',
-                'result': f'Error: {str(e)}',
+                'error': f'Error: {str(e)}',
                 'status': False
             })
         
