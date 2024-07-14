@@ -189,7 +189,7 @@ class DownloadttResource(Resource):
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
-    @instagramdlrek.doc(params={
+    @api.doc(params={
         'url': 'Instagram URL',
         'apikey': 'API Key for authentication'
     })
@@ -200,8 +200,13 @@ class DownloadigResource(Resource):
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
         
-        if apikey is None:
+        if not apikey:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
+
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
 
         api_url = 'https://api.cobalt.tools/api/json'
         headers = {
@@ -222,53 +227,34 @@ class DownloadigResource(Resource):
             response_data = response.json()
 
             if response.status_code == 200:
+                result_urls = []
+
                 if response_data.get('status') == 'picker':
                     picker_data = response_data.get('picker', [])
-                    media_list = {"video": [], "photo": []}
 
                     for item in picker_data:
-                        if item['type'] == 'photo':
-                            media_list['photo'].append(item['url'])
-                        elif item['type'] == 'video':
-                            media_list['video'].append(item['url'])
-
-                    return jsonify({
-                        'Creeator': 'AmmarBN',
-                        'result': media_list,
-                        'status': True
-                    })
+                        result_urls.append(item['url'])
 
                 elif response_data.get('status') == 'redirect' and response_data.get('url'):
                     direct_url = response_data.get('url')
+                    result_urls.append(direct_url)
 
-                    # Check if the URL ends with .mp4 to categorize as video
-                    if direct_url.endswith('.mp4'):
-                        media_list = {"video": [direct_url], "photo": []}
-                    else:
-                        media_list = {"video": [], "photo": [direct_url]}
-
-                    return jsonify({
-                        'Creator': 'AmmarBN',
-                        'result': media_list,
-                        'status': True
-                    })
-                    
-                else:
-                    return jsonify({
-                        'Creeator': 'AmmarBN',
-                        'error': 'Failed to fetch media. Please try again later.',
-                        'status': False
-                    })
+                return jsonify({
+                    'creator': 'AmmarBN',
+                    'result': result_urls,
+                    'status': True
+                })
 
             else:
                 return jsonify({
-                    'Creeator': 'AmmarBN',
+                    'creator': 'AmmarBN',
                     'error': 'Failed to fetch media. Please try again later.',
                     'status': False
                 })
 
         except Exception as e:
             return jsonify({
+                'creator': 'AmmarBN',
                 'error': f'Error: {str(e)}',
                 'status': False
             })
