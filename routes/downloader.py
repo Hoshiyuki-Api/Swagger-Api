@@ -609,10 +609,18 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Failed to fetch mp4 stream."}), 500
         mp4_url = resp_mp4.json().get('url')
 
+        yt = YouTube(url)
+        title = yt.title
+        views = yt.views
+        duration = yt.length
+
         return jsonify({
             'creator': 'AmmarBN',
+            'status': True
             'result': {
-                'status': True,
+                'title': title,
+                'total_views': views,
+                'duration': duration,
                 'audio': audio_url,
                 'mp4': mp4_url
             }
