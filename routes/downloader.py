@@ -613,6 +613,7 @@ class DownloadytResource(Resource):
         title = yt.title
         views = yt.views
         duration = yt.length
+        thumb = yt.thumbnail_url
 
         return jsonify({
             'creator': 'AmmarBN',
@@ -621,6 +622,7 @@ class DownloadytResource(Resource):
                 'title': title,
                 'total_views': views,
                 'duration': duration,
+                'thumbnail': thumb,
                 'audio': audio_url,
                 'mp4': mp4_url
             }
