@@ -616,7 +616,7 @@ class DownloadytResource(Resource):
 
         return jsonify({
             'creator': 'AmmarBN',
-            'status': True
+            'status': True,
             'result': {
                 'title': title,
                 'total_views': views,
