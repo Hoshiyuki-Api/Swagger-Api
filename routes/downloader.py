@@ -614,11 +614,13 @@ class DownloadytResource(Resource):
         views = yt.views
         duration = yt.length
         thumb = yt.thumbnail_url
+        author = yt.author
 
         return jsonify({
             'creator': 'AmmarBN',
             'status': True,
             'result': {
+                'channel': 'https://youtube.com/@'+author,
                 'title': title,
                 'total_views': views,
                 'duration': duration,
