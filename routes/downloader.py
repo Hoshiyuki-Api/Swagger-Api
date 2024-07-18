@@ -620,7 +620,7 @@ class DownloadytResource(Resource):
             'creator': 'AmmarBN',
             'status': True,
             'result': {
-                'channel': 'https://youtube.com/@'+author,
+                'channel': '@'+author,
                 'title': title,
                 'total_views': views,
                 'duration': duration,
