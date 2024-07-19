@@ -623,7 +623,7 @@ class DownloadytResource(Resource):
                     'duration': duration,
                     'thumbnail': thumbnail,
                     'mp4': mp4_url,
-                    'mp3': mp3_url
+                    'audio': mp3_url
                 }
             })
 
