@@ -579,53 +579,51 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         
-        headers = {
-            'authority': 'api.cobalt.tools',
-            'accept': 'application/json',
-            'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-            'content-type': 'application/json',
-            'origin': 'https://cobalt.tools',
-            'referer': 'https://cobalt.tools/',
-            'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
-            'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-        }
-        
-        # Request for audio-only stream
-        json_data_audio = {'url': url, 'isAudioOnly': 'true'}
-        resp_audio = requests.post('https://api.cobalt.tools/api/json', headers=headers, json=json_data_audio)
-        if resp_audio.status_code != 200:
-            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch audio stream."}), 500
-        audio_url = resp_audio.json().get('url')
+        # Request to the API
+    api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey={apikey}'
+    try:
+        response = requests.get(api_url)
+        if response.status_code != 200:
+            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch data from API: {response.text}"}), 500
 
-        # Request for mp4 stream
-        json_data_mp4 = {'url': url}
-        resp_mp4 = requests.post('https://api.cobalt.tools/api/json', headers=headers, json=json_data_mp4)
-        if resp_mp4.status_code != 200:
-            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch mp4 stream."}), 500
-        mp4_url = resp_mp4.json().get('url')
+        data = response.json()
+        if not data.get('status'):
+            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch data from API."}), 500
 
+        result = data.get('result')
+        title = result.get('title')
+        thumbnail = result.get('thumbnail')
+        duration = result.get('duration')
+        medias = result.get('medias')
+
+        mp4_url = None
+        mp3_url = None
+
+        for media in medias:
+            if media.get('extension') == 'mp4':
+                mp4_url = media.get('url')
+            elif media.get('extension') == 'mp3':
+                mp3_url = media.get('url')
+
+        if not mp4_url and not mp3_url:
+            return jsonify({"creator": "AmmarBN", "error": "No valid media URLs found in API response."}), 500
+
+        # Fetch additional details using pytube
         yt = YouTube(url)
-        title = yt.title
-        views = yt.views
-        duration = yt.length
-        thumb = yt.thumbnail_url
         author = yt.author
 
         return jsonify({
             'creator': 'AmmarBN',
             'status': True,
             'result': {
-                'channel': '@'+author,
+                'channel': '@' + author,
                 'title': title,
-                'total_views': views,
                 'duration': duration,
-                'thumbnail': thumb,
-                'audio': audio_url,
-                'mp4': mp4_url
+                'thumbnail': thumbnail,
+                'mp4': mp4_url,
+                'mp3': mp3_url
             }
         })
+
+    except Exception as e:
+        return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
