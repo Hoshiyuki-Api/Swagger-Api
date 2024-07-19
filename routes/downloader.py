@@ -581,11 +581,10 @@ class DownloadytResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         # Request to the API
-        api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey={apikey}'
+        api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey=Hoshiyuki'
         try:
             response = requests.get(api_url)
-            if response.status_code != 200:
-                return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch data from API: {response.text}"}), 500
+            response.raise_for_status()  # Raise HTTPError for bad responses
 
             data = response.json()
             if not data.get('status'):
@@ -628,5 +627,11 @@ class DownloadytResource(Resource):
                 }
             })
 
+        except requests.exceptions.HTTPError as e:
+            return jsonify({"creator": "AmmarBN", "error": f"HTTP error occurred: {str(e)}"}), 500
+        
+        except requests.exceptions.RequestException as e:
+            return jsonify({"creator": "AmmarBN", "error": f"Request failed: {str(e)}"}), 500
+        
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
