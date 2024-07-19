@@ -568,62 +568,65 @@ class DownloadytResource(Resource):
         """
         url = request.args.get('url')
         apikey = request.args.get('apikey')
-        if not url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
         
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+        
+        if not apikey:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."}), 400
         
         # Read existing users data
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-        
+
         # Request to the API
-    api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey={apikey}'
-    try:
-        response = requests.get(api_url)
-        if response.status_code != 200:
-            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch data from API: {response.text}"}), 500
+        api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey={apikey}'
+        try:
+            response = requests.get(api_url)
+            if response.status_code != 200:
+                return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch data from API: {response.text}"}), 500
 
-        data = response.json()
-        if not data.get('status'):
-            return jsonify({"creator": "AmmarBN", "error": "Failed to fetch data from API."}), 500
+            data = response.json()
+            if not data.get('status'):
+                return jsonify({"creator": "AmmarBN", "error": "Failed to fetch data from API."}), 500
 
-        result = data.get('result')
-        title = result.get('title')
-        thumbnail = result.get('thumbnail')
-        duration = result.get('duration')
-        medias = result.get('medias')
+            result = data.get('result')
+            title = result.get('title')
+            thumbnail = result.get('thumbnail')
+            duration = result.get('duration')
+            medias = result.get('medias')
 
-        mp4_url = None
-        mp3_url = None
+            mp4_url = None
+            mp3_url = None
 
-        for media in medias:
-            if media.get('extension') == 'mp4':
-                mp4_url = media.get('url')
-            elif media.get('extension') == 'mp3':
-                mp3_url = media.get('url')
+            for media in medias:
+                if media.get('extension') == 'mp4':
+                    mp4_url = media.get('url')
+                elif media.get('extension') == 'mp3':
+                    mp3_url = media.get('url')
 
-        if not mp4_url and not mp3_url:
-            return jsonify({"creator": "AmmarBN", "error": "No valid media URLs found in API response."}), 500
+            if not mp4_url and not mp3_url:
+                return jsonify({"creator": "AmmarBN", "error": "No valid media URLs found in API response."}), 500
 
-        # Fetch additional details using pytube
-        yt = YouTube(url)
-        author = yt.author
+            # Fetch additional details using pytube
+            yt = YouTube(url)
+            author = yt.author
+            views = yt.views
 
-        return jsonify({
-            'creator': 'AmmarBN',
-            'status': True,
-            'result': {
-                'channel': '@' + author,
-                'title': title,
-                'duration': duration,
-                'thumbnail': thumbnail,
-                'mp4': mp4_url,
-                'mp3': mp3_url
-            }
-        })
+            return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': {
+                    'channel': '@' + author,
+                    'title': title,
+                    'total_views': views,
+                    'duration': duration,
+                    'thumbnail': thumbnail,
+                    'mp4': mp4_url,
+                    'mp3': mp3_url
+                }
+            })
 
-    except Exception as e:
-        return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
