@@ -27,6 +27,10 @@ app.secret_key = os.urandom(24)
 
 # Index
 app.register_blueprint(index_app)
+# 404
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
 # Login, Register, Dash
 app.register_blueprint(regis_app)
 app.register_blueprint(dash_app)
