@@ -57,7 +57,7 @@ app.register_blueprint(textti_bp, url_prefix='/api/texttoimg')
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
           description='A Simple Documentation API Created Using Flask-RestX\nThx For Xenzi-XN1 & YukiSmall',
-          doc='/docs')
+          doc='/playground')
 
 # Add namespaces
 api.add_namespace(useragent_ns, path='/user-agent')
