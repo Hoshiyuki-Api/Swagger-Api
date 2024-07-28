@@ -177,7 +177,7 @@ def remove_bg_and_upload(url):
             data=form_data,
             headers={
                 'Content-Type': form_data.content_type,
-                'X-Api-Key': 'jk5Kx17qgyByRmPRiBUSrVo4'
+                'X-Api-Key': 'hRg3HUf3uc52mgd8TFzJwXXL'
             }
         )
         
