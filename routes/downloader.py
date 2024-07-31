@@ -271,15 +271,11 @@ class DownloadigsResource(Resource):
     })
 
     def RegId(self, url):
-        if  '/p/' in url:id_post = re.search(r"/p/([A-Za-z0-9_-]+)", url).group(1)
-        elif '/reel/' in url:id_post = re.search(r"/reel/([A-Za-z0-9_-]+)", url).group(1)
-        else:
-            return jsonify({
-                'creator': 'AmmarBN',
-                'error': 'URL not detected. Please try again later.',
-                'status': False
-            })
-            
+        if  '/p/' in url:id_p = {'s': 'post', 'id': re.search(r"/p/([A-Za-z0-9_-]+)", url).group(1)}
+        elif '/reel/' in url:id_p = {'s': 'reel', 'id':re.search(r"/reel/([A-Za-z0-9_-]+)", url).group(1)} 
+        else:id_p = {'s': 'eror'}
+        return id_p
+
     def RegData(self, url):
         try:
             resp = requests.get(url)
@@ -318,7 +314,7 @@ class DownloadigsResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         try:
-            self.RegId(url)
+            print(self.RegId(url))
             csrf, appig, blockv, lsd, igdev, hs, ccg, rev, hsi, jaz, spint, spinr = self.RegData(url)
             url_requst = 'https://www.instagram.com/graphql/query'
 
