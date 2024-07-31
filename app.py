@@ -11,7 +11,6 @@ from routes.dash_regis import regis_app
 from routes.dashboard import dashboard_bp
 # Routes Downloader
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
-from routes.downloader import igdls_bp, instagramdlsrek as igdls_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlrek as ytdl_ns
 # Routes Tools
 from routes.tools import igstalk_bp, remove_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns
@@ -70,7 +69,6 @@ api.add_namespace(check_ns, path='/check/apikey')
 # NameSpace Downloader
 api.add_namespace(tiktok_ns, path='/api/tiktok')  # Namespace untuk TikTok
 api.add_namespace(igdl_ns, path='/api/igdl')      # Namespace untuk Instagram
-api.add_namespace(igdls_ns, path='/api/igdls')      # Namespace untuk Instagram Slide
 api.add_namespace(twitter_ns, path='/api/twdl')   # Namespace untuk Twitter
 api.add_namespace(fbdl_ns, path='/api/fbdl')      # NameSpace Untuk Facebook
 api.add_namespace(mdf_ns, path='/api/mediafire')  # NameSpace Untuk Mediafire
