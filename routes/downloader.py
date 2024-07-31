@@ -8,7 +8,6 @@ from flask_restx import Namespace, Resource, fields
 
 tiktok_bp = Blueprint('tiktokdl', __name__)
 igdl_bp = Blueprint('igdl', __name__)
-igdls_bp = Blueprint('igdls', __name__)
 twitter_bp = Blueprint('twitter', __name__)
 facebook_bp = Blueprint('facebook', __name__)
 mediafire_bp = Blueprint('mediafir', __name__)
@@ -97,7 +96,6 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 tiktokdlrek = Namespace('downloader', description='Downloader Api')
 instagramdlrek = Namespace('downloader', description='Downloader Api')
-instagramdlsrek = Namespace('downloader', description='Downloader Api')
 twitterdlrek = Namespace('downloader', description='Downloader Api')
 facebookdlrek = Namespace('downloader', description='Downloader Api')
 mediafiredlrek = Namespace('downloader', description='Downloader Api')
@@ -262,130 +260,6 @@ class DownloadigResource(Resource):
                 'status': False
             })
         
-
-@instagramdlsrek.route('')
-class DownloadigsResource(Resource):
-    @instagramdlsrek.doc(params={
-        'url': 'Instagram URL',
-        'apikey': 'API Key for authentication'
-    })
-
-    def RegId(self, url):
-        if  '/p/' in url:id_p = {'s': 'post', 'id': re.search(r"/p/([A-Za-z0-9_-]+)", url).group(1)}
-        elif '/reel/' in url:id_p = {'s': 'reel', 'id':re.search(r"/reel/([A-Za-z0-9_-]+)", url).group(1)} 
-        else:id_p = {'s': 'eror'}
-        return id_p
-
-    def RegData(self, url):
-        try:
-            resp = requests.get(url)
-            csrf = re.search('{"csrf_token":"(.*?)"}', str(resp.text)).group(1)
-            appig = re.search('"customHeaders":{"X-IG-App-ID":"(.*?)","X-IG-D":".*?"}', str(resp.text)).group(1)
-            blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
-            lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
-            igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', str(resp.text)).group(1)
-            hs = re.search('"haste_session":"(.*?)"',str(resp.text)).group(1)
-            ccg = re.search('"connectionClass":"(.*?)"',str(resp.text)).group(1)
-            rev = re.search('{"rev":(.*?)}',str(resp.text)).group(1)
-            hsi = re.search('"hsi":"(.*?)"',str(resp.text)).group(1)
-            jaz = re.search('jazoest=(\d+)',str(resp.text)).group(1)
-            spint = re.search('"__spin_t":(\d+)',str(resp.text)).group(1)
-            spinr = re.search('"__spin_r":(\d+)',str(resp.text)).group(1)
-            return csrf, appig, blockv, lsd, igdev, hs, ccg, rev, hsi, jaz, spint, spinr
-        except Exception as e:
-            return None, None, None, None, None, None, None, None, None, None, None, None
-    
-   def RegRes(self, id_post, url):
-       try
-            csrf, appig, blockv, lsd, igdev, hs, ccg, rev, hsi, jaz, spint, spinr = self.RegData(url)
-            url_requst = 'https://www.instagram.com/graphql/query'
-            headers = {
-                'accept': '*/*',
-                'accept-language': 'en-US,en;q=0.9,id;q=0.8',
-                'content-type': 'application/x-www-form-urlencoded',
-                'cookie': f'csrftoken={csrf}; mid=Zmsd4gAEAAESBID5v6w-PNVhUgRh; ig_did={igdev}; datr=4h1rZosO2qTGqqyXQ8IRZoJo; ig_nrcb=1; ps_n=1; ps_l=1; wd=507x632',
-                'origin': 'https://www.instagram.com',
-                'priority': 'u=1, i',
-                'referer': url_requst,
-                'sec-ch-prefers-color-scheme': 'dark',
-                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-                'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.141", "Not.A/Brand";v="24.0.0.0"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-model': '""',
-                'sec-ch-ua-platform': 'Linux',
-                'sec-ch-ua-platform-version': '4.9.227',
-                'sec-fetch-dest': 'empty',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                'x-asbd-id': '129477',
-                'x-bloks-version-id': blockv,
-                'x-csrftoken': csrf,
-                'x-fb-friendly-name': 'PolarisPostActionLoadPostQueryQuery',
-                'x-fb-lsd': lsd,
-                'x-ig-app-id': appig
-            }
-            data = {
-                'av': '0',
-                '__d': 'www',
-                '__user': '0',
-                '__a': '1',
-                '__req': '3',
-                '__hs': hs,
-                'dpr': '1',
-                '__ccg': ccg,
-                '__rev': rev,
-                '__s': '',
-                '__hsi': hsi,
-                '__dyn': '',
-                '__csr': '',
-                '__comet_req': '7',
-                'lsd': lsd,
-                'jazoest': jaz,
-                '__spin_r': spinr,
-                '__spin_b': 'trunk',
-                '__spin_t': spint,
-                'fb_api_caller_class': 'RelayModern',
-                'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
-                'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
-                'server_timestamps': 'true',
-                'doc_id': '25531498899829322'
-            }
-            resp = requests.post(url, headers=headers, data=data)
-            return resp.json()
-
-    def get(self):
-        url = request.args.get('url')
-        apikey = request.args.get('apikey')
-
-        if not url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
-        
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
-
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-
-        try:
-            a = (self.RegId(url))
-            if 'eror' in a.get('s'):
-                return jsonify({
-                    'creator': 'AmmarBN',
-                    'error': 'URL error not detected. Please try again later.',
-                    'status': False
-                })
-            res = self.RegRes(a.get('id'), url)
-            return jsonify(res)
-        except Exception as e:
-            return jsonify({
-                'creator': 'AmmarBN',
-                'error': f'Error: {str(e)}',
-                'status': False
-            })
-
 @twitterdlrek.route('')
 class DownloadtwResource(Resource):
     @twitterdlrek.doc(params={
