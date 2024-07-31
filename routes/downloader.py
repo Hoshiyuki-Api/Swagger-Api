@@ -295,35 +295,10 @@ class DownloadigsResource(Resource):
         except Exception as e:
             return None, None, None, None, None, None, None, None, None, None, None, None
     
-   #def IgSlide(self, id, url)
-
-
-    def get(self):
-        url = request.args.get('url')
-        apikey = request.args.get('apikey')
-
-        if not url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
-        
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
-
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-
-        try:
-            a = (self.RegId(url))
-            if 'eror' in a.get('s'):
-                return jsonify({
-                    'creator': 'AmmarBN',
-                    'error': 'URL error not detected. Please try again later.',
-                    'status': False
-                })
+   def RegRes(self, id_post, url):
+       try
             csrf, appig, blockv, lsd, igdev, hs, ccg, rev, hsi, jaz, spint, spinr = self.RegData(url)
             url_requst = 'https://www.instagram.com/graphql/query'
-
             headers = {
                 'accept': '*/*',
                 'accept-language': 'en-US,en;q=0.9,id;q=0.8',
@@ -350,7 +325,60 @@ class DownloadigsResource(Resource):
                 'x-fb-lsd': lsd,
                 'x-ig-app-id': appig
             }
-            return jsonify({'pesan': a.get('id')})
+            data = {
+                'av': '0',
+                '__d': 'www',
+                '__user': '0',
+                '__a': '1',
+                '__req': '3',
+                '__hs': hs,
+                'dpr': '1',
+                '__ccg': ccg,
+                '__rev': rev,
+                '__s': '',
+                '__hsi': hsi,
+                '__dyn': '',
+                '__csr': '',
+                '__comet_req': '7',
+                'lsd': lsd,
+                'jazoest': jaz,
+                '__spin_r': spinr,
+                '__spin_b': 'trunk',
+                '__spin_t': spint,
+                'fb_api_caller_class': 'RelayModern',
+                'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
+                'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
+                'server_timestamps': 'true',
+                'doc_id': '25531498899829322'
+            }
+            resp = requests.post(url, headers=headers, data=data)
+            return resp.json()
+
+    def get(self):
+        url = request.args.get('url')
+        apikey = request.args.get('apikey')
+
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
+        
+        if not apikey:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
+
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        try:
+            a = (self.RegId(url))
+            if 'eror' in a.get('s'):
+                return jsonify({
+                    'creator': 'AmmarBN',
+                    'error': 'URL error not detected. Please try again later.',
+                    'status': False
+                })
+            res = self.RegRes(a.get('id'), url)
+            return jsonify(res)
         except Exception as e:
             return jsonify({
                 'creator': 'AmmarBN',
