@@ -314,7 +314,7 @@ class DownloadigsResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         try:
-            print(self.RegId(url))
+            a = (self.RegId(url))
             csrf, appig, blockv, lsd, igdev, hs, ccg, rev, hsi, jaz, spint, spinr = self.RegData(url)
             url_requst = 'https://www.instagram.com/graphql/query'
 
@@ -344,7 +344,7 @@ class DownloadigsResource(Resource):
                 'x-fb-lsd': lsd,
                 'x-ig-app-id': appig
             }
-            return jsonify({'pesan': 'halo'})
+            return jsonify({'pesan': a})
         except Exception as e:
             return jsonify({
                 'creator': 'AmmarBN',
