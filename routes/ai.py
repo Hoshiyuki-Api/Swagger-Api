@@ -576,6 +576,6 @@ class DownloadanimediffResource(Resource):
         # Redirect to the first image URL
         if urls:
             first_image_url = urls[0]  # Get the first image URL
-            return redirect(first_image_url)
+            return redirect('https://linaqruf-kivotos-xl-2-0.hf.space/file='+first_image_url)
         else:
             return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
