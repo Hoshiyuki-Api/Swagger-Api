@@ -98,7 +98,7 @@ deepairek = Namespace('ai', description='AI Api')
 simirek = Namespace('ai', description='AI Api')
 osmagerek = Namespace('ai', description='AI Api')
 texttirek = Namespace('ai', description='AI Api')
-animediff = NameSpace('ai', description='AI Api')
+animediff = Namespace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
