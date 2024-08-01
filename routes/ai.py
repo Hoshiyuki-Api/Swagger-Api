@@ -573,14 +573,9 @@ class DownloadanimediffResource(Resource):
         for json_obj in json_objects:
             extract_urls(json_obj)
 
-        # Return all URLs found in the response
+        # Redirect to the first image URL
         if urls:
-            return jsonify(
-		    {
-			    "creator": "AmmarBN", 
-			    "urls": urls,
-			    "status": True
-		    }
-	    )
+            first_image_url = urls[0]  # Get the first image URL
+            return redirect(first_image_url)
         else:
             return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
