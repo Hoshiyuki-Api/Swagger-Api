@@ -10,6 +10,7 @@ deepai_bp = Blueprint('_openai-deepai', __name__)
 simi_bp = Blueprint('_openai_simi', __name__)
 osmage_bp = Blueprint('osmage', __name__)
 textti_bp = Blueprint('textoimg', __name__)
+animediff_bp = Blueprint('animediff', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -97,6 +98,7 @@ deepairek = Namespace('ai', description='AI Api')
 simirek = Namespace('ai', description='AI Api')
 osmagerek = Namespace('ai', description='AI Api')
 texttirek = Namespace('ai', description='AI Api')
+animediff = NameSpace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
@@ -459,3 +461,126 @@ class DownloadtextiResource(Resource):
             return redirect(first_image_url)
         else:
             return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan."})
+
+@animediff.route('')
+class DownloadanimediffResource(Resource):
+    @animediff.doc(params={
+        'prompt': 'Input Prompt',
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        Text To Image.
+
+        Parameters:
+        - prompt: prompt (required)
+        - apikey: API Key for authentication (required)
+        """
+        prompt = request.args.get('prompt')
+        apikey = request.args.get('apikey')
+
+        if not prompt:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
+
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        json_objects = []
+        urls = []
+
+        def getinpt(prompt):
+            url = 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/queue/join?'
+            headers = {
+                'authority': 'ehristoforu-dalle-3-xl-lora-v2.hf.space',
+                'accept': '*/*',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'content-type': 'application/json',
+                'cookie': '_gid=GA1.2.396965202.1719581958; _gat_gtag_UA_156449732_1=1; _ga_R1FN4KJKJH=GS1.1.1719581957.1.1.1719582101.0.0.0; _ga=GA1.1.369526913.1719581958',
+                'origin': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space',
+                'referer': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/',
+                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+                'sec-ch-ua-mobile': '?1',
+                'sec-ch-ua-platform': '"Android"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-origin',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+            }
+            data = {
+                'data': [
+                    prompt,
+                    '(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, (NSFW:1.25)',
+                    True,
+                    0,
+                    1024,
+                    1024,
+                    6,
+                    True
+                ],
+                'event_data': None,
+                'fn_index': 3,
+                'trigger_id': 6,
+                'session_hash': 'kghqdnjxlyp'
+            }
+            response = requests.post(url, headers=headers, json=data)
+
+            url1 = 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/queue/data'
+            params = {'session_hash': 'kghqdnjxlyp'}
+            headers = {
+                'authority': 'ehristoforu-dalle-3-xl-lora-v2.hf.space',
+                'accept': 'text/event-stream',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'cache-control': 'no-cache',
+                'cookie': '_gid=GA1.2.396965202.1719581958; _gat_gtag_UA_156449732_1=1; _ga_R1FN4KJKJH=GS1.1.1719581957.1.1.1719582101.0.0.0; _ga=GA1.1.369526913.1719581958',
+                'referer': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/',
+                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+                'sec-ch-ua-mobile': '?1',
+                'sec-ch-ua-platform': '"Android"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-origin',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+            }
+            resp = requests.get(url1, headers=headers, params=params).text
+            lines = resp.splitlines()
+            for line in lines:
+                match = re.search(r'\{.*\}', line)
+                if match:
+                    json_str = match.group(0)
+                    try:
+                        json_obj = json.loads(json_str)
+                        json_objects.append(json_obj)
+                    except json.JSONDecodeError as e:
+                        print(f'Error decoding JSON: {e}')
+                        continue
+
+        def extract_urls(obj):
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    if k == "url":
+                        urls.append(v)
+                    else:
+                        extract_urls(v)
+            elif isinstance(obj, list):
+                for item in obj:
+                    extract_urls(item)
+
+        getinpt(prompt)
+        for json_obj in json_objects:
+            extract_urls(json_obj)
+
+        # Return all URLs found in the response
+        if urls:
+            return jsonify(
+		    {
+			    "creator": "AmmarBN", 
+			    "urls": urls,
+			    "status": True
+		    }
+	    )
+        else:
+            return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
