@@ -489,64 +489,59 @@ class DownloadanimediffResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
+        # Define global variables for storing data
+        global json_objects, urls
         json_objects = []
         urls = []
 
         def getinpt(prompt):
-            url = 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/queue/join?'
+            # API request to submit prompt
+            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/join?__theme=light'
             headers = {
-                'authority': 'ehristoforu-dalle-3-xl-lora-v2.hf.space',
-                'accept': '*/*',
-                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'accept': '/',
+                'accept-language': 'en-US,en;q=0.9',
                 'content-type': 'application/json',
-                'cookie': '_gid=GA1.2.396965202.1719581958; _gat_gtag_UA_156449732_1=1; _ga_R1FN4KJKJH=GS1.1.1719581957.1.1.1719582101.0.0.0; _ga=GA1.1.369526913.1719581958',
-                'origin': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space',
-                'referer': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/',
-                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-                'sec-ch-ua-mobile': '?1',
-                'sec-ch-ua-platform': '"Android"',
+                'origin': 'https://linaqruf-kivotos-xl-2-0.hf.space',
+                'priority': 'u=1, i',
+                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/?__theme=light',
+                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Linux"',
                 'sec-fetch-dest': 'empty',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
             }
             data = {
-                'data': [
-                    prompt,
-                    '(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, (NSFW:1.25)',
-                    True,
-                    0,
-                    1024,
-                    1024,
-                    6,
-                    True
-                ],
-                'event_data': None,
-                'fn_index': 3,
-                'trigger_id': 6,
-                'session_hash': 'kghqdnjxlyp'
+                "data": [prompt, "nsfw, (low quality, worst quality:1.2), 3d, watermark, signature, ugly, poorly drawn", 1437075292, 1024, 1024, 7, 28, "Euler a", "896 x 1152", False, 0.55, 1.5, True],
+                "event_data": None,
+                "fn_index": 6,
+                "trigger_id": 41,
+                "session_hash": "0ke8fz0hr52"
             }
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, data=json.dumps(data))
 
-            url1 = 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/queue/data'
-            params = {'session_hash': 'kghqdnjxlyp'}
+            # API request to get the results
+            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/data'
+            params = {'session_hash': '0ke8fz0hr52'}
             headers = {
-                'authority': 'ehristoforu-dalle-3-xl-lora-v2.hf.space',
                 'accept': 'text/event-stream',
-                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-                'cache-control': 'no-cache',
-                'cookie': '_gid=GA1.2.396965202.1719581958; _gat_gtag_UA_156449732_1=1; _ga_R1FN4KJKJH=GS1.1.1719581957.1.1.1719582101.0.0.0; _ga=GA1.1.369526913.1719581958',
-                'referer': 'https://ehristoforu-dalle-3-xl-lora-v2.hf.space/',
-                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-                'sec-ch-ua-mobile': '?1',
-                'sec-ch-ua-platform': '"Android"',
+                'accept-language': 'en-US,en;q=0.9',
+                'content-type': 'application/json',
+                'priority': 'u=1, i',
+                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/?__theme=light',
+                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Linux"',
                 'sec-fetch-dest': 'empty',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
             }
-            resp = requests.get(url1, headers=headers, params=params).text
+            resp = requests.get(url, params=params, headers=headers, stream=True).text
             lines = resp.splitlines()
+            
+            # Extract and parse JSON objects
             for line in lines:
                 match = re.search(r'\{.*\}', line)
                 if match:
