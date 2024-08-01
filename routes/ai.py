@@ -470,7 +470,7 @@ class DownloadanimediffResource(Resource):
     })
     def get(self):
         """
-        Text To Image.
+        AnimeDiffusion.
 
         Parameters:
         - prompt: prompt (required)
