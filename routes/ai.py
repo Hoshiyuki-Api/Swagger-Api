@@ -659,9 +659,11 @@ class BingImageCreator:
         if len(safe_image_links) != len(matches):
             print("Detected & Removed bad images")
         unique_image_links = list(set(safe_image_links))
-        if not unique_image_links:
+        # Filter out .svg links
+        filtered_image_links = [link for link in unique_image_links if not link.endswith(".svg")]
+        if not filtered_image_links:
             raise Exception("error_no_images")
-        return unique_image_links
+        return filtered_image_links
 
     def create_image(self, prompt):
         encoded_prompt = requests.utils.quote(prompt)
@@ -673,7 +675,6 @@ class BingImageCreator:
             print("Retrying once...")
             redirect_url, request_id = self.fetch_redirect_url(f"{BING_URL}/images/create?q={encoded_prompt}&rt=8&FORM=GENCRE", form_data)
             return self.fetch_result(encoded_prompt, redirect_url, request_id)
-
 # Flask-RESTx resource
 @bingimg.route('')
 class DownloadbingimgResource(Resource):
