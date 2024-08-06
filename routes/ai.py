@@ -704,7 +704,7 @@ class DownloadbingimgResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         # Bing Image Creator instance
-        cookie = "1zx4B2Eyso8HxX9jFWG1I2-9VQ55t2QPHrB5a--LPpNvL5Ja-g6cMfqOTDcdojeDTJNYCc3lyEpqUSmjU4kmSRUplrN8OAcXQJbehufhInC09Hapr-xU4_4PV8q87nbLtaXVuWSLga80FFwHUp9Ezf01UdrA8lkRMo79uvyEG2NJoLSjvRvpzwRyJrLNSmi_UP7OlucTFwAI_xMeQqKpROw"  # Replace with your actual cookie
+        cookie = "1iDhiZ0fHzDJj3R8L-Y69d6QQoZsDkWHhLeXzbCQx4vjyxWO4zkoa8chlUKCjzfZ4gJxg_6AE0cFhMFkbMQejiUH5_-ADCnNe-OIwDPTRxcUJVgbGruxNpTRM763lDUZaHdes0FkOBE6-f9hpVXH8QhP4WUQlJxuQhUFixCgONRBIuU9FFhtb2e0lxegkd5mFdI61vtu_aEdGGagWS8Lxgg"  # Replace with your actual cookie
         bing_image_creator = BingImageCreator(cookie)
 
         try:
