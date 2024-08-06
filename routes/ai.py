@@ -12,7 +12,7 @@ simi_bp = Blueprint('_openai_simi', __name__)
 osmage_bp = Blueprint('osmage', __name__)
 textti_bp = Blueprint('textoimg', __name__)
 animediff_bp = Blueprint('animediff', __name__)
-bingimg_bp = Blueprint('animediff', __name__)
+bingimg_bp = Blueprint('bingimage', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
