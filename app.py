@@ -58,7 +58,7 @@ app.register_blueprint(simi_bp, url_prefix='/api/simi')
 app.register_blueprint(osmage_bp, url_prefix='/api/osmage')
 app.register_blueprint(textti_bp, url_prefix='/api/texttoimg')
 app.register_blueprint(animediff_bp, url_prefix='/api/animediff')
-app.register_blueprint(bingimg_bp, url_prefix='/api/bingimg'
+app.register_blueprint(bingimg_bp, url_prefix='/api/bingimg')
 
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
