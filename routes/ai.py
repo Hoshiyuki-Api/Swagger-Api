@@ -1,6 +1,7 @@
 import requests, re
 import json
-import os
+import os, time, random
+from fake_useragent import UserAgent
 from datetime import datetime
 from flask import Blueprint, jsonify, request, redirect
 from flask_restx import Namespace, Resource
