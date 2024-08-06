@@ -12,6 +12,7 @@ simi_bp = Blueprint('_openai_simi', __name__)
 osmage_bp = Blueprint('osmage', __name__)
 textti_bp = Blueprint('textoimg', __name__)
 animediff_bp = Blueprint('animediff', __name__)
+bingimg_bp = Blueprint('animediff', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -100,6 +101,7 @@ simirek = Namespace('ai', description='AI Api')
 osmagerek = Namespace('ai', description='AI Api')
 texttirek = Namespace('ai', description='AI Api')
 animediff = Namespace('ai', description='AI Api')
+bingimg = Namespace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
@@ -575,3 +577,145 @@ class DownloadanimediffResource(Resource):
             return redirect('https://linaqruf-kivotos-xl-2-0.hf.space/file=' + first_image_url)
         else:
             return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
+
+BING_URL = "https://www.bing.com"
+
+def sleep(ms):
+    time.sleep(ms / 1000)
+
+def generate_random_ip():
+    return '.'.join(str(random.randint(0, 255)) for _ in range(4))
+
+def generate_random_user_agent():
+    android_versions = ['4.0.3', '4.1.1', '4.2.2', '4.3', '4.4', '5.0.2', '5.1', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0']
+    device_models = ['M2004J19C', 'S2020X3', 'Xiaomi4S', 'RedmiNote9', 'SamsungS21', 'GooglePixel5']
+    build_versions = ['RP1A.200720.011', 'RP1A.210505.003', 'RP1A.210812.016', 'QKQ1.200114.002', 'RQ2A.210505.003']
+    selected_model = random.choice(device_models)
+    selected_build = random.choice(build_versions)
+    chrome_version = f"Chrome/{random.randint(1, 80)}.{random.randint(1, 999)}.{random.randint(1, 9999)}"
+    user_agent = f"Mozilla/5.0 (Linux; Android {random.choice(android_versions)}; {selected_model} Build/{selected_build}) AppleWebKit/537.36 (KHTML, like Gecko) {chrome_version} Mobile Safari/537.36 WhatsApp/1.{random.randint(1, 9)}.{random.randint(1, 9)}"
+    return user_agent
+
+def get_valid_ipv4(ip):
+    parts = ip.split('.')
+    if len(parts) == 4 and all(0 <= int(part) < 256 for part in parts):
+        return ip
+    return None
+
+class BingImageCreator:
+    HEADERS = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "max-age=0",
+        "content-type": "application/x-www-form-urlencoded",
+        "referrer": "https://www.bing.com/images/create/",
+        "origin": "https://www.bing.com",
+        "user-agent": generate_random_user_agent(),
+        "x-forwarded-for": get_valid_ipv4(generate_random_ip()) or generate_random_ip()
+    }
+
+    def __init__(self, cookie):
+        self._cookie = f"_U={cookie}"
+        if not self._cookie:
+            raise ValueError("Bing cookie is required")
+
+    def fetch_redirect_url(self, url, form_data):
+        response = requests.post(url, headers={**self.HEADERS, "cookie": self._cookie}, data=form_data, allow_redirects=False)
+        if not response.ok:
+            raise Exception("Request failed")
+        redirect_url = response.headers['Location'].replace("&nfy=1", "")
+        request_id = redirect_url.split("id=")[1]
+        return redirect_url, request_id
+
+    def fetch_result(self, encoded_prompt, redirect_url, request_id):
+        url = f"{BING_URL}{redirect_url}"
+        try:
+            requests.get(url, headers={**self.HEADERS, "cookie": self._cookie})
+        except Exception as e:
+            raise Exception(f"Request redirect_url failed: {e}")
+        get_result_url = f"{BING_URL}/images/create/async/results/{request_id}?q={encoded_prompt}"
+        start_wait = time.time()
+        while True:
+            if time.time() - start_wait > 800:
+                raise Exception("Timeout")
+            sleep(1000)
+            result = self.get_results(get_result_url)
+            if result:
+                break
+        return self.parse_result(result)
+
+    def get_results(self, get_result_url):
+        response = requests.get(get_result_url, headers={**self.HEADERS, "cookie": self._cookie})
+        if response.status_code != 200:
+            raise Exception("Bad status code")
+        content = response.text
+        if not content or "errorMessage" in content:
+            return None
+        return content
+
+    def parse_result(self, result):
+        matches = [match.split("?w=")[0] for match in re.findall(r'src="([^"]*)"', result)]
+        safe_image_links = [link for link in matches if not re.search(r'r.bing.com/rp', link)]
+        if len(safe_image_links) != len(matches):
+            print("Detected & Removed bad images")
+        unique_image_links = list(set(safe_image_links))
+        if not unique_image_links:
+            raise Exception("error_no_images")
+        return unique_image_links
+
+    def create_image(self, prompt):
+        encoded_prompt = requests.utils.quote(prompt)
+        form_data = {"q": encoded_prompt, "qa": "ds"}
+        try:
+            redirect_url, request_id = self.fetch_redirect_url(f"{BING_URL}/images/create?q={encoded_prompt}&rt=8&FORM=GENCRE", form_data)
+            return self.fetch_result(encoded_prompt, redirect_url, request_id)
+        except Exception as e:
+            print("Retrying once...")
+            redirect_url, request_id = self.fetch_redirect_url(f"{BING_URL}/images/create?q={encoded_prompt}&rt=8&FORM=GENCRE", form_data)
+            return self.fetch_result(encoded_prompt, redirect_url, request_id)
+
+# Flask-RESTx resource
+@bingimg.route('')
+class DownloadbingimgResource(Resource):
+    @bingimg.doc(params={
+        'prompt': 'Input Prompt',
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        Bing Image Creator.
+
+        Parameters:
+        - prompt: prompt (required)
+        - apikey: API Key for authentication (required)
+        """
+        prompt = request.args.get('prompt')
+        apikey = request.args.get('apikey')
+
+        if not prompt:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
+
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        # Bing Image Creator instance
+        cookie = "1zx4B2Eyso8HxX9jFWG1I2-9VQ55t2QPHrB5a--LPpNvL5Ja-g6cMfqOTDcdojeDTJNYCc3lyEpqUSmjU4kmSRUplrN8OAcXQJbehufhInC09Hapr-xU4_4PV8q87nbLtaXVuWSLga80FFwHUp9Ezf01UdrA8lkRMo79uvyEG2NJoLSjvRvpzwRyJrLNSmi_UP7OlucTFwAI_xMeQqKpROw"  # Replace with your actual cookie
+        bing_image_creator = BingImageCreator(cookie)
+
+        try:
+            image_urls = bing_image_creator.create_image(prompt)
+            if image_urls:
+                result_urls = image_urls[:4]  # Get the first 4 image URLs
+                return jsonify({
+                    "creator": "AmmarBN",
+                    "status": True,
+                    "result": result_urls
+                })
+            else:
+                return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e), "status": False})
