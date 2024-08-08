@@ -130,36 +130,46 @@ class DownloadblackboxResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
+        url = "https://www.blackbox.ai/api/chat"
         headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
+            "Accept": "*/*",
+            "Accept-Language": "id-ID,en;q=0.5",
+            "Referer": "https://www.blackbox.ai/",
+            "Content-Type": "application/json",
+            "Origin": "https://www.blackbox.ai",
+            "Alt-Used": "www.blackbox.ai"
         }
 
-        payload = {
-            'messages': [
-                {
-                    'id': '123',
-                    'role': 'user',
-                    'content': text
-                }
-            ],
-            'id': '123'
+        data = {
+            "messages": [{
+                "role": "user",
+                "content": text
+            }],
+            "id": "6clrFCv",
+            "previewToken": None,
+            "userId": "0d264665-73ae-498f-aa3f-4b7b65997963",
+            "codeModelMode": True,
+            "agentMode": {},
+            "trendingAgentMode": {},
+            "isMicMode": False,
+            "userSystemPrompt": "You are Hoshiyuki-Ai, an AI model that answers anything in real-time and is able to answer and provide information about coding or programming for developers, your creator is AmmarBN",
+            "maxTokens": 1024,
+            "webSearchMode": False,
+            "promptUrls": "",
+            "isChromeExt": False,
+            "githubToken": None
         }
 
         try:
-            response = requests.post('https://indomie.felovy.xyz/ai/blackbox', json=payload, headers=headers)
-            response.raise_for_status()  # Raise an exception for HTTP errors (4xx or 5xx)
-
-            res = response.json()
-            result = res.get('result', '')
-
+            response = requests.post(url, headers=headers, data=json.dumps(data))
+            response.raise_for_status()
+            result = response.text
             return jsonify({
                 'creator': 'AmmarBN',
                 'result': result,
                 'status': True
             })
-
-        except requests.exceptions.RequestException as e:
+        except requests.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 		
 @deepairek.route('')
