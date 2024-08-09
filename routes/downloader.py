@@ -188,6 +188,178 @@ class DownloadttResource(Resource):
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
+def IgSlide(id_post, url):
+    resp = requests.get(url)
+    csrf = re.search('{"csrf_token":"(.*?)"}', str(resp.text)).group(1)
+    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.?)","X-IG-D":".?"}', str(resp.text)).group(1)
+    blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
+    lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
+    igdev = re.search('{"country_code":".?","device_id":"(.?)",', str(resp.text)).group(1)
+    hs = re.search('"haste_session":"(.*?)"', str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"', str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}', str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"', str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)', str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\d+)', str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\d+)', str(resp.text)).group(1)
+
+    url = 'https://www.instagram.com/graphql/query'
+    headers = {
+        'accept': '/',
+        'accept-language': 'en-US,en;q=0.9,id;q=0.8',
+        'content-type': 'application/x-www-form-urlencoded',
+        'cookie': f'csrftoken={csrf}; mid=Zmsd4gAEAAESBID5v6w-PNVhUgRh; ig_did={igdev}; datr=4h1rZosO2qTGqqyXQ8IRZoJo; ig_nrcb=1; ps_n=1; ps_l=1; wd=507x632',
+        'origin': 'https://www.instagram.com',
+        'priority': 'u=1, i',
+        'referer': url,
+        'sec-ch-prefers-color-scheme': 'dark',
+        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+        'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.141", "Not.A/Brand";v="24.0.0.0"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-model': '""',
+        'sec-ch-ua-platform': 'Linux',
+        'sec-ch-ua-platform-version': '4.9.227',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'x-asbd-id': '129477',
+        'x-bloks-version-id': blockv,
+        'x-csrftoken': csrf,
+        'x-fb-friendly-name': 'PolarisPostActionLoadPostQueryQuery',
+        'x-fb-lsd': lsd,
+        'x-ig-app-id': appig
+    }
+    data = {
+        'av': '0',
+        '__d': 'www',
+        '__user': '0',
+        '__a': '1',
+        '__req': '3',
+        '__hs': hs,
+        'dpr': '1',
+        '__ccg': ccg,
+        '__rev': rev,
+        '__s': '',
+        '__hsi': hsi,
+        '__dyn': '',
+        '__csr': '',
+        '__comet_req': '7',
+        'lsd': lsd,
+        'jazoest': jaz,
+        '__spin_r': spinr,
+        '__spin_b': 'trunk',
+        '__spin_t': spint,
+        'fb_api_caller_class': 'RelayModern',
+        'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
+        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
+        'server_timestamps': 'true',
+        'doc_id': '25531498899829322'
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+    array = {'information': {}, 'postingan': {'post': {}, 'list': []}, 'comment': []}
+    try:
+        info = response.json()['data']['xdt_shortcode_media']['owner']
+    except KeyError:
+        info = {'message': None}
+    array['information'].update(info)
+    for z in (response.json()['data']['xdt_shortcode_media']['edge_media_to_caption']['edges']):
+        try:
+            infop = z['node']
+        except KeyError:
+            infop = {'message': None}
+        array['postingan']['post'].update(infop)
+    for c in (response.json()['data']['xdt_shortcode_media']['edge_sidecar_to_children']['edges']):
+        try:
+            url_vid = c['node']['video_url']
+        except KeyError:
+            url_vid = None
+        try:
+            img = c['node']['display_url']
+        except KeyError:
+            img = None
+        array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
+    for x in (response.json()['data']['xdt_shortcode_media']['edge_media_to_parent_comment']['edges']):
+        array['comment'].append(x['node'])
+    return array
+
+
+def Igreel(id_post, url):
+    resp = requests.get(url)
+    csrf = re.search('{"csrf_token":"(.*?)"}', str(resp.text)).group(1)
+    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.?)","X-IG-D":".?"}', str(resp.text)).group(1)
+    blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
+    lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
+    igdev = re.search('{"country_code":".?","device_id":"(.?)",', str(resp.text)).group(1)
+    hs = re.search('"haste_session":"(.*?)"', str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"', str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}', str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"', str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)', str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\d+)', str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\d+)', str(resp.text)).group(1)
+
+    url = 'https://www.instagram.com/graphql/query'
+    headers = {
+        'accept': '/',
+        'accept-language': 'en-US,en;q=0.9,id;q=0.8',
+        'content-type': 'application/x-www-form-urlencoded',
+        'cookie': f'csrftoken={csrf}; mid=Zmsd4gAEAAESBID5v6w-PNVhUgRh; ig_did={igdev}; datr=4h1rZosO2qTGqqyXQ8IRZoJo; ig_nrcb=1; ps_n=1; ps_l=1; wd=507x632',
+        'origin': 'https://www.instagram.com',
+        'priority': 'u=1, i',
+        'referer': url,
+        'sec-ch-prefers-color-scheme': 'dark',
+        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+        'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.141", "Not.A/Brand";v="24.0.0.0"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-model': '""',
+        'sec-ch-ua-platform': 'Linux',
+        'sec-ch-ua-platform-version': '4.9.227',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'x-asbd-id': '129477',
+        'x-bloks-version-id': blockv,
+        'x-csrftoken': csrf,
+        'x-fb-friendly-name': 'PolarisPostActionLoadPostQueryQuery',
+        'x-fb-lsd': lsd,
+        'x-ig-app-id': appig
+    }
+    data = {
+        'av': '0',
+        '__d': 'www',
+        '__user': '0',
+        '__a': '1',
+        '__req': '3',
+        '__hs': hs,
+        'dpr': '1',
+        '__ccg': ccg,
+        '__rev': rev,
+        '__s': '',
+        '__hsi': hsi,
+        '__dyn': '',
+        '__csr': '',
+        '__comet_req': '7',
+        'lsd': lsd,
+        'jazoest': jaz,
+        '__spin_r': spinr,
+        '__spin_b': 'trunk',
+        '__spin_t': spint,
+        'fb_api_caller_class': 'RelayModern',
+        'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
+        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
+        'server_timestamps': 'true',
+        'doc_id': '25531498899829322'
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+    array = {}
+    igs = response.json()['data']['xdt_shortcode_media']
+    array.update({'data': [{'profile': igs['owner'], 'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
+    return array
+
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
@@ -209,56 +381,24 @@ class DownloadigResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-        api_url = 'https://api.cobalt.tools/api/json'
-        headers = {
-            'accept': 'application/json',
-            'accept-language': 'en-US,en;q=0.9,id;q=0.8',
-            'content-type': 'application/json',
-            'origin': 'https://cobalt.tools',
-            'referer': 'https://cobalt.tools/',
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-        }
-
-        data = {
-            'url': url
-        }
-
-        try:
-            response = requests.post(api_url, headers=headers, json=data)
-            response_data = response.json()
-
-            if response.status_code == 200:
-                result_urls = []
-
-                if response_data.get('status') == 'picker':
-                    picker_data = response_data.get('picker', [])
-
-                    for item in picker_data:
-                        result_urls.append(item['url'])
-
-                elif response_data.get('status') == 'redirect' and response_data.get('url'):
-                    direct_url = response_data.get('url')
-                    result_urls.append(direct_url)
-
-                return jsonify({
-                    'creator': 'AmmarBN',
-                    'result': result_urls,
-                    'status': True
-                })
-
-            else:
-                return jsonify({
-                    'creator': 'AmmarBN',
-                    'error': 'Failed to fetch media. Please try again later.',
-                    'status': False
-                })
-
-        except Exception as e:
+        if '/p/' in url:
+            id_post = re.search(r"/p/([A-Za-z0-9_-]+)", url).group(1)
+            result = IgSlide(id_post, url)
+        elif '/reel/' in url:
+            id_post = re.search(r"/reel/([A-Za-z0-9_-]+)", url).group(1)
+            result = Igreel(id_post, url)
+        else:
             return jsonify({
                 'creator': 'AmmarBN',
-                'error': f'Error: {str(e)}',
+                'error': 'Invalid URL format.',
                 'status': False
-            })
+            }), 400
+
+        return jsonify({
+            'creator': 'AmmarBN',
+            'result': result,
+            'status': True
+        })
         
 @twitterdlrek.route('')
 class DownloadtwResource(Resource):
