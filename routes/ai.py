@@ -272,13 +272,13 @@ class DownloadsimiResource(Resource):
 		'lc':'id'
         })
         a.raise_for_status()
-	result = a.json()
+	#result = a.json()
 
         return jsonify(
             {
                 'creator': 'AmmarBN',
                 'status': True,
-                'result': result
+                'result': a.text
             }
         )
 
