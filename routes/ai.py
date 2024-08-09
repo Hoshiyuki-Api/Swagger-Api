@@ -161,12 +161,12 @@ class DownloadblackboxResource(Resource):
         })
 
         try:
-            response = requests.post(url, headers=headers, data=data).text
-            #response.raise_for_status()
-            #result = response.text  # Mengubah text menjadi JSON jika responsnya adalah JSON
+            response = requests.post(url, headers=headers, data=data)
+            response.raise_for_status()
+            result = response.json()  # Mengubah text menjadi JSON jika responsnya adalah JSON
             return jsonify({
                 'creator': 'AmmarBN',
-                'result': response.text,
+                'result': result,
                 'status': True
             })
         except requests.RequestException as e:
@@ -270,13 +270,15 @@ class DownloadsimiResource(Resource):
         data={
 		'text':text,
 		'lc':'id'
-        }).text
+        })
+        a.raise_for_status()
+	result = a.json()
 
         return jsonify(
             {
                 'creator': 'AmmarBN',
                 'status': True,
-                'result': a
+                'result': result
             }
         )
 
@@ -340,6 +342,7 @@ class DownloadosmageResource(Resource):
         }
 
         response = requests.post('https://locate-image-7cs5mab6na-uc.a.run.app/', headers=headers, files=files)
+        response.raise_for_status()
         data = response.json()
 
         # Extract the required information safely
