@@ -199,7 +199,7 @@ class DownloaddeepaiResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-	url = "https://www.blackbox.ai/api/chat"
+        url = "https://www.blackbox.ai/api/chat"
         headers = {
             "Accept": "*/*",
             "Accept-Language": "id-ID,en;q=0.5",
