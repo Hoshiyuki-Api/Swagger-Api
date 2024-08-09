@@ -163,10 +163,10 @@ class DownloadblackboxResource(Resource):
         try:
             response = requests.post(url, headers=headers, data=data).text
             #response.raise_for_status()
-            result = response.text  # Mengubah text menjadi JSON jika responsnya adalah JSON
+            #result = response.text  # Mengubah text menjadi JSON jika responsnya adalah JSON
             return jsonify({
                 'creator': 'AmmarBN',
-                'result': result,
+                'result': response.text,
                 'status': True
             })
         except requests.RequestException as e:
