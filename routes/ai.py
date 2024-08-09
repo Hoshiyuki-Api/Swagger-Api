@@ -508,52 +508,54 @@ class DownloadanimediffResource(Resource):
         urls = []
 
         def getinpt(prompt):
-            # API request to submit prompt
-            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/join?__theme=light'
+            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/join?'
             headers = {
-                'accept': '/',
-                'accept-language': 'en-US,en;q=0.9',
+                'authority': 'linaqruf-kivotos-xl-2-0.hf.space',
+                'accept': '*/*',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
                 'content-type': 'application/json',
+                'cookie': '_ga_R1FN4KJKJH=GS1.1.1721563327.2.0.1721563327.0.0.0; _ga=GA1.2.369526913.1719581958',
                 'origin': 'https://linaqruf-kivotos-xl-2-0.hf.space',
-                'priority': 'u=1, i',
-                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/?__theme=light',
-                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/',
+                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Linux"',
                 'sec-fetch-dest': 'empty',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
             }
             data = {
-                "data": [prompt, "nsfw, (low quality, worst quality:1.2), 3d, watermark, signature, ugly, poorly drawn", 1437075292, 1024, 1024, 7, 28, "Euler a", "896 x 1152", False, 0.55, 1.5, True],
+                "data": [prompt, "nsfw, (low quality, worst quality:1.2), 3d, watermark, signature, ugly, poorly drawn", 673571220, 1024, 1024, 7, 28, "Euler a", "896 x 1152", False, 0.55, 1.5, True],
                 "event_data": None,
                 "fn_index": 6,
                 "trigger_id": 41,
-                "session_hash": "0ke8fz0hr52"
+                "session_hash": "19lmlrvpgpb"
             }
-            response = requests.post(url, headers=headers, data=json.dumps(data))
 
-            # API request to get the results
-            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/data'
-            params = {'session_hash': '0ke8fz0hr52'}
+            response = requests.post(url, headers=headers, json=data)
+
+            url = 'https://linaqruf-kivotos-xl-2-0.hf.space/queue/data?session_hash=19lmlrvpgpb'
             headers = {
+                'authority': 'linaqruf-kivotos-xl-2-0.hf.space',
                 'accept': 'text/event-stream',
-                'accept-language': 'en-US,en;q=0.9',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
                 'content-type': 'application/json',
-                'priority': 'u=1, i',
-                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/?__theme=light',
-                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'cookie': '_ga_R1FN4KJKJH=GS1.1.1721563327.2.0.1721563327.0.0.0; _ga=GA1.2.369526913.1719581958',
+                'referer': 'https://linaqruf-kivotos-xl-2-0.hf.space/',
+                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Linux"',
                 'sec-fetch-dest': 'empty',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
             }
-            resp = requests.get(url, params=params, headers=headers, stream=True).text
+            resp = requests.get(url, headers=headers, stream=True).text
+
+            # Split the data by lines
             lines = resp.splitlines()
-            
+
             # Extract and parse JSON objects
             for line in lines:
                 match = re.search(r'\{.*\}', line)
