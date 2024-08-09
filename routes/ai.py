@@ -140,7 +140,7 @@ class DownloadblackboxResource(Resource):
             "Alt-Used": "www.blackbox.ai"
         }
 
-        data = json.dumpe({
+        data = json.dumps({
             "messages": [{
                 "role": "user",
                 "content": text
@@ -163,7 +163,7 @@ class DownloadblackboxResource(Resource):
         try:
             response = requests.post(url, headers=headers, data=data)
             response.raise_for_status()
-            result = response.json()  # Mengubah text menjadi JSON jika responsnya adalah JSON
+            result = response.text  # Mengubah text menjadi JSON jika responsnya adalah JSON
             return jsonify({
                 'creator': 'AmmarBN',
                 'result': result,
