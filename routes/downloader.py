@@ -358,7 +358,8 @@ def Igreel(id_post, url):
     response = requests.post(url, headers=headers, data=data)
     #open('ig.ig.json', 'w').write(response.text)
     array = {}
-    igs = response.json()['data']['xdt_shortcode_media']
+    igs1 = response.json()
+    igs = igs1['data']['xdt_shortcode_media']
     array.update({'data': [{'profile':igs['owner'],'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
     return (array)
 
