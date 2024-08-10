@@ -363,7 +363,7 @@ def Igreel(id_post, url):
     except Exception as e:
         print(f"Unexpected error in Igreel: {e}")
 
-    return response_json
+    return data
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
