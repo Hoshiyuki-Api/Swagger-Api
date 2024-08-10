@@ -190,19 +190,19 @@ class DownloadttResource(Resource):
 
 def IgSlide(id_post, url):
     resp = requests.get(url)
-    csrf = re.search('{"csrf_token":"(.*?)"}', resp.text).group(1)
-    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.*?)","X-IG-D":".*?"}', resp.text).group(1)
-    blockv = re.search('{"versioningID":"(.*?)"}', resp.text).group(1)
-    lsd = re.search('"lsd":"(.*?)"', resp.text).group(1)
-    igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', resp.text).group(1)
-    hs = re.search('"haste_session":"(.*?)"', resp.text).group(1)
-    ccg = re.search('"connectionClass":"(.*?)"', resp.text).group(1)
-    rev = re.search('{"rev":(.*?)}', resp.text).group(1)
-    hsi = re.search('"hsi":"(.*?)"', resp.text).group(1)
-    jaz = re.search('jazoest=(\d+)', resp.text).group(1)
-    spint = re.search('"__spin_t":(\d+)', resp.text).group(1)
-    spinr = re.search('"__spin_r":(\d+)', resp.text).group(1)
-
+    csrf = re.search('{"csrf_token":"(.*?)"}', str(resp.text)).group(1)
+    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.*?)","X-IG-D":".*?"}', str(resp.text)).group(1)
+    blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
+    lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
+    igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', str(resp.text)).group(1)
+    hs = re.search('"haste_session":"(.*?)"',str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"',str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}',str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"',str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)',str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\d+)',str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\d+)',str(resp.text)).group(1)
+    #exit(jaz)
     url = 'https://www.instagram.com/graphql/query'
 
     headers = {
@@ -231,7 +231,6 @@ def IgSlide(id_post, url):
         'x-fb-lsd': lsd,
         'x-ig-app-id': appig
     }
-
     data = {
         'av': '0',
         '__d': 'www',
@@ -260,47 +259,47 @@ def IgSlide(id_post, url):
     }
 
     response = requests.post(url, headers=headers, data=data)
+    #open('ig.ig.json', 'w').write(response.text)
 
     array = {'information': {}, 'postingan': {'post': {}, 'list': []}, 'comment': []}
     try:
-        info = response.json()['data']['xdt_shortcode_media']['owner']
-    except KeyError:
-        info = {'message': None}
+        info = response.json()['data']['xdt_shortcode_media']['owner'] # get informasi account
+    except KeyError:info = {'message': None}
     array['information'].update(info)
     for z in (response.json()['data']['xdt_shortcode_media']['edge_media_to_caption']['edges']):
         try:
-            infop = z['node']
-        except KeyError:
-            infop = {'message': None}
+            infop = z['node'] # get informasi postingan
+        except KeyError:infop = {'message': None}
         array['postingan']['post'].update(infop)
-    try:
-        url_vid = response.json()['data']['xdt_shortcode_media']['video_url']
-    except KeyError:
-        url_vid = None
-    try:
-        img = response.json()['data']['xdt_shortcode_media']['display_url']
-    except KeyError:
-        img = None
-    array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
+    for c in (response.json()['data']['xdt_shortcode_media']['edge_sidecar_to_children']['edges']):
+        # get url img dan video
+        try:
+            url_vid = c['node']['video_url']
+        except KeyError:url_vid = None
+        try:
+            img = c['node']['display_url']
+        except KeyError:img = None
+        array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
     for x in (response.json()['data']['xdt_shortcode_media']['edge_media_to_parent_comment']['edges']):
         array['comment'].append(x['node'])
     return array
+
 
 def Igreel(id_post, url):
     resp = requests.get(url)
-    csrf = re.search('{"csrf_token":"(.*?)"}', resp.text).group(1)
-    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.*?)","X-IG-D":".*?"}', resp.text).group(1)
-    blockv = re.search('{"versioningID":"(.*?)"}', resp.text).group(1)
-    lsd = re.search('"lsd":"(.*?)"', resp.text).group(1)
-    igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', resp.text).group(1)
-    hs = re.search('"haste_session":"(.*?)"', resp.text).group(1)
-    ccg = re.search('"connectionClass":"(.*?)"', resp.text).group(1)
-    rev = re.search('{"rev":(.*?)}', resp.text).group(1)
-    hsi = re.search('"hsi":"(.*?)"', resp.text).group(1)
-    jaz = re.search('jazoest=(\d+)', resp.text).group(1)
-    spint = re.search('"__spin_t":(\d+)', resp.text).group(1)
-    spinr = re.search('"__spin_r":(\d+)', resp.text).group(1)
-
+    csrf = re.search('{"csrf_token":"(.*?)"}', str(resp.text)).group(1)
+    appig = re.search('"customHeaders":{"X-IG-App-ID":"(.*?)","X-IG-D":".*?"}', str(resp.text)).group(1)
+    blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
+    lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
+    igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', str(resp.text)).group(1)
+    hs = re.search('"haste_session":"(.*?)"',str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"',str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}',str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"',str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)',str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\d+)',str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\d+)',str(resp.text)).group(1)
+    #exit(jaz)
     url = 'https://www.instagram.com/graphql/query'
 
     headers = {
@@ -329,7 +328,6 @@ def Igreel(id_post, url):
         'x-fb-lsd': lsd,
         'x-ig-app-id': appig
     }
-
     data = {
         'av': '0',
         '__d': 'www',
@@ -358,32 +356,12 @@ def Igreel(id_post, url):
     }
 
     response = requests.post(url, headers=headers, data=data)
+    #open('ig.ig.json', 'w').write(response.text)
+    array = {}
+    igs = response.json()['data']['xdt_shortcode_media']
+    array.update({'data': [{'profile':igs['owner'],'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
+    return (array)
 
-    array = {'information': {}, 'postingan': {'post': {}, 'list': []}, 'comment': []}
-    try:
-        info = response.json()['data']['xdt_shortcode_media']['owner']
-    except KeyError:
-        info = {'message': None}
-    array['information'].update(info)
-    for z in (response.json()['data']['xdt_shortcode_media']['edge_media_to_caption']['edges']):
-        try:
-            infop = z['node']
-        except KeyError:
-            infop = {'message': None}
-        array['postingan']['post'].update(infop)
-    try:
-        url_vid = response.json()['data']['xdt_shortcode_media']['video_url']
-    except KeyError:
-        url_vid = None
-    try:
-        img = response.json()['data']['xdt_shortcode_media']['display_url']
-    except KeyError:
-        img = None
-    array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
-    for x in (response.json()['data']['xdt_shortcode_media']['edge_media_to_parent_comment']['edges']):
-        array['comment'].append(x['node'])
-    return array
-    
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
@@ -405,23 +383,17 @@ class DownloadigResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-        if '/p/' in url:
+        if  '/p/' in url:
             id_post = re.search(r"/p/([A-Za-z0-9_-]+)", url).group(1)
             result = IgSlide(id_post, url)
         elif '/reel/' in url:
             id_post = re.search(r"/reel/([A-Za-z0-9_-]+)", url).group(1)
             result = Igreel(id_post, url)
-        else:
-            return jsonify({
-                'creator': 'AmmarBN',
-                'error': 'Invalid URL format.',
-                'status': False
-            }), 400
 
         return jsonify({
-            'creator': 'AmmarBN',
-            'result': result,
-            'status': True
+            "creator": "AmmarBN",
+            "result": result,
+            "status": True
         })
         
 @twitterdlrek.route('')
