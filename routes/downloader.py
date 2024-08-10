@@ -306,7 +306,7 @@ def IgSlide(id_post, url):
     except KeyError:
         array['comment'] = []
 
-    return response_json
+    return data
 
 def Igreel(id_post, url):
     resp = requests.get(url)
