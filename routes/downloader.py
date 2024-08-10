@@ -274,8 +274,8 @@ def IgSlide(id_post, url):
     except ValueError as e:
         return {'error': f'JSON decoding error: {e}'}
 
-    if 'data' not in response_json:
-        return {'error': 'Key "data" not found in the response'}
+    #if 'data' not in response_json:
+        #return {'error': 'Key "data" not found in the response'}
 
     array = {'information': {}, 'postingan': {'post': {}, 'list': []}, 'comment': []}
     try:
