@@ -195,14 +195,14 @@ def IgSlide(id_post, url):
     blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
     lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
     igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', str(resp.text)).group(1)
-    hs = re.search('"haste_session":"(.*?)"',str(resp.text)).group(1)
-    ccg = re.search('"connectionClass":"(.*?)"',str(resp.text)).group(1)
-    rev = re.search('{"rev":(.*?)}',str(resp.text)).group(1)
-    hsi = re.search('"hsi":"(.*?)"',str(resp.text)).group(1)
-    jaz = re.search('jazoest=(\d+)',str(resp.text)).group(1)
-    spint = re.search('"__spin_t":(\d+)',str(resp.text)).group(1)
-    spinr = re.search('"__spin_r":(\d+)',str(resp.text)).group(1)
-    #exit(jaz)
+    hs = re.search('"haste_session":"(.*?)"', str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"', str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}', str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"', str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)', str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\\d+)', str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\\d+)', str(resp.text)).group(1)
+
     url = 'https://www.instagram.com/graphql/query'
 
     headers = {
@@ -211,19 +211,8 @@ def IgSlide(id_post, url):
         'content-type': 'application/x-www-form-urlencoded',
         'cookie': f'csrftoken={csrf}; mid=Zmsd4gAEAAESBID5v6w-PNVhUgRh; ig_did={igdev}; datr=4h1rZosO2qTGqqyXQ8IRZoJo; ig_nrcb=1; ps_n=1; ps_l=1; wd=507x632',
         'origin': 'https://www.instagram.com',
-        'priority': 'u=1, i',
         'referer': url,
-        'sec-ch-prefers-color-scheme': 'dark',
-        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.141", "Not.A/Brand";v="24.0.0.0"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-model': '""',
-        'sec-ch-ua-platform': 'Linux',
-        'sec-ch-ua-platform-version': '4.9.227',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/125.0.0.0 Safari/537.36',
         'x-asbd-id': '129477',
         'x-bloks-version-id': blockv,
         'x-csrftoken': csrf,
@@ -231,59 +220,43 @@ def IgSlide(id_post, url):
         'x-fb-lsd': lsd,
         'x-ig-app-id': appig
     }
+
     data = {
         'av': '0',
-        '__d': 'www',
-        '__user': '0',
-        '__a': '1',
-        '__req': '3',
-        '__hs': hs,
-        'dpr': '1',
-        '__ccg': ccg,
-        '__rev': rev,
-        '__s': '',
-        '__hsi': hsi,
-        '__dyn': '',
-        '__csr': '',
-        '__comet_req': '7',
-        'lsd': lsd,
-        'jazoest': jaz,
-        '__spin_r': spinr,
-        '__spin_b': 'trunk',
-        '__spin_t': spint,
-        'fb_api_caller_class': 'RelayModern',
-        'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
-        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
+        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10}',
         'server_timestamps': 'true',
         'doc_id': '25531498899829322'
     }
 
     response = requests.post(url, headers=headers, data=data)
-    #open('ig.ig.json', 'w').write(response.text)
 
+    # Initialize array to hold results
     array = {'information': {}, 'postingan': {'post': {}, 'list': []}, 'comment': []}
-    try:
-        info = response.json()['data']['xdt_shortcode_media']['owner'] # get informasi account
-    except KeyError:info = {'message': None}
-    array['information'].update(info)
-    for z in (response.json()['data']['xdt_shortcode_media']['edge_media_to_caption']['edges']):
-        try:
-            infop = z['node'] # get informasi postingan
-        except KeyError:infop = {'message': None}
-        array['postingan']['post'].update(infop)
-    for c in (response.json()['data']['xdt_shortcode_media']['edge_sidecar_to_children']['edges']):
-        # get url img dan video
-        try:
-            url_vid = c['node']['video_url']
-        except KeyError:url_vid = None
-        try:
-            img = c['node']['display_url']
-        except KeyError:img = None
-        array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
-    for x in (response.json()['data']['xdt_shortcode_media']['edge_media_to_parent_comment']['edges']):
-        array['comment'].append(x['node'])
-    return array
 
+    try:
+        response_json = response.json()
+        info = response_json['data']['xdt_shortcode_media']['owner']  # Get informasi account
+        array['information'].update(info)
+
+        for z in response_json['data']['xdt_shortcode_media']['edge_media_to_caption']['edges']:
+            infop = z['node']  # Get informasi postingan
+            array['postingan']['post'].update(infop)
+
+        for c in response_json['data']['xdt_shortcode_media']['edge_sidecar_to_children']['edges']:
+            # Get URL img dan video
+            img = c['node'].get('display_url', None)
+            url_vid = c['node'].get('video_url', None)
+            array['postingan']['list'].append({'thumbnail': img, 'url_video': url_vid})
+
+        for x in response_json['data']['xdt_shortcode_media']['edge_media_to_parent_comment']['edges']:
+            array['comment'].append(x['node'])
+
+    except KeyError as e:
+        print(f"KeyError: {e} in IgSlide function")
+    except Exception as e:
+        print(f"Unexpected error in IgSlide: {e}")
+
+    return array
 
 def Igreel(id_post, url):
     resp = requests.get(url)
@@ -292,14 +265,14 @@ def Igreel(id_post, url):
     blockv = re.search('{"versioningID":"(.*?)"}', str(resp.text)).group(1)
     lsd = re.search('"lsd":"(.*?)"', str(resp.text)).group(1)
     igdev = re.search('{"country_code":".*?","device_id":"(.*?)",', str(resp.text)).group(1)
-    hs = re.search('"haste_session":"(.*?)"',str(resp.text)).group(1)
-    ccg = re.search('"connectionClass":"(.*?)"',str(resp.text)).group(1)
-    rev = re.search('{"rev":(.*?)}',str(resp.text)).group(1)
-    hsi = re.search('"hsi":"(.*?)"',str(resp.text)).group(1)
-    jaz = re.search('jazoest=(\d+)',str(resp.text)).group(1)
-    spint = re.search('"__spin_t":(\d+)',str(resp.text)).group(1)
-    spinr = re.search('"__spin_r":(\d+)',str(resp.text)).group(1)
-    #exit(jaz)
+    hs = re.search('"haste_session":"(.*?)"', str(resp.text)).group(1)
+    ccg = re.search('"connectionClass":"(.*?)"', str(resp.text)).group(1)
+    rev = re.search('{"rev":(.*?)}', str(resp.text)).group(1)
+    hsi = re.search('"hsi":"(.*?)"', str(resp.text)).group(1)
+    jaz = re.search('jazoest=(\d+)', str(resp.text)).group(1)
+    spint = re.search('"__spin_t":(\\d+)', str(resp.text)).group(1)
+    spinr = re.search('"__spin_r":(\\d+)', str(resp.text)).group(1)
+
     url = 'https://www.instagram.com/graphql/query'
 
     headers = {
@@ -308,19 +281,8 @@ def Igreel(id_post, url):
         'content-type': 'application/x-www-form-urlencoded',
         'cookie': f'csrftoken={csrf}; mid=Zmsd4gAEAAESBID5v6w-PNVhUgRh; ig_did={igdev}; datr=4h1rZosO2qTGqqyXQ8IRZoJo; ig_nrcb=1; ps_n=1; ps_l=1; wd=507x632',
         'origin': 'https://www.instagram.com',
-        'priority': 'u=1, i',
         'referer': url,
-        'sec-ch-prefers-color-scheme': 'dark',
-        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.141", "Not.A/Brand";v="24.0.0.0"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-model': '""',
-        'sec-ch-ua-platform': 'Linux',
-        'sec-ch-ua-platform-version': '4.9.227',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, seperti Gecko) Chrome/125.0.0.0 Safari/537.36',
         'x-asbd-id': '129477',
         'x-bloks-version-id': blockv,
         'x-csrftoken': csrf,
@@ -328,40 +290,30 @@ def Igreel(id_post, url):
         'x-fb-lsd': lsd,
         'x-ig-app-id': appig
     }
+
     data = {
         'av': '0',
-        '__d': 'www',
-        '__user': '0',
-        '__a': '1',
-        '__req': '3',
-        '__hs': hs,
-        'dpr': '1',
-        '__ccg': ccg,
-        '__rev': rev,
-        '__s': '',
-        '__hsi': hsi,
-        '__dyn': '',
-        '__csr': '',
-        '__comet_req': '7',
-        'lsd': lsd,
-        'jazoest': jaz,
-        '__spin_r': spinr,
-        '__spin_b': 'trunk',
-        '__spin_t': spint,
-        'fb_api_caller_class': 'RelayModern',
-        'fb_api_req_friendly_name': 'PolarisPostActionLoadPostQueryQuery',
-        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10,"fetch_tagged_user_count":null,"fetch_preview_comment_count":2,"has_threaded_comments":true,"hoisted_comment_id":null,"hoisted_reply_id":null}',
+        'variables': '{"shortcode":"'+id_post+'","fetch_comment_count":40,"parent_comment_count":24,"child_comment_count":3,"fetch_like_count":10}',
         'server_timestamps': 'true',
         'doc_id': '25531498899829322'
     }
 
     response = requests.post(url, headers=headers, data=data)
-    #open('ig.ig.json', 'w').write(response.text)
+
+    # Initialize array to hold results
     array = {}
-    igs1 = response.json()
-    igs = igs1['data']['xdt_shortcode_media']
-    array.update({'data': [{'profile':igs['owner'],'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
-    return (array)
+
+    try:
+        response_json = response.json()
+        igs = response_json['data']['xdt_shortcode_media']
+        array.update({'data': [{'profile': igs['owner'], 'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
+
+    except KeyError as e:
+        print(f"KeyError: {e} in Igreel function")
+    except Exception as e:
+        print(f"Unexpected error in Igreel: {e}")
+
+    return array
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
