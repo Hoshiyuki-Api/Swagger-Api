@@ -356,14 +356,14 @@ def Igreel(id_post, url):
     try:
         response_json = response.json()
         igs = response_json['data']['xdt_shortcode_media']
-        array.update({'data': [{'profile': igs['owner'], 'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
+        #array.update({'data': [{'profile': igs['owner'], 'thumbnail': igs['display_url'], 'url_video': igs['video_url']}]})
 
     except KeyError as e:
         print(f"KeyError: {e} in Igreel function")
     except Exception as e:
         print(f"Unexpected error in Igreel: {e}")
 
-    return array
+    return igs
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
