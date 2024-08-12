@@ -185,6 +185,8 @@ class DownloadttResource(Resource):
                     }
                 }
             )
+        except requests.exceptions.RequestException as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)})
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
