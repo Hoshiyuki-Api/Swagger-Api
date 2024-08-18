@@ -846,7 +846,7 @@ class DownloadimgtotextResource(Resource):
                 }
 
                 data = {
-                    'text': 'Extract the text content of the image, analyze and summarize the image, your output must use "automatic" language, use Indonesian or English and the output structure is:\n## Image to Text\n',
+                    'text': 'Extract the contents of the image text, analyze and summarize the image, your output must use "automatic" language, use Indonesian or English in the explanation, prioritize Indonesian and the output structure is:\n## Image to Text\n',
                     'end_flag': True,
                     'streaming': True,
                     'model': 'gpt-4o',
