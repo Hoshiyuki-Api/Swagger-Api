@@ -13,7 +13,6 @@ osmage_bp = Blueprint('osmage', __name__)
 textti_bp = Blueprint('textoimg', __name__)
 animediff_bp = Blueprint('animediff', __name__)
 bingimg_bp = Blueprint('bingimage', __name__)
-imgtotext_bp = Blueprints('imgtotext', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -103,7 +102,6 @@ osmagerek = Namespace('ai', description='AI Api')
 texttirek = Namespace('ai', description='AI Api')
 animediff = Namespace('ai', description='AI Api')
 bingimg = Namespace('ai', description='AI Api')
-imgtotext = Namespace('ai', description='AI Api')
 
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
@@ -749,135 +747,3 @@ class DownloadbingimgResource(Resource):
                 return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e), "status": False})
-
-@imgtotext.route('')
-class DownloadimgtotextResource(Resource):
-    @imgtotext.doc(params={
-        'url': 'Input Url Image',
-        'apikey': 'API Key for authentication'
-    })
-    def get(self):
-        """
-        Image To Text Api.
-
-        Parameters:
-        - url: url (required)
-        - apikey: API Key for authentication (required)
-        """
-        url = request.args.get('url')
-        apikey = request.args.get('apikey')
-
-        if not url:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-
-        try:
-            # Get configuration data
-            def getdat():
-                url = 'https://notegpt.io/image-summary'
-                resp = requests.get(url)
-                url = 'https://notegpt.io/api/v1/ai-tab/get-prod-config'
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0',
-                    'Accept': '*/*',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate, br, zstd',
-                    'Referer': 'https://notegpt.io/image-summary',
-                    'Alt-Used': 'notegpt.io',
-                    'Connection': 'keep-alive',
-                    'Cookie': 'sbox-guid=' + resp.cookies.get_dict().get("sbox-guid", '') + '; _uab_collina=172260251465981339934667; _trackUserId=G-1722602519000; _ga_PFX3BRW5RQ=GS1.1.1722602521.1.1.1722602710.54.0.1773758305; _ga=GA1.2.23332330.1722602522; anonymous_user_id=425b4996c2425885bff283b0c8f4eaa7; is_first_visit=true; _gid=GA1.2.1506952061.1722602526; crisp-client%2Fsession%2F02aa9b53-fc37-4ca7-954d-7a99fb3393de=session_1fc918dc-6039-4698-9d62-5590843e5544; g_state={"i_p":1722609731813,"i_l":1}; _gat_gtag_UA_252982427_14=1; crisp-client%2Fsocket%2F02aa9b53-fc37-4ca7-954d-7a99fb3393de=0',
-                    'Sec-Fetch-Dest': 'empty',
-                    'Sec-Fetch-Mode': 'cors',
-                    'Sec-Fetch-Site': 'same-origin',
-                    'Priority': 'u=4',
-                    'TE': 'trailers'
-                }
-                response = requests.get(url, headers=headers)
-                return response.json().get('data', {})
-
-            # Extract URLs from JSON
-            def extract_urls(obj, itext):
-                if isinstance(obj, dict):
-                    for k, v in obj.items():
-                        if k == "message":
-                            itext.append(v)
-                        else:
-                            extract_urls(v, itext)
-                elif isinstance(obj, list):
-                    for item in obj:
-                        extract_urls(item, itext)
-
-            # Check image
-            def cekft(url_img):
-                json_objects = []
-                itext = []
-                prm = getdat()
-                url = 'https://extensiondock.com/chatgpt/v4/completions'
-                params = {
-                    't': prm.get('t'),
-                    'nonce': prm.get('nonce'),
-                    'sign': prm.get('sign'),
-                    'secret_key': prm.get('secret_key'),
-                    'app_id': 'nc_ai_denote',
-                    'uid': prm.get('uid')
-                }
-
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0',
-                    'Accept': '*/*',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate, br, zstd',
-                    'Referer': 'https://notegpt.io/',
-                    'Content-Type': 'application/json',
-                    'Origin': 'https://notegpt.io',
-                    'Connection': 'keep-alive',
-                    'Sec-Fetch-Dest': 'empty',
-                    'Sec-Fetch-Mode': 'cors',
-                    'Sec-Fetch-Site': 'cross-site',
-                    'Priority': 'u=4',
-                    'TE': 'trailers'
-                }
-
-                data = {
-                    'text': 'Extract the text content of the image, analyze and summarize the image, your output must use "automatic" language, use Indonesian or English and the output structure is:\n## Image to Text\n',
-                    'end_flag': True,
-                    'streaming': True,
-                    'model': 'gpt-4o',
-                    'image_url': url_img
-                }
-
-                response = requests.post(url, headers=headers, params=params, json=data).text
-
-                lines = response.splitlines()
-                for line in lines:
-                    match = re.search(r'\{.*\}', line)
-                    if match:
-                        json_str = match.group(0)
-                        try:
-                            json_obj = json.loads(json_str)
-                            json_objects.append(json_obj)
-                        except json.JSONDecodeError as e:
-                            print(f'Error decoding JSON: {e}')
-                            continue
-
-                for json_obj in json_objects:
-                    extract_urls(json_obj, itext)
-
-                return ''.join(itext)
-
-            # Call the function and return the result
-            result = cekft(url_img)
-            return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'result': result
-            })
-
-        except Exception as e:
-            return jsonify({"creator": "AmmarBN", "error": str(e)})
