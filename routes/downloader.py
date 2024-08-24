@@ -210,46 +210,40 @@ class DownloadigResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         # Siapkan request ke API baru
-        api_url = 'https://app.publer.io/hooks/media'
+        api_url = 'https://tools.revesery.com/ig/server.php'
         headers = {
-            'authority': 'app.publer.io',
-            'accept': '/',
+            'authority': 'tools.revesery.com',
+            'accept': '*/*',
             'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-            'content-type': 'application/json;',
-            'origin': 'https://publer.io',
-            'referer': 'https://publer.io/',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'cookie': '_ga=GA1.1.1992994149.1723390762; _ga_G8KSZGHJ0D=GS1.1.1723396058.2.0.1723396058.0.0.0; __gads=ID=830fc255386ea0d4:T=1723396065:RT=1723396065:S=ALNI_MbZibumPe5BD6LmoK2D5EMetnrzqw; __gpi=UID=00000ebd276ca172:T=1723396065:RT=1723396065:S=ALNI_MZO935TwTeIfoNvEJINF6yagpk8ow; __eoi=ID=786948cbe4acb921:T=1723396065:RT=1723396065:S=AA-AfjZebk0McHOHOg-XmqLUo1pX; FCNEC=%5B%5B%22AKsRol8ZsLieH6oXsM3BD1D7mVRqt6cbxIf6M5HSgMRhTlllICfOtuJbS8v9Bn6CTL0Y-bT2wEsb37hiCdm7Xoof9BPMpT7SjRT7zOs-glJNQX4Tj9u5KOeutZgbmshVJUS2v_17YfofLmf3gob_6hfpSOALck24jA%3D%3D%22%5D%5D',
+            'origin': 'https://tools.revesery.com',
+            'referer': 'https://tools.revesery.com/ig/',
             'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
             'sec-ch-ua-mobile': '?1',
             'sec-ch-ua-platform': '"Android"',
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
+            'sec-fetch-site': 'same-origin',
             'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+            'x-requested-with': 'XMLHttpRequest',
         }
 
-        json_data = {
-            'url': url,
-            'iphone': False,
+        data = {
+            'instagramUrl': url,
         }
 
         # Lakukan request ke API baru
-        response = requests.post(api_url, headers=headers, json=json_data)
+        response = requests.post(api_url, headers=headers, data=data)
         result = response.json()
 
-        # Cek status dan ambil URL
+        # Ambil URL dari respons API
         urls = []
-        job_id = result.get("job_id")
-        if job_id:
-            status_url = f'https://app.publer.io/api/v1/job_status/{job_id}'
-            for _ in range(15):  # Cek status hingga 15 kali
-                try:
-                    status_response = requests.get(status_url, headers=headers)
-                    status_result = status_response.json()
-                    if status_result.get("status") == "complete":
-                        urls = [item['path'] for item in status_result.get("payload", [])]
-                        break
-                except KeyError:
-                    pass
+        if result.get("status") == "picker":
+            for item in result.get("picker", []):
+                urls.append(item.get("url"))
+        elif result.get("status") == "redirect":
+            urls.append(result.get("url"))
 
         return jsonify({
             "creator": "AmmarBN",
