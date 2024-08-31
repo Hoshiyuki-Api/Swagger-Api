@@ -593,11 +593,12 @@ class DownloadytResource(Resource):
             for media in medias:
                 if media.get('extension') == 'mp4':
                     mp4_url = media.get('url')
+                # API does not provide separate mp3 URL, but you can handle it if needed
                 elif media.get('extension') == 'mp3':
                     mp3_url = media.get('url')
 
-            if not mp4_url and not mp3_url:
-                return jsonify({"creator": "AmmarBN", "error": "No valid media URLs found in API response."}), 500
+            if not mp4_url:
+                return jsonify({"creator": "AmmarBN", "error": "No valid MP4 media URL found in API response."}), 500
 
             # Fetch additional details using pytube
             yt = YouTube(url)
@@ -614,7 +615,7 @@ class DownloadytResource(Resource):
                     'duration': duration,
                     'thumbnail': thumbnail,
                     'mp4': mp4_url,
-                    'audio': mp3_url
+                    'audio': mp3_url if mp3_url else "No audio available"
                 }
             })
 
