@@ -550,13 +550,6 @@ class DownloadytResource(Resource):
         'apikey': 'API Key for authentication'
     })
     def get(self):
-        """
-        Downloader YouTube Video & Audio.
-
-        Parameters:
-        - url: Url YouTube (required)
-        - apikey: API Key for authentication (required)
-        """
         url = request.args.get('url')
         apikey = request.args.get('apikey')
         
@@ -571,33 +564,39 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-        # Request to the API
-        api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey=Hoshiyuki'
+        # Request to the API for MP4 and MP3 URLs
+        mp4_mp3_url = "https://line.1010diy.com/web/free-mp3-finder/detail"
+        params = {"url": url}
+        headers = {
+            "authority": "line.1010diy.com",
+            "accept": "/",
+            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            "amoyshare": "202408241672-a0a7f2f8b3f3e715903af140326fafd0",
+            "origin": "https://ytbdownload.com",
+            "sec-ch-ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": '"Android"',
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+        }
+
         try:
-            response = requests.get(api_url)
+            response = requests.get(mp4_mp3_url, headers=headers, params=params)
             response.raise_for_status()  # Raise HTTPError for bad responses
 
             data = response.json()
-            if not data.get('status'):
-                return jsonify({"creator": "AmmarBN", "error": "Failed to fetch data from API."}), 500
+            videos = data.get("data", {}).get("videos", [])
 
-            result = data.get('result')
-            title = result.get('title')
-            thumbnail = result.get('thumbnail')
-            duration = result.get('duration')
-            medias = result.get('medias')
-
-            mp4_url = None
-            mp3_url = None
-
-            for media in medias:
-                if media.get('extension') == 'mp4':
-                    mp4_url = media.get('url')
-                elif media.get('extension') == 'mp3':
-                    mp3_url = media.get('url')
-
-            if not mp4_url and not mp3_url:
+            if not videos:
                 return jsonify({"creator": "AmmarBN", "error": "No valid media URLs found in API response."}), 500
+
+            url_mp4 = [video["url"] for video in videos if video.get("type") == "video"]
+            url_mp3 = [video["orgin_audio_url"] for video in videos if video.get("type") == "audio"]
+
+            if not url_mp4 or not url_mp3:
+                return jsonify({"creator": "AmmarBN", "error": "No valid MP4 or MP3 URLs found in API response."}), 500
 
             # Fetch additional details using pytube
             yt = YouTube(url)
@@ -609,12 +608,12 @@ class DownloadytResource(Resource):
                 'status': True,
                 'result': {
                     'channel': '@' + author,
-                    'title': title,
+                    'title': yt.title,
                     'total_views': views,
-                    'duration': duration,
-                    'thumbnail': thumbnail,
-                    'mp4': mp4_url,
-                    'audio': mp3_url
+                    'duration': yt.length,
+                    'thumbnail': yt.thumbnail_url,
+                    'mp4': url_mp4[0],
+                    'audio': url_mp3[0]
                 }
             })
 
