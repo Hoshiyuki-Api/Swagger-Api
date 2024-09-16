@@ -631,7 +631,7 @@ class DownloadytResource(Resource):
                 'total_views': views,
                 'duration': duration,
                 'thumbnail': thumbnail,
-                'mp4': f'{url_mp4[0]}'
-                'audio': f'{url_mp3[0]}'
+                'mp4': url_mp4,
+                'audio': url_mp3
             }
         })
