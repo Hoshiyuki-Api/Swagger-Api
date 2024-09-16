@@ -559,13 +559,14 @@ class DownloadytResource(Resource):
         """
         url = request.args.get('url')
         apikey = request.args.get('apikey')
-        
+
+        # Parameter validation
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
-        
+
         if not apikey:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."}), 400
-        
+
         # Read existing users data
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
@@ -575,7 +576,7 @@ class DownloadytResource(Resource):
         api_url = "https://line.1010diy.com/web/free-mp3-finder/detail"
         headers = {
             "authority": "line.1010diy.com",
-            "accept": "/",
+            "accept": "*/*",
             "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
             "amoyshare": "202408241672-a0a7f2f8b3f3e715903af140326fafd0",
             "origin": "https://ytbdownload.com",
@@ -589,46 +590,35 @@ class DownloadytResource(Resource):
         }
         params = {"url": url}
 
+        # Make the request to the API
+        response = requests.get(url, headers=headers, params=params)
+        # Extract URLs for MP4 and MP3
+        url_mp4 = [i["url"] for i in response.json()["data"]["videos"]]
+        url_mp3 = [i["orgin_audio_url"] for i in response.json()["data"]["videos"]]
+
+        # Fetch additional details using pytube
+        yt = None
         try:
-            response = requests.get(api_url, headers=headers, params=params)
-            response.raise_for_status()  # Raise HTTPError for bad responses
-
-            data = response.json()
-            videos = data.get('data', {}).get('videos', [])
-            if not videos:
-                return jsonify({"creator": "AmmarBN", "error": "No video data found from API."}), 500
-
-            # Extract URLs for MP4 and MP3
-            mp4_url = [i.get("url") for i in videos if i.get("url")]
-            mp3_url = [i.get("orgin_audio_url") for i in videos if i.get("orgin_audio_url")]
-
-            # Fetch additional details using pytube
             yt = YouTube(url)
-            author = yt.author
-            views = yt.views
-            title = yt.title
-            thumbnail = yt.thumbnail_url
-            duration = yt.length
-
-            return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'result': {
-                    'channel': '@' + author,
-                    'title': title,
-                    'total_views': views,
-                    'duration': duration,
-                    'thumbnail': thumbnail,
-                    'mp4': mp4_url,
-                    'audio': mp3_url if mp3_url else "No audio available"
-                }
-            })
-
-        except requests.exceptions.HTTPError as e:
-            return jsonify({"creator": "AmmarBN", "error": f"HTTP error occurred: {str(e)}"}), 500
-
-        except requests.exceptions.RequestException as e:
-            return jsonify({"creator": "AmmarBN", "error": f"Request failed: {str(e)}"}), 500
-
         except Exception as e:
-            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
+            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch YouTube video details: {str(e)}"}), 500
+        
+        author = yt.author
+        views = yt.views
+        title = yt.title
+        thumbnail = yt.thumbnail_url
+        duration = yt.length
+
+        return jsonify({
+            'creator': 'AmmarBN',
+            'status': True,
+            'result': {
+                'channel': '@' + author,
+                'title': title,
+                'total_views': views,
+                'duration': duration,
+                'thumbnail': thumbnail,
+                'mp4': url_mp4,
+                'audio': url_mp3
+            }
+        })
