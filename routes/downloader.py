@@ -598,11 +598,9 @@ class DownloadytResource(Resource):
             if not videos:
                 return jsonify({"creator": "AmmarBN", "error": "No video data found from API."}), 500
 
-            mp4_url = next((item["url"] for item in videos if item.get("extension") == "mp4"), None)
-            mp3_url = next((item["orgin_audio_url"] for item in videos if item.get("extension") == "mp3"), None)
-
-            if not mp4_url:
-                return jsonify({"creator": "AmmarBN", "error": "No valid MP4 media URL found in API response."}), 500
+            # Extract URLs for MP4 and MP3
+            mp4_url = [i["url"] for i in response.json()["data"]["videos"]]
+            mp3_url = [i["orgin_audio_url"] for i in response.json()["data"]["videos"]]
 
             # Fetch additional details using pytube
             yt = YouTube(url)
