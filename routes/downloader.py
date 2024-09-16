@@ -621,6 +621,10 @@ class DownloadytResource(Resource):
         title = yt.title
         thumbnail = yt.thumbnail_url
         duration = yt.length
+        
+        # Take only the first URL for mp4 and audio
+        mp4_url = url_mp4[0] if url_mp4 else None
+        audio_url = url_mp3[0] if url_mp3 else None
 
         return jsonify({
             'creator': 'AmmarBN',
@@ -631,7 +635,7 @@ class DownloadytResource(Resource):
                 'total_views': views,
                 'duration': duration,
                 'thumbnail': thumbnail,
-                'mp4': url_mp4,
-                'audio': url_mp3
+                'mp4': mp4_url,
+                'audio': audio_url
             }
         })
