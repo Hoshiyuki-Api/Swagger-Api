@@ -571,31 +571,35 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
 
-        # Request to the API
-        api_url = f'https://api.betabotz.eu.org/api/download/allin?url={url}&apikey=Hoshiyuki'
+        # Request to the new API
+        api_url = "https://line.1010diy.com/web/free-mp3-finder/detail"
+        headers = {
+            "authority": "line.1010diy.com",
+            "accept": "/",
+            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            "amoyshare": "202408241672-a0a7f2f8b3f3e715903af140326fafd0",
+            "origin": "https://ytbdownload.com",
+            "sec-ch-ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": '"Android"',
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+        }
+        params = {"url": url}
+
         try:
-            response = requests.get(api_url)
+            response = requests.get(api_url, headers=headers, params=params)
             response.raise_for_status()  # Raise HTTPError for bad responses
 
             data = response.json()
-            if not data.get('status'):
-                return jsonify({"creator": "AmmarBN", "error": "Failed to fetch data from API."}), 500
+            videos = data.get('data', {}).get('videos', [])
+            if not videos:
+                return jsonify({"creator": "AmmarBN", "error": "No video data found from API."}), 500
 
-            result = data.get('result')
-            title = result.get('title')
-            thumbnail = result.get('thumbnail')
-            duration = result.get('duration')
-            medias = result.get('medias')
-
-            mp4_url = None
-            mp3_url = None
-
-            for media in medias:
-                if media.get('extension') == 'mp4':
-                    mp4_url = media.get('url')
-                # API does not provide separate mp3 URL, but you can handle it if needed
-                elif media.get('extension') == 'mp3':
-                    mp3_url = media.get('url')
+            mp4_url = next((item["url"] for item in videos if item.get("extension") == "mp4"), None)
+            mp3_url = next((item["orgin_audio_url"] for item in videos if item.get("extension") == "mp3"), None)
 
             if not mp4_url:
                 return jsonify({"creator": "AmmarBN", "error": "No valid MP4 media URL found in API response."}), 500
@@ -604,6 +608,9 @@ class DownloadytResource(Resource):
             yt = YouTube(url)
             author = yt.author
             views = yt.views
+            title = yt.title
+            thumbnail = yt.thumbnail_url
+            duration = yt.length
 
             return jsonify({
                 'creator': 'AmmarBN',
