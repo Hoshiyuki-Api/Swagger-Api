@@ -599,8 +599,8 @@ class DownloadytResource(Resource):
                 return jsonify({"creator": "AmmarBN", "error": "No video data found from API."}), 500
 
             # Extract URLs for MP4 and MP3
-            mp4_url = [i["url"] for i in response.json()["data"]["videos"]]
-            mp3_url = [i["orgin_audio_url"] for i in response.json()["data"]["videos"]]
+            mp4_url = [i.get("url") for i in videos if i.get("url")]
+            mp3_url = [i.get("orgin_audio_url") for i in videos if i.get("orgin_audio_url")]
 
             # Fetch additional details using pytube
             yt = YouTube(url)
@@ -626,9 +626,9 @@ class DownloadytResource(Resource):
 
         except requests.exceptions.HTTPError as e:
             return jsonify({"creator": "AmmarBN", "error": f"HTTP error occurred: {str(e)}"}), 500
-        
+
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": f"Request failed: {str(e)}"}), 500
-        
+
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch video details: {str(e)}"}), 500
