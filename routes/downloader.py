@@ -591,11 +591,24 @@ class DownloadytResource(Resource):
         params = {"url": url}
 
         # Make the request to the API
-        response = requests.get(url, headers=headers, params=params)
-        # Extract URLs for MP4 and MP3
-        url_mp4 = [i["url"] for i in response.json()["data"]["videos"]]
-        url_mp3 = [i["orgin_audio_url"] for i in response.json()["data"]["videos"]]
+        response = requests.get(api_url, headers=headers, params=params)
+        
+        # Check the response status code
+        if response.status_code != 200:
+            return jsonify({"creator": "AmmarBN", "error": f"API request failed with status code {response.status_code}"}), 500
+        
+        # Log the raw response content for debugging
+        response_content = response.text
+        print(f"API Response: {response_content}")
 
+        try:
+            # Extract URLs for MP4 and MP3
+            json_data = response.json()
+            url_mp4 = [i["url"] for i in json_data["data"]["videos"]]
+            url_mp3 = [i["orgin_audio_url"] for i in json_data["data"]["videos"]]
+        except ValueError as e:
+            return jsonify({"creator": "AmmarBN", "error": f"Failed to parse JSON response: {str(e)}"}), 500
+        
         # Fetch additional details using pytube
         yt = None
         try:
