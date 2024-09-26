@@ -283,11 +283,11 @@ class Resourcecuaca(Resource):
         try:
             response_c = requests.get(
                 f"https://api.shecodes.io/weather/v1/current?query={requests.utils.quote(i_country)}&key=96f59ob69a32facbb34b2tdb5d2e7405"
-            )
+            ).text
             return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
-                'result': response_c.text
+                'result': response_c
             })
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
