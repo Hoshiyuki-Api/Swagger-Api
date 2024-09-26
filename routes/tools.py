@@ -9,6 +9,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
 cuaca_bp = Blueprint('cuaca', __name__)
+
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
