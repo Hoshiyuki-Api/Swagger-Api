@@ -8,7 +8,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
-cuaca_bp = Blueprint('cuaca', __name__)
+
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -90,7 +90,6 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 stalkigrek = Namespace('tools', description='Tools Api')
 removebgrek = Namespace('tools', description='Tools Api')
-cuacagrek = NameSpace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -249,64 +248,3 @@ class Resourcermbg(Resource):
             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
-
-
-@cuacagrek.route('')
-class Resourcecuaca(Resource):
-    @cuacagrek.doc(params={
-        'username': 'Input Country Name',
-        'apikey': 'API key for authenticated'
-    })
-    def get(self):
-        """
-        Tools weather information.
-
-        Parameters:
-        - Country: Country (required)
-        - apikey: API Key for authentication (required)
-        """
-        
-        i_country = request.args.get('country')
-        apikey = request.args.get('apikey')
-
-        if not i_country:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'country' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        try:
-            url = 'https://tools.revesery.com/proxy/check_bulk_proxies.php'
-            headers = {
-                'authority': 'tools.revesery.com',
-                'accept': '*/*',
-                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-                'content-type': 'application/json',
-                'cookie': '_ga=GA1.1.1992994149.1723390762; visited=1; __gads=ID=830fc255386ea0d4:T=1723396065:RT=1723433840:S=ALNI_MbZibumPe5BD6LmoK2D5EMetnrzqw; __gpi=UID=00000ebd276ca172:T=1723396065:RT=1723433840:S=ALNI_MZO935TwTeIfoNvEJINF6yagpk8ow; __eoi=ID=786948cbe4acb921:T=1723396065:RT=1723433840:S=AA-AfjZebk0McHOHOg-XmqLUo1pX; FCNEC=%5B%5B%22AKsRol8G43Jg-O18VaPYa0ShE9d7uakWgVM-kabcnbl06eAowT-8rAyShwM5KGDhZ4_5U7iu_lg5gO4W_XO9UZuHyj16IEsd6qrADMps0WCWZFD6SLdzgRs7ixO6zqheki3upyb5ssgkPDVJNc8WEEEV55t7gaig_A%3D%3D%22%5D%5D; _ga_G8KSZGHJ0D=GS1.1.1723433838.4.1.1723433848.0.0.0',
-                'origin': 'https://tools.revesery.com',
-                'referer': 'https://tools.revesery.com/proxy/',
-                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-                'sec-ch-ua-mobile': '?1',
-                'sec-ch-ua-platform': '"Android"',
-                'sec-fetch-dest': 'empty',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-origin',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
-            }
-
-            data = {
-                'proxies': i_country
-            }
-
-            response_c = requests.post(url, headers=headers, json=data).text
-            return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'result': response_c.text
-            })
-        except requests.exceptions.RequestException as e:
-            return jsonify({"creator": "AmmarBN", "error": str(e)})
