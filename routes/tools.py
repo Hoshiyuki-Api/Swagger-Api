@@ -8,7 +8,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
-
+cuaca_bp = Blueprint('cuaca', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -90,6 +90,7 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 stalkigrek = Namespace('tools', description='Tools Api')
 removebgrek = Namespace('tools', description='Tools Api')
+cuacagrek = NameSpace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -248,3 +249,37 @@ class Resourcermbg(Resource):
             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+
+@cuacagrek.route('')
+class Resourcecux(Resource):
+    @cuacagrek.doc(params={
+        'username': 'Input Country Name',
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Tools weather information.
+
+        Parameters:
+        - Country: Country (required)
+        - apikey: API Key for authentication (required)
+        """
+        
+        i_country = request.args.get('country')
+        apikey = request.args.get('apikey')
+
+        if not i_country:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'country' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+        try:
+            return jsonify({"creator": "AmmarBN"})
+        except requests.exceptions.RequestException as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)})
