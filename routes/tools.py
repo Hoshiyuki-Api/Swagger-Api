@@ -8,6 +8,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
+cuaca_bp = Blueprint('cuaca', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -90,6 +91,7 @@ def check_and_update_request_limit(apikey):
 # Namespace untuk Flask-RESTX
 stalkigrek = Namespace('tools', description='Tools Api')
 removebgrek = Namespace('tools', description='Tools Api')
+cuacarek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -248,3 +250,40 @@ class Resourcermbg(Resource):
             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+@cuacarek.route('')
+class Resourcecauaca(Resource):
+    @cuacarek.doc(params={
+        'query': 'Input query'
+    })
+    def get(self):
+        """
+        Tools Remove Background Image.
+
+        Parameters:
+        - query: query (required)
+        """
+        
+        query = request.args.get('query')
+        url = f"https://api.shecodes.io/weather/v1/current?query={query}&key=96f59ob69a32facbb34b2tdb5d2e7405"
+        response = requests.get(url)
+        data = response.json()
+        city = data['city']
+        country = data['country']
+        coordinates = data['coordinates']
+        condition = data['condition']['description']
+        temperature = data['temperature']['current']
+        
+        return jsonify (
+            {
+                'creator': 'AmmarBN',
+                'status': True,
+                'result': {
+                    'city': city,
+                    'country': country,
+                    'coordinates': coordinates,
+                    'condition': condition,
+                    'temperature': temperature
+                }
+            }
+        )
