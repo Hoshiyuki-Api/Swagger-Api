@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, jsonify, request
-import json, instaloader
+import json, instaloader, uuid
 from datetime import datetime
 import os
 from flask_restx import Namespace, Resource, fields
@@ -9,6 +9,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
 cuaca_bp = Blueprint('cuaca', __name__)
+ffstalk_bp = Blueprint('ffstalk', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -92,6 +93,8 @@ def check_and_update_request_limit(apikey):
 stalkigrek = Namespace('tools', description='Tools Api')
 removebgrek = Namespace('tools', description='Tools Api')
 cuacarek = Namespace('tools', description='Tools Api')
+ffstalkgrek = Namespace('tools', description='Tools Api')
+
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -287,3 +290,90 @@ class Resourcecauaca(Resource):
                 }
             }
         )
+
+# cdoe check akunff
+
+def ff_stalk(id):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+        "X-Device": str(uuid.uuid4()),
+    }
+
+    try:
+        # Get token
+        token_response = requests.post(
+            "https://api.duniagames.co.id/api/item-catalog/v1/get-token",
+            json={"msisdn": "0812665588"},
+            headers=headers
+        )
+        token_data = token_response.json()
+
+        if token_data.get('status', {}).get('code'):
+            raise Exception("Fail initializing token")
+
+        token = token_data.get('data', {}).get('token')
+
+        # Perform the inquiry
+        inquiry_response = requests.post(
+            "https://api.duniagames.co.id/api/transaction/v1/top-up/inquiry/store",
+            json={
+                "productId": 3,
+                "itemId": 353,
+                "product_ref": "REG",
+                "product_ref_denom": "REG",
+                "catalogId": 376,
+                "paymentId": 1252,
+                "gameId": id,
+                "token": token,
+                "campaignUrl": "",
+            },
+            headers=headers
+        )
+        inquiry_data = inquiry_response.json()
+
+        game_detail = inquiry_data.get('data', {}).get('gameDetail', {})
+        user_name = game_detail.get('userName')
+
+        return user_name
+    except Exception as e:
+        raise e
+
+@ffstalkgrek.route('')
+class Resourceffstalk(Resource):
+    @ffstalkgrek.doc(params={
+        'username': 'Input Id FreeFire',
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Tools Stalk FreeFire.
+
+        Parameters:
+        - id: Id FreeFire (required)
+        - apikey: API Key for authentication (required)
+        """
+        
+        Id_ff = request.args.get('id')
+        apikey = request.args.get('apikey')
+
+        if not username:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+        
+        try:
+            result = ff_stalk(Id_ff)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'id': Id_ff,
+                'nikname': result
+            })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
