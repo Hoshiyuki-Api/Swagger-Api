@@ -337,7 +337,7 @@ def ff_stalk(id):
 @ffstalkgrek.route('')
 class Resourceffstalk(Resource):
     @ffstalkgrek.doc(params={
-        'username': 'Input Id FreeFire',
+        'id': 'Input Id FreeFire',
         'apikey': 'API key for authenticated'
     })
     def get(self):
