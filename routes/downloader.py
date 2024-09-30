@@ -571,71 +571,63 @@ class DownloadytResource(Resource):
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-
-        # Request to the new API
-        api_url = "https://line.1010diy.com/web/free-mp3-finder/detail"
-        headers = {
-            "authority": "line.1010diy.com",
-            "accept": "*/*",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-            "amoyshare": "202408241672-a0a7f2f8b3f3e715903af140326fafd0",
-            "origin": "https://ytbdownload.com",
-            "sec-ch-ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
-            "sec-ch-ua-mobile": "?1",
-            "sec-ch-ua-platform": '"Android"',
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "cross-site",
-            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-        }
-        params = {"url": url}
-
-        # Make the request to the API
-        response = requests.get(api_url, headers=headers, params=params)
-        
-        # Check the response status code
-        if response.status_code != 200:
-            return jsonify({"creator": "AmmarBN", "error": f"API request failed with status code {response.status_code}"}), 500
-        
-        # Log the raw response content for debugging
-        response_content = response.text
-        print(f"API Response: {response_content}")
-
         try:
-            # Extract URLs for MP4 and MP3
-            json_data = response.json()
-            url_mp4 = [i["url"] for i in json_data["data"]["videos"]]
-            url_mp3 = [i["orgin_audio_url"] for i in json_data["data"]["videos"]]
-        except ValueError as e:
-            return jsonify({"creator": "AmmarBN", "error": f"Failed to parse JSON response: {str(e)}"}), 500
-        
-        # Fetch additional details using pytube
-        yt = None
-        try:
-            yt = YouTube(url)
-        except Exception as e:
-            return jsonify({"creator": "AmmarBN", "error": f"Failed to fetch YouTube video details: {str(e)}"}), 500
-        
-        author = yt.author
-        views = yt.views
-        title = yt.title
-        thumbnail = yt.thumbnail_url
-        duration = yt.length
-        
-        # Take only the first URL for mp4 and audio
-        mp4_url = url_mp4[0] if url_mp4 else None
-        audio_url = url_mp3[0] if url_mp3 else None
-
-        return jsonify({
-            'creator': 'AmmarBN',
-            'status': True,
-            'result': {
-                'channel': '@' + author,
-                'title': title,
-                'total_views': views,
-                'duration': duration,
-                'thumbnail': thumbnail,
-                'mp4': mp4_url,
-                'audio': audio_url
+            urlk = "https://ytmp3-converter.com/api/get-token"
+            headers = {
+                "Host": "ytmp3-converter.com",
+                "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+                "Accept": "*/*",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Dest": "empty",
+                "Referer": "https://ytmp3-converter.com/id300",
+                "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
             }
-        })
+            token = requests.get(urlk, headers=headers)
+            headers = {
+                "Host": "ytmp3-converter.com",
+                "content-length": "36",
+                "accept": "application/json, text/plain, */*",
+                "sc-token": token.json()["csrfToken"],
+                "content-type": "application/json",
+                "origin": "https://ytmp3-converter.com",
+                "sec-fetch-site": "same-origin",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://ytmp3-converter.com/en301",
+
+                "cookie": f"h3={str(token.cookies.get_dict()['h3'])}"
+            }
+            payload = {
+                "q": url
+            }
+            resp = requests.post('https://ytmp3-converter.com/api/analyze', json=payload, headers=headers)
+            try:
+                resolt = resp.json()['videos']['mp4s'][0]['resolution']
+                cdn    = resp.json()['videos']['cdn']
+            except Exception as e:
+                return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+            payload1 = {
+                "id": url.replace('https://youtu.be/', ''),
+                "t": resolt,
+                "cdn": cdn
+            }
+            respo = requests.post('https://ytmp3-converter.com/api/convert', json=payload1, headers=headers)
+
+            payload2 = {
+                "id": respo.json()['id'],
+                "t": resolt,
+                "cdn": respo.json()['cdn']
+            }
+            for i in range(100):
+                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload, headers=headers)
+                if respon.json()['percent'] == 100:
+                    return jsonify({
+                        'title': title,
+                        'duration': durat,
+                        'thumnail': thumn,
+                        'description': desci,
+                        'url_music': f'{str(respon.json()["cdn"])}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(respon.json()["id"])}&t={str(resolt)}'
+                    })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
