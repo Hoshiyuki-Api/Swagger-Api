@@ -352,7 +352,7 @@ class Resourceffstalk(Resource):
         Id_ff = request.args.get('id')
         apikey = request.args.get('apikey')
 
-        if not username:
+        if not Id_ff:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
         
         if apikey is None:
