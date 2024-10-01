@@ -438,7 +438,7 @@ class Resourceremovebg2(Resource):
 
             # Prepare the files and data
             files = {
-                'image': ('image_file', str(response.content), content_type),
+                'image': ('image_file', response.content, content_type),
             }
             data = {
                 'format': 'png',
