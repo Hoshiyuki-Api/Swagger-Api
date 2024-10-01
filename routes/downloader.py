@@ -633,14 +633,12 @@ class DownloadytResource(Resource):
                 if respon.json()['percent'] == 100:
                     hos = respon.json()["cdn"]
                     next = respon.json()["id"]
-                    return jsonify({
-                        'title': str(title),
-                        'duration': str(durat),
-                        'thumnail': str(thumn),
-                        'description': str(desci),
-                        'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
-                    })
-                else:
-                    return jsonify({'status': False, 'msg': f'Error'})
+            return jsonify({
+                'title': str(title),
+                'duration': str(durat),
+                'thumnail': str(thumn),
+                'description': str(desci),
+                'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
+            })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
