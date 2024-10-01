@@ -584,11 +584,13 @@ class DownloadytResource(Resource):
                 "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
             }
             token = requests.get(urlk, headers=headers)
+            token_csf = token.json()["csrfToken"]
+            ck = token.cookies.get_dict()['h3']
             headers = {
                 "Host": "ytmp3-converter.com",
                 "content-length": "36",
                 "accept": "application/json, text/plain, */*",
-                "sc-token": token.json()["csrfToken"],
+                "sc-token": str(token_csf),
                 "content-type": "application/json",
                 "origin": "https://ytmp3-converter.com",
                 "sec-fetch-site": "same-origin",
@@ -596,7 +598,7 @@ class DownloadytResource(Resource):
                 "sec-fetch-dest": "empty",
                 "referer": "https://ytmp3-converter.com/en301",
 
-                "cookie": f"h3={str(token.cookies.get_dict()['h3'])}"
+                "cookie": f"h3={str(ck)}"
             }
             payload = {
                 "q": url
@@ -607,27 +609,38 @@ class DownloadytResource(Resource):
                 cdn    = resp.json()['videos']['cdn']
             except Exception as e:
                 return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+            try:
+                title = resp.json()['videos']['text']
+                durat = resp.json()['videos']['durationText']
+                thumn = resp.json()['videos']['imgUrl']
+                desci = resp.json()['videos']['descriptionHtml']
+            except:return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             payload1 = {
-                "id": url.replace('https://youtu.be/', ''),
-                "t": resolt,
-                "cdn": cdn
+                "id": str(url.replace('https://youtu.be/', '')),
+                "t": str(resolt),
+                "cdn": str(cdn)
             }
             respo = requests.post('https://ytmp3-converter.com/api/convert', json=payload1, headers=headers)
-
+            ids = respo.json()['id']
+            cdn1 = respo.json()['cdn']
             payload2 = {
-                "id": respo.json()['id'],
-                "t": resolt,
-                "cdn": respo.json()['cdn']
+                "id": str(ids),
+                "t": str(resolt),
+                "cdn": str(cdn1)
             }
-            for i in range(100):
-                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload2, headers=headers)
+            for i in range(1000):
+                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload, headers=headers)
                 if respon.json()['percent'] == 100:
+                    hos = respon.json()["cdn"]
+                    next = respon.json()["id"]
                     return jsonify({
-                        'title': title,
-                        'duration': durat,
-                        'thumnail': thumn,
-                        'description': desci,
-                        'url_music': f'{str(respon.json()["cdn"])}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(respon.json()["id"])}&t={str(resolt)}'
+                        'title': str(title),
+                        'duration': str(durat),
+                        'thumnail': str(thumn),
+                        'description': str(desci),
+                        'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
                     })
+                else:
+                    return jsonify({'status': False, 'msg': f'Error'})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
