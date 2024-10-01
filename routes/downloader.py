@@ -630,15 +630,17 @@ class DownloadytResource(Resource):
             }
             for i in range(1000):
                 respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload2, headers=headers)
-                if respon.json()['percent'] == 100:
-                    hos = respon.json()["cdn"]
-                    next = respon.json()["id"]
-            return jsonify({
-                'title': str(title),
-                'duration': str(durat),
-                'thumnail': str(thumn),
-                'description': str(desci),
-                'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
-            })
+                respoons = respon.json()
+                return jsonify({"c": respoons})
+#                if respon.json()['percent'] == 100:
+#                    hos = respon.json()["cdn"]
+#                    next = respon.json()["id"]
+#            return jsonify({
+#                'title': str(title),
+#                'duration': str(durat),
+#                'thumnail': str(thumn),
+#                'description': str(desci),
+#                'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
+#            })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
