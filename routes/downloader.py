@@ -629,7 +629,7 @@ class DownloadytResource(Resource):
                 "cdn": str(cdn1)
             }
             for i in range(1000):
-                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload, headers=headers)
+                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload2, headers=headers)
                 if respon.json()['percent'] == 100:
                     hos = respon.json()["cdn"]
                     next = respon.json()["id"]
