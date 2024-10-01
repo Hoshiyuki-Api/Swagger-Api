@@ -630,9 +630,9 @@ class DownloadytResource(Resource):
             }
             for i in range(1000):
                 respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload2, headers=headers)
-                respoons = respon.json()
-                return jsonify({"c": respoons})
-#                if respon.json()['percent'] == 100:
+                respk = respon.json()
+                if respk['percent'] == 100:
+                     return jsonify({"c": respk})
 #                    hos = respon.json()["cdn"]
 #                    next = respon.json()["id"]
 #            return jsonify({
