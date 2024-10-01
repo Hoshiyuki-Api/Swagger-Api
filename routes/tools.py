@@ -438,7 +438,7 @@ class Resourceremovebg2(Resource):
 
             # Prepare the files and data
             files = {
-                'image': ('image_file', response.content, content_type),
+                'image': ('image_file', str(response.content), content_type),
             }
             data = {
                 'format': 'png',
@@ -449,7 +449,7 @@ class Resourceremovebg2(Resource):
             resp = requests.post('https://api2.pixelcut.app/image/matte/v1', headers=headers, files=files, data=data)
 
             # Save the response as an image file
-            if response.status_code == 200:
+            if resp.status_code == 200:
                 img_base64 = base64.b64encode(resp.content).decode('utf-8')
                 return jsonify({
                     'creator': 'AmmarBN',
