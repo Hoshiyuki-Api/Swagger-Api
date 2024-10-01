@@ -13,7 +13,7 @@ from routes.dashboard import dashboard_bp
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlrek as ytdl_ns
 # Routes Tools
-from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns
+from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
@@ -53,6 +53,7 @@ app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 app.register_blueprint(remove_bp, url_prefix='/api/removebg')
 app.register_blueprint(cuaca_bp, url_prefix='/api/cuaca')
 app.register_blueprint(ffstalk_bp, url_prefix='/api/ffstalk')
+app.register_blueprint(removebg2_bp, url_prefix='/api/removebg2')
 # Register Ai
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
 app.register_blueprint(deepai_bp, url_prefix='/api/deepai')
@@ -85,6 +86,7 @@ api.add_namespace(stalkig_ns, path='/api/stalkig')
 api.add_namespace(removebg_ns, path='/api/removebg')
 api.add_namespace(cuaca_ns, path='/api/cuaca')
 api.add_namespace(ffstalk_ns, path='/api/ffstalk')
+api.add_namespace(remove2_ns, path='/api/removebg2')
 # NameSpace AI
 api.add_namespace(blackbox_ns, path='/api/blackbox')
 api.add_namespace(deepai_ns, path='/api/deepai')
