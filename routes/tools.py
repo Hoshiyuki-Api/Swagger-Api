@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, jsonify, request
-import json, instaloader, uuid
+import json, instaloader, uuid, base64
 from datetime import datetime
 import os
 from flask_restx import Namespace, Resource, fields
@@ -10,7 +10,7 @@ igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
 cuaca_bp = Blueprint('cuaca', __name__)
 ffstalk_bp = Blueprint('ffstalk', __name__)
-
+removebg2_bp = Blueprint('removebg2', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -94,7 +94,7 @@ stalkigrek = Namespace('tools', description='Tools Api')
 removebgrek = Namespace('tools', description='Tools Api')
 cuacarek = Namespace('tools', description='Tools Api')
 ffstalkgrek = Namespace('tools', description='Tools Api')
-
+removebg2grek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -371,5 +371,91 @@ class Resourceffstalk(Resource):
                 'id': Id_ff,
                 'nikname': result
             })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+
+@removebg2grek.route('')
+class Resourceremovebg2(Resource):
+    @removebg2grek.doc(params={
+        'url': 'Input Url Image',
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Tools Remove Background Image V2.
+
+        Parameters:
+        - url: Url Image (required)
+        - apikey: API Key for authentication (required)
+        """
+        
+        image_url = request.args.get('url')
+        apikey = request.args.get('apikey')
+
+        if not image_url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        try:
+            filename = image_url
+            response = requests.get(filename)
+
+            # Infer the content type from the file extension
+            if filename.endswith('jpg') or filename.endswith('jpeg'):
+                content_type = 'image/jpeg'
+            elif filename.endswith('png'):
+                content_type = 'image/png'
+            elif filename.endswith('webp'):
+                content_type = 'image/webp'
+            else:
+                content_type = 'application/octet-stream'
+
+            # remove bg
+            headers = {
+                'authority': 'api2.pixelcut.app',
+                'accept': 'application/json, text/plain, */*',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'authorization': '',  # Add your authorization token here
+                'origin': 'https://www.pixelcut.ai',
+                'referer': 'https://www.pixelcut.ai/',
+                'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+                'sec-ch-ua-mobile': '?1',
+                'sec-ch-ua-platform': '"Android"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'cross-site',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'x-client-version': 'web',
+            }
+
+            # Prepare the files and data
+            files = {
+                'image': ('image_file', response.content, content_type),
+            }
+            data = {
+                'format': 'png',
+                'model': 'v1',
+            }
+
+            # Send the POST request
+            resp = requests.post('https://api2.pixelcut.app/image/matte/v1', headers=headers, files=files, data=data)
+
+            # Save the response as an image file
+            if response.status_code == 200:
+                img_base64 = base64.b64encode(str(resp.content)).decode('utf-8')
+                return jsonify({
+                    'creator': 'AmmarBN',
+                    'status': True,
+                    'url_img': img_base64,
+                })
+            else:return jsonify({'status': False, 'msg': f'Error: url image error'})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
