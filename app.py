@@ -19,7 +19,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, aivoicekre as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
+from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, aivoicerek as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
 from routes.ai import textti_bp, animediff_bp, bingimg_bp, imgtotext_bp, texttirek as textti_ns, animediff as animediff_ns, bingimg as bingimg_ns, imgtotext as imgtotext_ns
 
 app = Flask(__name__)
