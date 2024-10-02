@@ -19,7 +19,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import blackbox_bp, deepai_bp, simi_bp, osmage_bp, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
+from routes.ai import hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
 from routes.ai import textti_bp, animediff_bp, bingimg_bp, imgtotext_bp, texttirek as textti_ns, animediff as animediff_ns, bingimg as bingimg_ns, imgtotext as imgtotext_ns
 
 app = Flask(__name__)
@@ -55,6 +55,7 @@ app.register_blueprint(cuaca_bp, url_prefix='/api/cuaca')
 app.register_blueprint(ffstalk_bp, url_prefix='/api/ffstalk')
 app.register_blueprint(removebg2_bp, url_prefix='/api/removebg2')
 # Register Ai
+app.register_blueprint(hercai_bp, url_prefix='/api/hercai')
 app.register_blueprint(blackbox_bp, url_prefix='/api/blackbox')
 app.register_blueprint(deepai_bp, url_prefix='/api/deepai')
 app.register_blueprint(simi_bp, url_prefix='/api/simi')
@@ -88,6 +89,7 @@ api.add_namespace(cuaca_ns, path='/api/cuaca')
 api.add_namespace(ffstalk_ns, path='/api/ffstalk')
 api.add_namespace(remove2_ns, path='/api/removebg2')
 # NameSpace AI
+api.add_namespace(hercai_ns, path='/api/hercai')
 api.add_namespace(blackbox_ns, path='/api/blackbox')
 api.add_namespace(deepai_ns, path='/api/deepai')
 api.add_namespace(simi_ns, path='/api/simi')
