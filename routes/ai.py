@@ -110,7 +110,7 @@ imgtotext = Namespace('ai', description='AI Api')
 @hercairek.route('')
 class DownloadhercaiResource(Resource):
     @hercairek.doc(params={
-        'text': 'Input Text'
+        'text': 'Input Text',
         'apikey': 'API Key for authentication'
     })
     def get(self):
