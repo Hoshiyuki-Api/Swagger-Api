@@ -6,6 +6,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, redirect
 from flask_restx import Namespace, Resource
 
+hercai_bp = Blueprint('_openai-hercai', __name__)
 blackbox_bp = Blueprint('_openai-blackbox', __name__)
 deepai_bp = Blueprint('_openai-deepai', __name__)
 simi_bp = Blueprint('_openai_simi', __name__)
@@ -96,6 +97,7 @@ def check_and_update_request_limit(apikey):
 
 
 # Namespace untuk Flask-RESTX
+hercairek = Namespace('ai', description='AI Api')
 blackboxrek = Namespace('ai', description='AI Api')
 deepairek = Namespace('ai', description='AI Api')
 simirek = Namespace('ai', description='AI Api')
@@ -105,6 +107,49 @@ animediff = Namespace('ai', description='AI Api')
 bingimg = Namespace('ai', description='AI Api')
 imgtotext = Namespace('ai', description='AI Api')
 
+@hercairek.route('')
+class DownloadhercaiResource(Resource):
+    @hercairek.doc(params={
+        'text': 'Input Text'
+        'apikey': 'API Key for authentication'
+    })
+    def get(self):
+        """
+        Hercai Api.
+
+        Parameters:
+        - text: Text (required)
+        - apikey: API Key for authentication (required)
+        """
+        text = request.args.get('text')
+        apikey = request.args.get('apikey')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        if not apikey:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        try:
+            cai = requests.get(
+                'https://hercai.onrender.com/v3/hercai',
+                params = {
+                    'question': text
+                }
+            )
+            result = cai.json()['reply']
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': result,
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+        
 @blackboxrek.route('')
 class DownloadblackboxResource(Resource):
     @blackboxrek.doc(params={
