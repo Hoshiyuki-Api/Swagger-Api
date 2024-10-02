@@ -113,7 +113,7 @@ imgtotext = Namespace('ai', description='AI Api')
 class DownloadaivoiceResource(Resource):
     @aivoicerek.doc(params={
         'text': 'Input Text',
-        'type': 'input Type Voice'
+        'type': 'input Type Voice',
         'apikey': 'API Key for authentication'
     })
     def get(self):
