@@ -13,7 +13,7 @@ from routes.dashboard import dashboard_bp
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdl_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlrek as ytdl_ns
 # Routes Tools
-from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns
+from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, rosting_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, rostinggrek as rosting_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
@@ -54,6 +54,7 @@ app.register_blueprint(remove_bp, url_prefix='/api/removebg')
 app.register_blueprint(cuaca_bp, url_prefix='/api/cuaca')
 app.register_blueprint(ffstalk_bp, url_prefix='/api/ffstalk')
 app.register_blueprint(removebg2_bp, url_prefix='/api/removebg2')
+app.register_blueprint(rosting_bp, url_prefix='/api/github-roast')
 # Register Ai
 app.register_blueprint(aivoice_bp, url_prefix='/api/aivoice')
 app.register_blueprint(hercai_bp, url_prefix='/api/hercai')
@@ -89,6 +90,7 @@ api.add_namespace(removebg_ns, path='/api/removebg')
 api.add_namespace(cuaca_ns, path='/api/cuaca')
 api.add_namespace(ffstalk_ns, path='/api/ffstalk')
 api.add_namespace(remove2_ns, path='/api/removebg2')
+api.add_namespace(rosting_ns, path='/api/github-roast')
 # NameSpace AI
 api.add_namespace(aivoice_ns, path='/api/aivoice')
 api.add_namespace(hercai_ns, path='/api/hercai')
