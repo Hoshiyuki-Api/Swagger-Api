@@ -492,14 +492,14 @@ class Resourcerostingg(Resource):
             return jsonify(limit_error[0]), limit_error[1]
         
         try:
-            rosting_github = request.post(
+            rosting_github = requests.post(
                 'https://github-roast.pages.dev/llama',
                 json = {
                     'username': username,
                     'language': 'indonesian'
                 }
             )
-            respon = rosting_github.json['roast']
+            respon = rosting_github.json()['roast']
             return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
