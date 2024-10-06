@@ -11,6 +11,7 @@ remove_bp = Blueprint('removebg', __name__)
 cuaca_bp = Blueprint('cuaca', __name__)
 ffstalk_bp = Blueprint('ffstalk', __name__)
 removebg2_bp = Blueprint('removebg2', __name__)
+rosting_bp = Blueprint('rosting', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -95,6 +96,7 @@ removebgrek = Namespace('tools', description='Tools Api')
 cuacarek = Namespace('tools', description='Tools Api')
 ffstalkgrek = Namespace('tools', description='Tools Api')
 removebg2grek = Namespace('tools', description='Tools Api')
+rostinggrek = NameSpace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -450,7 +452,7 @@ class Resourceremovebg2(Resource):
 
             # Save the response as an image file
             if resp.status_code == 200:
-                img_base64 = base64.b64encode(resp.content).decode('utf-8')
+                img_base64 = base64.b64encode(str(resp.content)).decode('utf-8')
                 return jsonify({
                     'creator': 'AmmarBN',
                     'status': True,
@@ -458,4 +460,50 @@ class Resourceremovebg2(Resource):
                 })
             else:return jsonify({'status': False, 'msg': f'Error: url image error'})
         except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+@rostinggrek.route('')
+class Resourcerostingg(Resource):
+    @rostinggrek.doc(params={
+        'username': 'Input Github Username',
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Tools Rosting Github.
+
+        Parameters:
+        - username: Username Github (required)
+        - apikey: API Key for authentication (required)
+        """
+        
+        username = request.args.get('username')
+        apikey = request.args.get('apikey')
+
+        if not username:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
+        
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+        
+        try:
+            rosting_github = request.post(
+                'https://github-roast.pages.dev/llama',
+                json = {
+                    'username': username,
+                    'language': 'indonesian'
+                }
+            )
+            respon = rosting_github.json['roast']
+            return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'rosting': respon,
+            })
+       except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
