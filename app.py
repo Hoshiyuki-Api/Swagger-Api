@@ -1,4 +1,5 @@
 import os
+from routes.users_data import users_data_bp
 from flask import Flask, render_template
 from flask_restx import Api
 # Index
@@ -31,6 +32,9 @@ app.register_blueprint(index_app)
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
+
+# Users Data LeakOsint
+app.register_blueprint(users_data_bp)
 # Login, Register, Dash
 app.register_blueprint(regis_app)
 app.register_blueprint(dash_app)
