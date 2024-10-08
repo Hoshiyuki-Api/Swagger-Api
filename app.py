@@ -1,5 +1,8 @@
 import os
+# Data user LeakOsint
 from routes.users_data import users_data_bp
+# Demo acc LeakOsint
+from routes.demo_acc import users_demo_bp
 from flask import Flask, render_template
 from flask_restx import Api
 # Index
@@ -35,6 +38,8 @@ def not_found_error(error):
 
 # Users Data LeakOsint
 app.register_blueprint(users_data_bp)
+# Demo Acc LeakOsint
+app.register_blueprint(users_demo_bp)
 # Login, Register, Dash
 app.register_blueprint(regis_app)
 app.register_blueprint(dash_app)
