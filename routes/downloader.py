@@ -511,6 +511,65 @@ class DownloadlaheluResource(Resource):
                 }
             )
         
+def extract_vid(data):
+    match = re.search(r'(?:youtu\.be\/|youtube\.com(?:.*[?&]v=|.*\/))([^?&]+)', data)
+    return match.group(1) if match else None
+
+def get_download_links(id):
+    headers = {
+        'Accept': '*/*',
+        'Origin': 'https://id-y2mate.com',
+        'Referer': f'https://id-y2mate.com/{id}',
+        'User-Agent': 'Postify/1.0.0',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+    
+    response = requests.post(
+        'https://id-y2mate.com/mates/analyzeV2/ajax',
+        data={'k_query': f'https://youtube.com/watch?v={id}', 'k_page': 'home', 'q_auto': 0},
+        headers=headers
+    )
+
+    data = response.json()
+    if not data or not data.get('links'):
+        return {'Error': 'url tidak valid'}
+    links = data['links']
+    formats = {}
+    convert = {}
+    for format, options in links.items():
+        for option in options.values():
+            if option['q'] in '480p':
+               formats[option['f']] = {
+                 'size': option['size'],
+                 'url': get_conversion_url(id, option['k'], headers)
+               }
+    return formats
+
+def get_conversion_url(id, k, headers):
+    response = requests.post(
+        'https://id-y2mate.com/mates/convertV2/index',
+        data={'vid': id, 'k': k},
+        headers=headers
+    )
+    
+    data = response.json()
+    if data['status'] != 'ok':
+        return {'Error': 'url tidak valid'}
+    
+    return data['dlink']
+
+def YTMate(data):
+    data = data.strip()
+    if not data:
+        return {'Error': 'url tidak valid'}
+    is_link = re.search(r'youtu(\.)?be', data)
+    if is_link:
+        id = extract_vid(data)
+        if not id:
+           return {'Error': 'url tidak valid'}
+        download_links = get_download_links(id)
+        return {'type': 'download', 'dl': download_links}
+        
 @ytdlrek.route('')
 class DownloadytResource(Resource):
     @ytdlrek.doc(params={
@@ -540,75 +599,7 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         try:
-            urlk = "https://ytmp3-converter.com/api/get-token"
-            headers = {
-                "Host": "ytmp3-converter.com",
-                "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-                "Accept": "*/*",
-                "Sec-Fetch-Site": "same-origin",
-                "Sec-Fetch-Mode": "cors",
-                "Sec-Fetch-Dest": "empty",
-                "Referer": "https://ytmp3-converter.com/id300",
-                "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-            }
-            token = requests.get(urlk, headers=headers)
-            token_csf = token.json()["csrfToken"]
-            ck = token.cookies.get_dict()['h3']
-            headers = {
-                "Host": "ytmp3-converter.com",
-                "content-length": "36",
-                "accept": "application/json, text/plain, */*",
-                "sc-token": str(token_csf),
-                "content-type": "application/json",
-                "origin": "https://ytmp3-converter.com",
-                "sec-fetch-site": "same-origin",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-dest": "empty",
-                "referer": "https://ytmp3-converter.com/en301",
-
-                "cookie": f"h3={str(ck)}"
-            }
-            payload = {
-                "q": url
-            }
-            resp = requests.post('https://ytmp3-converter.com/api/analyze', json=payload, headers=headers)
-            try:
-                resolt = resp.json()['videos']['mp4s'][0]['resolution']
-                cdn    = resp.json()['videos']['cdn']
-            except Exception as e:
-                return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
-            try:
-                title = resp.json()['videos']['text']
-                durat = resp.json()['videos']['durationText']
-                thumn = resp.json()['videos']['imgUrl']
-                desci = resp.json()['videos']['descriptionHtml']
-            except:return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
-            payload1 = {
-                "id": str(url.replace('https://youtu.be/', '')),
-                "t": str(resolt),
-                "cdn": str(cdn)
-            }
-            respo = requests.post('https://ytmp3-converter.com/api/convert', json=payload1, headers=headers)
-            ids = respo.json()['id']
-            cdn1 = respo.json()['cdn']
-            payload2 = {
-                "id": str(ids),
-                "t": str(resolt),
-                "cdn": str(cdn1)
-            }
-            for i in range(1000):
-                respon = requests.post("https://ytmp3-converter.com/api/checkfile", json=payload2, headers=headers)
-                respk = respon.json()
-                if respk['percent'] == 100:
-                     return jsonify({"c": respk})
-#                    hos = respon.json()["cdn"]
-#                    next = respon.json()["id"]
-#            return jsonify({
-#                'title': str(title),
-#                'duration': str(durat),
-#                'thumnail': str(thumn),
-#                'description': str(desci),
-#                'url_music': f'{str(hos)}/api/v1/downloadfile?dm=ytmp3-converter.com&id={str(next)}&t={str(resolt)}'
-#            })
+            res = YTMate(url)
+            return jsonify({'creator': 'AmmarBN','status': True,'result':res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
