@@ -210,9 +210,20 @@ class DownloadigResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
 
         # Siapkan request ke API baru
-        resp = requests.get(f"https://widipe.com/download/igdl?url={url}")
-        urls = resp.json()["result"][0]["url"]
-
+        #resp = requests.get(f"https://widipe.com/download/igdl?url={url}")
+        #urls = resp.json()["result"][0]["url"]
+        
+        # api baru
+        headers = {'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"','sec-ch-ua-platform': 'Android','Referer': 'https://instasave.website/','sec-ch-ua-mobile': '?1','User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36','Content-Type': 'application/x-www-form-urlencoded',}
+        data = {'url': url}
+        html_content = requests.post('https://api.instasave.website/media', headers=headers, data=data).text
+        inner_html_match = re.search(r'innerHTML\s*=\s*"(.*?)";', html_content, re.DOTALL)
+        if inner_html_match:
+        	extracted_html = inner_html_match.group(1)
+        	thumb_url = re.search('"https://cdn.instasave.website/(.*?)"', extracted_html)
+        	link_vido = thumb_url.group(1)
+        	urls = "https://cdn.instasave.website/{}".format(link_vido.replace("\\", ""))
+        else:urls = None
         return jsonify({
             "creator": "AmmarBN",
             "result": urls,
