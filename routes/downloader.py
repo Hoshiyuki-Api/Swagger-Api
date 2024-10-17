@@ -164,7 +164,7 @@ class DownloadttResource(Resource):
             return jsonify(limit_error[0]), limit_error[1]
             
         resl = tiktok2(url)
-        return jsonify({'creator': 'AmmarBN', 'result': resl})
+        return jsonify({'creator': 'AmmarBN', 'result': {'title': resl['title'], 'cover': resl['cover'], 'origin_cover': resl['origin_cover'], 'no_watermark': resl['no_watermark'], 'watermark': resl['watermark'], 'music': resl['music']}})
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
