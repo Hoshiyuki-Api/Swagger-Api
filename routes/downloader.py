@@ -109,6 +109,31 @@ ytdlrek = Namespace('downloader', description='Downloader Api')
 #    'pembuat': fields.String(description='Creator information')
 #})
 
+def tiktok2(query):
+    try:
+        url = 'https://tikwm.com/api/'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Cookie': 'current_language=en',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36'
+        }
+        data = {'url': query, 'hd': '1'}
+        
+        response = requests.post(url, data=data, headers=headers)
+        response_data = response.json()['data']
+        
+        result = {
+            'title': response_data['title'],
+            'cover': response_data['cover'],
+            'origin_cover': response_data['origin_cover'],
+            'no_watermark': response_data['play'],
+            'watermark': response_data['wmplay'],
+            'music': response_data['music']
+        }
+        return result
+    except Exception as error:
+        raise error
+        
 # Endpoint untuk menghasilkan user agents acak
 @tiktokdlrek.route('')
 class DownloadttResource(Resource):
@@ -138,53 +163,8 @@ class DownloadttResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
             
-        headers = {
-    'accept': '*/*',
-    'accept-language': 'en-US,en;q=0.9',
-    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    # 'cookie': '_ga=GA1.1.6364207.1717837319; __gads=ID=00bce85d94f977a3:T=1717837319:RT=1717839979:S=ALNI_MZDAjs_SNl6GQkU4whEOmcDoVkTwg; __gpi=UID=00000e443e647ee2:T=1717837319:RT=1717839979:S=ALNI_MYkfsQRA_ZduJ8nwTV9z3eV61pDdg; __eoi=ID=26c8d4ac0c9d33c7:T=1717837319:RT=1717839979:S=AA-AfjYHA7UAR40jPrn-ZJDvTEx_; _ga_30X9VRGZQ4=GS1.1.1717837318.1.1.1717840098.0.0.0; FCNEC=%5B%5B%22AKsRol_uWFsgDh-_YrbPyNvMAQCS2PvIbY1jjqzwVRNTPtBXgL9XFZVjBywWxCCEEuYktubvGuyIdEPMRWTBCOvxbhLDyVGEwq9BgZxUP_cYRUamatpo7OTOJE_ao3dyesMDJLR7IWjz_QZ8_KQu9ETkKGsuc765Ng%3D%3D%22%5D%5D',
-    'origin': 'https://lovetik.com',
-    'priority': 'u=1, i',
-    'referer': 'https://lovetik.com/id',
-    'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Linux"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-    'x-requested-with': 'XMLHttpRequest',
-        }
-            
-        data = {
-            'query': url
-        }
-        resp = requests.post('https://lovetik.com/api/ajax/search', headers=headers, data=data)
-        try:
-            username  = resp.json()['author']
-            profile   = resp.json()['author_a']
-            fullname  = resp.json()['author_name']
-            thumbnail = resp.json()['cover']
-            deskripsi = resp.json()['desc']
-            url = []
-            for i in resp.json()['links']:
-                url.append(i)
-            mp4 = url[8]['a']
-            mp3 = url[9]['a']
-            return jsonify(
-                {
-                    'creator': 'AmmarBN',
-                    'result': {
-                        'username': username,
-                        'profile': profile,
-                        'fullname': fullname,
-                        'thumb': thumbnail,
-                        'desc': deskripsi,
-                        'mp4': mp4,
-                        'mp3': mp3
-                    }
-                }
-            )
+        resl = tiktok2(url)
+        return jsonify({'creator': 'AmmarBN', 'result': resl})
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
