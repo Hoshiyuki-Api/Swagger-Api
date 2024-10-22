@@ -443,54 +443,34 @@ class DownloadlaheluResource(Resource):
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-        
-        headers = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'accept-language': 'en-US,en;q=0.9',
-    'cache-control': 'max-age=0',
-    #'cookie': '_ga_ZD1YG9MSQ3=GS1.1.1718548942.1.0.1718548942.0.0.0; _gcl_au=1.1.1186587033.1718548943; stpdOrigin={"origin":"direct"}; _sharedID=ac0f93da-c23d-47e8-8463-742b93c505d6; _sharedID_cst=zix7LPQsHA%3D%3D; cto_bidid=y2-ZQV9JYTdKOVhDbU5hWnhjRng0SzNtb3pmS283Q3o0cXRUUG85U1ZmQUI0Wkw1OGZWQkpDaHJJdFN4NHMyR3M2bE10UUdoJTJCdEJydUpyOGZDU3FIdHY5SFd3JTNEJTNE; _cc_id=ac8d725d2061a8118abac3156abc7614; panoramaId_expiry=1718635367072; __gads=ID=3d4f3d41c0f344db:T=1718548967:RT=1718548967:S=ALNI_MYabpBjSDmxnkz_AzqFWLzYd3KBoA; __gpi=UID=00000e4f7116c6b3:T=1718548967:RT=1718548967:S=ALNI_MYXZTJ8sz_K-qnfsDFfuGm9KGgzcg; __eoi=ID=1a5112c16d3c0ed4:T=1718548967:RT=1718548967:S=AA-AfjbSbU0ht3H-gIudkb1x2pCV; _au_1d=AU1D-0100-001718548969-W0J9KTKH-916F; _ga=GA1.2.1010614677.1718548943; _gid=GA1.2.273983052.1718548972; cto_bundle=IGTbU185aGo0SERZSW4lMkJjUW1iSmtMdkRPaVI2VlF1QlRmNzclMkI3TkpXQ2klMkZDN0olMkJ5SXM3WXdJYTh4T2l6TG1Hc0ZabEtybWhvViUyQjRqZVFRSUpqRlpBNUQlMkJ5U1FlbXVUQVhSZ2clMkZyRkpBVVhyOHdRTDNzZGVwZlVDb3gxZXhYYVduVG1q',
-    'priority': 'u=0, i',
-    'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Linux"',
-    'sec-fetch-dest': 'document',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'none',
-    'sec-fetch-user': '?1',
-    'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        }
-        
-        response = requests.get(url, headers=headers).text
-        pattern = r"window\.atob\('([^']+)'\)"
-        match = re.search(pattern, response)
-        if match:
-            base64_string = match.group(1)  # Mengambil nilai yang terdapat dalam tanda kurung tunggal
-            decoded_bytes = base64.b64decode(base64_string)  # Mendekode string dari base64
-            encoded_string = decoded_bytes.decode('utf-8')  # Mengubah bytes menjadi string UTF-8
-            # Dekode URL encoding
-            decoded_string = urllib.parse.unquote(encoded_string)
-            # Parse JSON ke dalam bentuk dictionary
-            data = json.loads(decoded_string)
-            username = data['postInfo']['userUsername']
-            title = data['postInfo']['title']
-            postid = data['postInfo']['postID']
-            userid = data['postInfo']['userID']
-            totalcomment = data['postInfo']['totalComments']
-            createtime = data['postInfo']['createTime']
-            data_url = data['postInfo']['media']
+
+        params = {"postID": url.replace("https://lahelu.com/post/", "")}
+        headers = {"Host": "lahelu.com","accept": "application/json, text/plain, /","user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36","sec-fetch-site": "same-origin","sec-fetch-mode": "cors","sec-fetch-dest": "empty","accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7","cookie": "_ga=GA1.1.1763889101.1729515843; _gcl_au=1.1.1664196277.1729515843; _ga_ZD1YG9MSQ3=GS1.1.1729571966.2.1.1729573139.56.0.175494160","if-none-match": 'W/"257-Brv/UpPGmYCjDMihALxbhOUJX6s"'}
+        response = requests.get("https://lahelu.com/api/post/get", headers=headers, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            post_info = data.get("postInfo", {})
+            post_id = post_info.get("postID", "")
+            user_id = post_info.get("userID", "")
+            title = post_info.get("title", "")
+            media = post_info.get("media", "")
+            sensitive = post_info.get("sensitive", False)
+            hashtags = post_info.get("hashtags", [])
+            create_time = post_info.get("createTime", 0)
             
             return jsonify(
                 {
                     'creator': 'AmmarBN',
                     'status': True,
                     'result': {
-                        'a_username': username,
-                        'b_title': title,
-                        'c_postid': postid,'d_userid': userid,
-                        'e_totalcomment': totalcomment,
-                        'f_create': createtime,
-                        'g_url': f'https://cache.lahelu.com/{data_url}'
+                        'user_id': user_id,
+                        'post_id': post_id,
+                        'post_info': postid,
+                        'title': title,
+                        'media': media,
+                        'sensitive': sensitive,
+                        'hashtags': hashtags,
+                        'create_time': create_time
                         }
                 }
             )
