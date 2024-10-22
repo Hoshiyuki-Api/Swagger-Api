@@ -465,7 +465,7 @@ class DownloadlaheluResource(Resource):
                     'result': {
                         'user_id': user_id,
                         'post_id': post_id,
-                        'post_info': postid,
+                        'post_info': post_info,
                         'title': title,
                         'media': media,
                         'sensitive': sensitive,
