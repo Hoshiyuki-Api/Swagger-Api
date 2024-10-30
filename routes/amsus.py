@@ -114,6 +114,6 @@ def leakphone():
         formatted_response = json.dumps(response, indent=2, ensure_ascii=False)
         passport = response['List']['KomInfo Indonesia']['Data'][0]['Passport']
         return jsonify({
-            'result': passport
+            'result': 'halo'
         })
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
