@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
 from flask import Blueprint, jsonify, request
 from datetime import datetime
-ckphone_bp = Blueprint('cknomor', __name__)
+ckphone_bp = Blueprint('amsus', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
