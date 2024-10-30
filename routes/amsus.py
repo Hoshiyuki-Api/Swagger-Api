@@ -83,7 +83,7 @@ def check_and_update_request_limit(apikey):
 
     return None
 
-@ckphone_bp.route('/osnt/leakphone', methods=['GET'])
+@ckphone_bp.route('/leakphone', methods=['GET'])
 def leakphone():
     nomor = request.args.get('nomor')
     apikey = request.args.get('apikey')
