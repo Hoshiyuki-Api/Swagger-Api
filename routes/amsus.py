@@ -105,7 +105,7 @@ def leakphone():
         response = requests.post(
             'https://server.leakosint.com/',
             json = {
-                'token'; token,
+                'token': token,
                 'request': nomor,
                 'limit': 100,
                 'lang': 'id'
