@@ -39,7 +39,7 @@ def not_found_error(error):
 
 # Users Data LeakOsint
 app.register_blueprint(users_data_bp)
-app.register_blueprint(ckphone_bp, url_prefix="/osnt/leakphone")
+app.register_blueprint(ckphone_bp, url_prefix="/osnt")
 # Demo Acc LeakOsint
 app.register_blueprint(users_demo_bp)
 # Login, Register, Dash
