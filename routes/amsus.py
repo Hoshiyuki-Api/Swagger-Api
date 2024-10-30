@@ -98,14 +98,10 @@ def leakphone():
     if limit_error:
         return jsonify(limit_error[0]), limit_error[1]
     try:
-        url_token = 'https://raw.githubusercontent.com/Hoshiyuki-Api/Swagger-Api/refs/heads/main/database/token.json'
-        responses = requests.get(url_token)
-        data = json.loads(responses.text)
-        token = data.get('token')
         response = requests.post(
             'https://server.leakosint.com/',
             json = {
-                'token': token,
+                'token': "7274295636:7nrgvRi9",
                 'request': nomor,
                 'limit': 100,
                 'lang': 'id'
