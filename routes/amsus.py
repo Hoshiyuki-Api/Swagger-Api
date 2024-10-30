@@ -91,7 +91,7 @@ def leakphone():
     if not nomor:
         return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
 
-    if apikey is not:
+    if not apikey:
         return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
 
     limit_error = check_and_update_request_limit(apikey)
