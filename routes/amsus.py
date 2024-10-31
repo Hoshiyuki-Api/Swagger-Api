@@ -200,6 +200,6 @@ def checknik():
             if not code:
                return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
         else:
-    	     hash_code = GetCode(nik, nomor)
+             hash_code = GetCode(nik, nomor)
              return jsonify({"creator": "AmmarBN", "result": hash_code})
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
