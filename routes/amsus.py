@@ -195,11 +195,11 @@ def checknik():
     limit_error = check_and_update_request_limit(apikey)
     if limit_error:
         return jsonify(limit_error[0]), limit_error[1]
-    try:
+#    try:
 #        if len(hash) > 0:
 #            if not code:
 #               return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
 #        else:
-         hash_code = GetCode(nik, nomor)
-         return jsonify({"creator": "AmmarBN", "result": hash_code})
-    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
+    hash_code = GetCode(nik, nomor)
+    return jsonify({"creator": "AmmarBN", "result": hash_code})
+#    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
