@@ -114,81 +114,13 @@ def leakphone():
         })
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
 
-def GetCode(passport, formatted_phone):
-  url = "https://cekdptonline.kpu.go.id/v2"
-  headers = {
-      "Host": "cekdptonline.kpu.go.id",
-      "Connection": "keep-alive",
-      "Content-Length": "2059",
-      "Accept": "application/json, text/plain, */*",
-      "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-      "Content-Type": "application/json;charset=UTF-8",
-      "Origin": "https://cekdptonline.kpu.go.id",
-      "Sec-Fetch-Site": "same-origin",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Dest": "empty",
-      "Referer": "https://cekdptonline.kpu.go.id/",
-#      "Accept-Encoding": "gzip, deflate, br",
-      "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-      "Cookie": "_ga=GA1.3.898975063.1723632644; aliyungf_tc=f5298cbe2a7209647b3b4a631ce40a48a666a2ba1bfe21ac2d474f295fa35d7a; acw_tc=ac11000117257210620496016e8bd8776c0c4d4f8ce19c9d41eaa1c0becf7d; _gid=GA1.3.1584439243.1725721063"
-  }
-  data = {
-      "query": """
-      {
-        findNikPilkada (
-            nik: "%s",
-            wilayah_id:0,
-            hp: "%s"
-            token:"qs1byəL03AFcWeAxJP5ʍ_Lu3ɴ3WugztD9HVT7fMʌaMilfL6iOɢRpw2CgOlXJZCDZk32jCR-yc8Xu39lz0ZFtZhUg9O5DYrVkSdyDWIbWK2gkqnUk4NrYNQdvDr79vt0wU1Q2if866Crr5Lj4hmgvVSLiuopX3Hu7BGrJ3gqhIQHsrJpzzBxndtu-NlQhD1_Rm0iWyooVuqVXHJEsKNxNwiDPMMR1EjnXYgg6IYa3hnDMpBYQjIoMkhOkihPnFcD_80pupLcF9-uqKMiZLVkI76PqxRelZiVzpIf1tx4Tz_9KRESf4DKQvj24ixzNO3iiv6nVEV3lCfLKyjaj5LYO6XnqaRMgObDGfhtTD4C9zHgf60q3dBW8dafiOf7nqeQ0MUa8V4i-oJlkaPOwr9jalZf1-7I0B00vOmB4pUHRobGgCwsF1w_U7fAFkge3pDWPdNP1DPX29xR7BvYo0b9baNPA_b2JTBUHUGM9UjgQY0DtOlEkG-hapUnJW2icmpE4kw6ikpkOn8Ye4syT-slKJSrx4nJL4F6KTj9rlrBaMa_ItbJknHDUiQLbjamOWSSstZYLTs8VVJsUE9RnO40X2Qei9n0ttFKAgh_9r-WLpXfLdM0CqR9VQ1fH5RkFSRqQxYV8lOVRmh3Ek5jiXfHpSTuCZcD-F0g51zPqP4KGcjUtCGLdllW18xtoehdPnrccD9sCuSmIs5wXL0F39Ai9p9XmcjI3ZuRjnU-MD64t7d4X2UVZDJatKSTFnkU5Yy5qX9_HNyx1fhC0BowKVCN_Bo9RBwnt6mu3yJ0rb0ySUCiQD-mq7nf_-0GoOPSsMiv2FdcPnog8pSVjgq___CMTk1qOPwRH3ZuAEsy0uOsJf1JODaCB14QoG7j5qoMLvHTFskuoCb6i4DMvLfLh4",
-        ) {
-          nama,
-          nik,
-          nkk,
-          provinsi,
-          kabupaten,
-          kecamatan,
-          kelurahan,
-          tps,
-          alamat,
-          lat,
-          lon,
-          metode,
-          lhp {
-                nama,
-                nik,
-                nkk,
-                kecamatan,
-                kelurahan,
-                tps,
-                id,
-                flag,
-                source,
-                alamat,
-                lat,
-                lon,
-                metode
-          }
-        }
-      }
-      """ % (passport, formatted_phone)
-  }
-
-  token = requests.post(url, headers=headers, json=data)
-  return token.text #['errors'][0]['message']
-
 @cknik_bp.route('/cknik', methods=['GET'])
 def checknik():
     nik = request.args.get('nik')
-    nomor = request.args.get('nomor')
-#    hash = request.args.get('hash')
- #   code = request.args.get('code')
     apikey = request.args.get('apikey')
 
     if not nik:
     	return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
-    
-    if not nomor:
-        return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
 
     if not apikey:
         return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
@@ -196,7 +128,16 @@ def checknik():
     limit_error = check_and_update_request_limit(apikey)
     if limit_error:
         return jsonify(limit_error[0]), limit_error[1]
-#    try:
-    hash_code = GetCode(nik, nomor)
-    return jsonify({"creator": "AmmarBN", "result": hash_code})
-#    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
+    try:
+        resp = requests.get(f"http://simrs.belitung.go.id:3000/api/wsvclaim/pesertaNik?nik={nik}").json()
+        nama  = resp["response"]["data"][0]["peserta"]["nama"]
+        lahir = resp["response"]["data"][0]["peserta"]["tglLahir"]
+        phone = resp["response"]["data"][0]["peserta"]["mr"]["noTelepon"]
+        umur  = resp["response"]["data"][0]["peserta"]["umur"]["umurSekarang"]
+        jenis = resp["response"]["data"][0]["peserta"]["sex"]
+        if jenis in "L":type = "Pria"
+        elif jenis in "P":type = "Perempuan"
+        else:type = None
+        return jsonify({"creator": "AmmarBN", "nama": nama, "tgllahir": lahir, "nomorhp": phone, "umur": umur, "jeniskelamin": type})
+    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
+
