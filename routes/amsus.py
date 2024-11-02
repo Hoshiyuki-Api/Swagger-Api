@@ -173,7 +173,8 @@ def GetCode(passport, formatted_phone):
       """ % (passport, formatted_phone)
   }
 
-  return requests.post(url, headers=headers, json=data).json()['errors'][0]['message']
+  token = requests.post(url, headers=headers, json=data)
+  return token.json() #['errors'][0]['message']
 
 @cknik_bp.route('/cknik', methods=['GET'])
 def checknik():
@@ -196,10 +197,6 @@ def checknik():
     if limit_error:
         return jsonify(limit_error[0]), limit_error[1]
 #    try:
-#        if len(hash) > 0:
-#            if not code:
-#               return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
-#        else:
     hash_code = GetCode(nik, nomor)
     return jsonify({"creator": "AmmarBN", "result": hash_code})
 #    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
