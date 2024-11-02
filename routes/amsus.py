@@ -174,7 +174,7 @@ def GetCode(passport, formatted_phone):
   }
 
   token = requests.post(url, headers=headers, json=data)
-  return token.json() #['errors'][0]['message']
+  return token.text #['errors'][0]['message']
 
 @cknik_bp.route('/cknik', methods=['GET'])
 def checknik():
