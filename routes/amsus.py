@@ -99,7 +99,7 @@ def leakphone():
         return jsonify(limit_error[0]), limit_error[1]
     try:
         response = requests.post(
-            'https://server.leakosint.com/',
+            'https://leakosintapi.com/',
             json = {
                 'token': "7274295636:7nrgvRi9",
                 'request': nomor,
