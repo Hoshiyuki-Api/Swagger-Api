@@ -128,7 +128,7 @@ def GetCode(passport, formatted_phone):
       "Sec-Fetch-Mode": "cors",
       "Sec-Fetch-Dest": "empty",
       "Referer": "https://cekdptonline.kpu.go.id/",
-      "Accept-Encoding": "gzip, deflate, br",
+#      "Accept-Encoding": "gzip, deflate, br",
       "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
       "Cookie": "_ga=GA1.3.898975063.1723632644; aliyungf_tc=f5298cbe2a7209647b3b4a631ce40a48a666a2ba1bfe21ac2d474f295fa35d7a; acw_tc=ac11000117257210620496016e8bd8776c0c4d4f8ce19c9d41eaa1c0becf7d; _gid=GA1.3.1584439243.1725721063"
   }
