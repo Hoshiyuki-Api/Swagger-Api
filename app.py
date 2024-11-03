@@ -1,7 +1,7 @@
 import os
 # Data user LeakOsint
 from routes.users_data import users_data_bp
-from routes.amsus import ckphone_bp, cknik_bp, ckwalet_bp, aicde_bp
+from routes.amsus import ckphone_bp, cknik_bp, ckwalet_bp#, aicde_bp
 # Demo acc LeakOsint
 from routes.demo_acc import users_demo_bp
 from flask import Flask, render_template
@@ -42,7 +42,7 @@ app.register_blueprint(users_data_bp)
 app.register_blueprint(ckphone_bp)
 app.register_blueprint(cknik_bp)
 app.register_blueprint(ckwalet_bp)
-app.register_blueprint(aicde_bp)
+#app.register_blueprint(aicde_bp)
 # Demo Acc LeakOsint
 app.register_blueprint(users_demo_bp)
 # Login, Register, Dash
