@@ -138,6 +138,7 @@ def checknik():
         if jenis in "L":type = "Pria"
         elif jenis in "P":type = "Perempuan"
         else:type = None
-        return jsonify({"creator": "AmmarBN", "result":{json.loads(resp)}}) #"nama": nama, "tgllahir": lahir, "nomorhp": phone, "umur": umur, "jeniskelamin": type})
+        bc = json.loads(resp)
+        return jsonify({"creator": "AmmarBN", "result":{bc}}) #"nama": nama, "tgllahir": lahir, "nomorhp": phone, "umur": umur, "jeniskelamin": type})
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
 
