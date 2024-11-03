@@ -99,7 +99,7 @@ def leakphone():
         return jsonify(limit_error[0]), limit_error[1]
     try:
         if nomor in ["6288229683561","6287708773367","6283139844517"]:
-            return jsonify({"result": None, "status": True})
+            return jsonify({"result": "Hayo mau leak owner, dikasi pitur malah mau nge dox owner", "status": True})
         response = requests.post(
             'https://leakosintapi.com/',
             json = {
@@ -112,7 +112,7 @@ def leakphone():
         formatted_response = json.dumps(response, indent=2, ensure_ascii=False)
         passport = response['List']['KomInfo Indonesia']['Data'][0]['Passport']
         return jsonify({
-            'result': "Hayo mau leak owner, dikasi pitur malah mau nge dox owner",
+            'result': response,
             "status": True
         })
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
