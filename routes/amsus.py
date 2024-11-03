@@ -169,7 +169,7 @@ def checkwalet():
         response_data = []
         ewallets = requests.get('https://api-rekening.lfourr.com/listEwallet').json()['data']
         for ewallet in ewallets:
-           wallet_check = requests.get(f'https://api-rekening.lfourr.com/getEwalletAccount?bankCode={ewallet["kodeBank"]}&accountNumber={phone}')
+           wallet_check = requests.get(f'https://api-rekening.lfourr.com/getEwalletAccount?bankCode={ewallet["kodeBank"]}&accountNumber={nomor}')
            if wallet_check.json()['status']:
                account_info = wallet_check.json()['data']
                response_data.append({  # Append wallet information to the list
