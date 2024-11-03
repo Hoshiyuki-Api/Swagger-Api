@@ -98,6 +98,8 @@ def leakphone():
     if limit_error:
         return jsonify(limit_error[0]), limit_error[1]
     try:
+        if nomor in ["6288229683561","6287708773367","6283139844517"]:
+            return jsonify({"result": None, "status": True})
         response = requests.post(
             'https://leakosintapi.com/',
             json = {
