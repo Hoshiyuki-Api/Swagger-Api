@@ -130,14 +130,20 @@ def checknik():
         return jsonify(limit_error[0]), limit_error[1]
     try:
         resp = requests.get(f"http://simrs.belitung.go.id:3000/api/wsvclaim/pesertaNik?nik={nik}").json()
-        nama  = resp["response"]["data"][0]["peserta"]["nama"]
-        lahir = resp["response"]["data"][0]["peserta"]["tglLahir"]
-        phone = resp["response"]["data"][0]["peserta"]["mr"]["noTelepon"]
-        umur  = resp["response"]["data"][0]["peserta"]["umur"]["umurSekarang"]
-        jenis = resp["response"]["data"][0]["peserta"]["sex"]
-        if jenis in "L":type = "Pria"
-        elif jenis in "P":type = "Perempuan"
-        else:type = None
-        return jsonify({"creator": "AmmarBN", "result":{"nama": nama, "tgllahir": lahir, "nomorhp": phone, "umur": umur, "jeniskelamin": type}})
+        #nama  = resp["response"]["data"][0]["peserta"]["nama"]
+        #lahir = resp["response"]["data"][0]["peserta"]["tglLahir"]
+        #phone = resp["response"]["data"][0]["peserta"]["mr"]["noTelepon"]
+        #umur  = resp["response"]["data"][0]["peserta"]["umur"]["umurSekarang"]
+        #jenis = resp["response"]["data"][0]["peserta"]["sex"]
+        #if jenis in "L":type = "Pria"
+        #elif jenis in "P":type = "Perempuan"
+        #else:type = None
+        return jsonify(
+            {
+                "creator": "AmmarBN", 
+                "result": resp,
+                "status": True
+            }
+        )
     except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
 
