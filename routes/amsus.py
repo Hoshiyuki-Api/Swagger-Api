@@ -6,6 +6,7 @@ from datetime import datetime
 
 ckphone_bp = Blueprint('amsus', __name__)
 cknik_bp = Blueprint('cknik', __name__)
+ckwalet_bp = Blueprint('ckwalet', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -145,6 +146,40 @@ def checknik():
             {
                 "creator": "AmmarBN", 
                 "result": resp,
+                "status": True
+            }
+        )
+    except requests.exceptions.RequestException as e:return jsonify({'error': str(e)})
+
+@ckwalet_bp.route('/ckwalet', methods=['GET'])
+def checkwalet():
+    nomor = request.args.get('nomor')
+    apikey = request.args.get('apikey')
+
+    if not nomor:
+    	return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
+
+    if not apikey:
+        return jsonify({"creator": "AmmarBN", "error": "tidak ada parameter"})
+
+    limit_error = check_and_update_request_limit(apikey)
+    if limit_error:
+        return jsonify(limit_error[0]), limit_error[1]
+    try:
+        response_data = []
+        ewallets = requests.get('https://api-rekening.lfourr.com/listEwallet').json()['data']
+        for ewallet in ewallets:
+           wallet_check = requests.get(f'https://api-rekening.lfourr.com/getEwalletAccount?bankCode={ewallet["kodeBank"]}&accountNumber={phone}')
+           if wallet_check.json()['status']:
+               account_info = wallet_check.json()['data']
+               response_data.append({  # Append wallet information to the list
+                 'Type Wallet': account_info['bankcode'],
+                 'Name': account_info['accountname']
+                 })
+        return jsonify(
+            {
+                "creator": "AmmarBN", 
+                "result": response_data,
                 "status": True
             }
         )
