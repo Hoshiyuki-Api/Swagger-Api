@@ -539,7 +539,6 @@ class Resourcessweb(Resource):
                       })
                   time.sleep(interval)
             return jsonify({"status": "in_progress", "message": "Task is still processing. Please check back later."})
-            else:return jsonify({'status': False, 'msg': f'Error: url image error'})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
