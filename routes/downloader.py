@@ -482,65 +482,7 @@ class DownloadlaheluResource(Resource):
                     'result': {}
                 }
             )
-        
-def extract_vid(data):
-    match = re.search(r'(?:youtu\.be\/|youtube\.com(?:.*[?&]v=|.*\/))([^?&]+)', data)
-    return match.group(1) if match else None
 
-def get_download_links(id):
-    headers = {
-        'Accept': '*/*',
-        'Origin': 'https://id-y2mate.com',
-        'Referer': f'https://id-y2mate.com/{id}',
-        'User-Agent': 'Postify/1.0.0',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
-    
-    response = requests.post(
-        'https://id-y2mate.com/mates/analyzeV2/ajax',
-        data={'k_query': f'https://youtube.com/watch?v={id}', 'k_page': 'home', 'q_auto': 0},
-        headers=headers
-    )
-
-    data = response.json()
-    if not data or not data.get('links'):
-        return {'Error': 'url tidak valid'}
-    links = data['links']
-    formats = {}
-    convert = {}
-    for format, options in links.items():
-        for option in options.values():
-            if option['q'] in '480p':
-               formats[option['f']] = {
-                 'size': option['size'],
-                 'url': get_conversion_url(id, option['k'], headers)
-               }
-    return formats
-
-def get_conversion_url(id, k, headers):
-    response = requests.post(
-        'https://id-y2mate.com/mates/convertV2/index',
-        data={'vid': id, 'k': k},
-        headers=headers
-    )
-    
-    data = response.json()
-    if data['status'] != 'ok':
-        return {'Error': 'url tidak valid'}
-    
-    return data['dlink']
-
-def YTMate(data):
-    data = data.strip()
-    if not data:
-        return {'Error': 'url tidak valid'}
-    is_link = re.search(r'youtu(\.)?be', data)
-    if is_link:
-        id = extract_vid(data)
-        if not id:
-           return {'Error': 'url tidak valid'}
-        download_links = get_download_links(id)
-        return {'type': 'download', 'dl': download_links}
         
 @ytdlrek.route('')
 class DownloadytResource(Resource):
@@ -571,7 +513,23 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         try:
-            res = YTMate(url)
-            return jsonify({'creator': 'AmmarBN','status': True,'result':res})
+            url = "https://submagic-free-tools.fly.dev/api/youtube-to-audio"
+            headers = {
+    "Host": "submagic-free-tools.fly.dev",
+    "content-length": "68",
+    "accept": "application/json, text/plain, */*",
+    "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+    "content-type": "application/json",
+    "origin": "https://submagic-free-tools.fly.dev",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "https://submagic-free-tools.fly.dev/youtube-to-mp3",
+#    "accept-encoding": "gzip, deflate, br",
+    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+            }
+            data = {"url": url}
+            mp3 = requests.post(url, headers=headers, json=data).json()
+            return jsonify({'creator': 'AmmarBN','status': True,'result':mp3, 'mp3': True, 'mp4': False})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
