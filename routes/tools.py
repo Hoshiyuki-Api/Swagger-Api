@@ -466,7 +466,7 @@ class Resourceremovebg2(Resource):
 class Resourcessweb(Resource):
     @sswebgrek.doc(params={
         'url': 'Input Url Website',
-        'mode': 'Input Mode desktop and mobile'
+        'mode': 'Input Mode desktop and mobile',
         'apikey': 'API key for authenticated'
     })
     def get(self):
