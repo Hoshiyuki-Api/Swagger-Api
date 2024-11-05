@@ -463,7 +463,7 @@ class Resourceremovebg2(Resource):
 
 
 @sswebgrek.route('')
-class Resourceremovebg2(Resource):
+class Resourcessweb(Resource):
     @sswebgrek.doc(params={
         'url': 'Input Url Website',
         'mode': 'Input Mode desktop and mobile'
