@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, jsonify, request
-import json, instaloader, uuid, base64
+import json, instaloader, uuid, base64, time
 from datetime import datetime
 import os
 from flask_restx import Namespace, Resource, fields
@@ -11,6 +11,7 @@ remove_bp = Blueprint('removebg', __name__)
 cuaca_bp = Blueprint('cuaca', __name__)
 ffstalk_bp = Blueprint('ffstalk', __name__)
 removebg2_bp = Blueprint('removebg2', __name__)
+ssweb_bp = Blueprint('ssweb', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -95,7 +96,7 @@ removebgrek = Namespace('tools', description='Tools Api')
 cuacarek = Namespace('tools', description='Tools Api')
 ffstalkgrek = Namespace('tools', description='Tools Api')
 removebg2grek = Namespace('tools', description='Tools Api')
-
+sswebgrek = Namespace('tools', description='Tools Api')
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
     @stalkigrek.doc(params={
@@ -459,3 +460,86 @@ class Resourceremovebg2(Resource):
             else:return jsonify({'status': False, 'msg': f'Error: url image error'})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+
+@sswebgrek.route('')
+class Resourceremovebg2(Resource):
+    @sswebgrek.doc(params={
+        'url': 'Input Url Website',
+        'mode': 'Input Mode desktop and mobile'
+        'apikey': 'API key for authenticated'
+    })
+    def get(self):
+        """
+        Capture a website screenshot online.
+
+        Parameters:
+        - url: Url Website (required)
+        - mode: desktop and mobile ssweb
+        - apikey: API Key for authentication (required)
+        """
+        
+        image_url = request.args.get('url')
+        mode = request.args.get('mode')
+        apikey = request.args.get('apikey')
+
+        if not image_url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+        if not mode:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'mode' diperlukan."})
+        if apikey is None:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
+        
+        # Periksa dan perbarui batas permintaan
+        limit_error = check_and_update_request_limit(apikey)
+        if limit_error:
+            return jsonify(limit_error[0]), limit_error[1]
+
+        try:
+             unix_timestamp = int(time.time())
+             headers = {
+        "Host": "demoair-api.wondershare.com",
+        "content-length": "103",
+        "teams": "teams",
+        "accept": "application/json, text/plain, */*",
+        "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+        "content-type": "application/json",
+        "origin": "https://demoair.wondershare.com",
+        "sec-fetch-site": "same-site",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-dest": "empty",
+        "referer": "https://demoair.wondershare.com/",
+        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+             }
+             submit_data = {
+        "taskType": 5,
+        "args": {
+            "url": image_url,
+            "fullPage": 1,
+            "type": mode,
+            "outputSuffix": "jpg"
+        }
+             }
+             submit_url = f"https://demoair-api.wondershare.com/api/demo/task/submit?_t={unix_timestamp}"
+             uid = requests.post(submit_url, headers=headers, data=json.dumps(submit_data)).json()["data"]["taskUuid"]
+             progress_url = f"https://demoair-api.wondershare.com/api/demo/task/progress?_t={unix_timestamp}"
+             progress_data = {"taskUuid": uid}
+             timeout = 30
+             interval = 2
+             start_time = time.time()
+             while time.time() - start_time < timeout:
+                  response = requests.post(progress_url, headers=headers, data=json.dumps(progress_data))
+                  progress_info = response.json()
+                  if 'images' in progress_info['data']['attacheInformation']:
+                      res_url = progress_info['data']['attacheInformation']['images']
+                      return jsonify({
+                        'creator': 'AmmarBN',
+                        'status': True,
+                        'url_img': res_url.replace("['", "").replace("']", ""),
+                      })
+                  time.sleep(interval)
+            return jsonify({"status": "in_progress", "message": "Task is still processing. Please check back later."})
+            else:return jsonify({'status': False, 'msg': f'Error: url image error'})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
