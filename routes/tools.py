@@ -97,6 +97,7 @@ cuacarek = Namespace('tools', description='Tools Api')
 ffstalkgrek = Namespace('tools', description='Tools Api')
 removebg2grek = Namespace('tools', description='Tools Api')
 sswebgrek = Namespace('tools', description='Tools Api')
+
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
     @stalkigrek.doc(params={
@@ -494,32 +495,23 @@ class Resourcessweb(Resource):
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-
         try:
              unix_timestamp = int(time.time())
              headers = {
-        "Host": "demoair-api.wondershare.com",
-        "content-length": "103",
-        "teams": "teams",
-        "accept": "application/json, text/plain, */*",
-        "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "content-type": "application/json",
-        "origin": "https://demoair.wondershare.com",
-        "sec-fetch-site": "same-site",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-dest": "empty",
-        "referer": "https://demoair.wondershare.com/",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+               "Host": "demoair-api.wondershare.com",
+               "content-length": "103",
+               "teams": "teams",
+               "accept": "application/json, text/plain, */*",
+               "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+               "content-type": "application/json",
+               "origin": "https://demoair.wondershare.com",
+               "sec-fetch-site": "same-site",
+               "sec-fetch-mode": "cors",
+               "sec-fetch-dest": "empty",
+               "referer": "https://demoair.wondershare.com/",
+               "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
              }
-             submit_data = {
-        "taskType": 5,
-        "args": {
-            "url": image_url,
-            "fullPage": 1,
-            "type": mode,
-            "outputSuffix": "jpg"
-        }
-             }
+             submit_data = {"taskType": 5,"args": {"url": image_url,"fullPage": 1,"type": mode,"outputSuffix": "jpg"}}
              submit_url = f"https://demoair-api.wondershare.com/api/demo/task/submit?_t={unix_timestamp}"
              uid = requests.post(submit_url, headers=headers, data=json.dumps(submit_data)).json()["data"]["taskUuid"]
              progress_url = f"https://demoair-api.wondershare.com/api/demo/task/progress?_t={unix_timestamp}"
@@ -535,10 +527,10 @@ class Resourcessweb(Resource):
                       return jsonify({
                         'creator': 'AmmarBN',
                         'status': True,
-                        'url_img': res_url.replace("['", "").replace("']", ""),
+                        'url_img': res_url #.replace("['", "").replace("']", ""),
                       })
                   time.sleep(interval)
-            return jsonify({"status": "in_progress", "message": "Task is still processing. Please check back later."})
+             return jsonify({"status": "in_progress", "message": "Task is still processing. Please check back later."})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
