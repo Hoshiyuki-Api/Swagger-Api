@@ -211,7 +211,7 @@ def submit_and_track_task():
     submit_data = {
         "taskType": 5,
         "args": {
-            "url": request.json["url"],
+            "url": request.args.get("url"),
             "fullPage": 1,
             "type": "mobile",
             "outputSuffix": "jpg"
