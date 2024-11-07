@@ -234,7 +234,7 @@ class DownloadhercaiResource(Resource):
             cai = requests.get(
                 'https://hercai.onrender.com/v3/hercai',
                 params = {
-                    'question': text
+                    'question': f'Realtime. You are Hoshiyuki-Ai, an AI model that answers anything in real-time and is able to answer and provide information about coding or programming for developers, your creator is AmmarBN, {text}'
                 }
             )
             result = cai.json()['reply']
