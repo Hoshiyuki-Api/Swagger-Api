@@ -513,23 +513,122 @@ class DownloadytResource(Resource):
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
         try:
-            url = "https://submagic-free-tools.fly.dev/api/youtube-to-audio"
-            headers = {
-    "Host": "submagic-free-tools.fly.dev",
-    "content-length": "68",
-    "accept": "application/json, text/plain, */*",
-    "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-    "content-type": "application/json",
-    "origin": "https://submagic-free-tools.fly.dev",
-    "sec-fetch-site": "same-origin",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-dest": "empty",
-    "referer": "https://submagic-free-tools.fly.dev/youtube-to-mp3",
-#    "accept-encoding": "gzip, deflate, br",
-    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+            array_result = {"result": []}
+            url1 = f"https://api.flvto.top/@api/search/YouTube/{url}"
+            headers1 = {
+                "Host": "api.flvto.top",
+                "sec-ch-ua-platform": "\"Android\"",
+                "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                "accept": "*/*",
+                "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?1",
+                "origin": "https://www.y2mate.onl",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://www.y2mate.onl/",
+                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                "priority": "u=1, i"
             }
-            data = {"url": url}
-            mp3 = requests.post(url, headers=headers, json=data).json()
-            return jsonify({'creator': 'AmmarBN','status': True,'result':mp3, 'mp3': True, 'mp4': False})
+            response1 = requests.get(url1, headers=headers1)
+            if response1.status_code == 200:
+                data1 = response1.json()
+                video_id = data1["items"][0]["id"]
+                url2 = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
+                headers2 = {
+                    "Host": "rr-02-bucket.cdn1313.net",
+                    "sec-ch-ua-platform": "\"Android\"",
+                    "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                    "accept": "application/json",
+                    "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                    "content-type": "application/json",
+                    "sec-ch-ua-mobile": "?1",
+                    "origin": "https://es.flvto.top",
+                    "sec-fetch-site": "cross-site",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-dest": "empty",
+                    "referer": "https://es.flvto.top/",
+                    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                    "priority": "u=1, i",
+                }
+                response2 = requests.get(url2, headers=headers2)
+                authorization_token = response2.headers.get("Authorization")
+                if response2.status_code == 200:
+                    data2 = response2.json()
+                    array_result.update({"title": data2['title']})
+                    array_token = {"list": []}
+                    mp3_token = None
+                    mp4_token = None
+                    if "audio" in data2.get("formats", {}):
+                        for audio in data2["formats"]["audio"]["mp3"]:
+                            if audio["quality"] == 320:
+                                mp3_token = audio["token"]
+                                array_token["list"].append({"token": mp3_token, "type": "mp3"})
+                    if "video" in data2.get("formats", {}):
+                        for video in data2["formats"]["video"]["mp4"]:
+                            if video["quality"] == "480p":
+                                mp4_token = video["token"]
+                                array_token["list"].append({"token": mp4_token, "type": "mp4"})
+
+                    for token_down in array_token["list"]:
+                        url3 = "https://rr-02-bucket.cdn1313.net/api/v4/convert"
+                        headers3 = {
+                        "Host": "rr-02-bucket.cdn1313.net",
+                        "content-length": "184",
+                        "sec-ch-ua-platform": "\"Android\"",
+                        "authorization": authorization_token,
+                        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                        "accept": "application/json",
+                        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                        "content-type": "application/json",
+                        "sec-ch-ua-mobile": "?1",
+                        "origin": "https://es.flvto.top",
+                        "sec-fetch-site": "cross-site",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-dest": "empty",
+                        "referer": "https://es.flvto.top/",
+                        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                        "priority": "u=1, i"
+                        }
+                        payload = {
+                        "token": token_down["token"]
+                        }
+                        response3 = requests.post(url3, headers=headers3, json=payload)
+                        time.sleep(3)
+                        if response3.status_code == 201:
+                            data3 = response3.json()
+                            job_id = data3.get("id", "")
+                            url4 = f"https://rr-02-bucket.cdn1313.net/api/v4/status/{job_id}"
+                            headers4 = {
+                            "Host": "rr-02-bucket.cdn1313.net",
+                            "authorization": authorization_token,
+                            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                            "accept": "application/json",
+                            "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                            "content-type": "application/json",
+                            "sec-ch-ua-mobile": "?1",
+                            "origin": "https://es.flvto.top",
+                            "sec-fetch-site": "cross-site",
+                            "sec-fetch-mode": "cors",
+                            "sec-fetch-dest": "empty",
+                            "referer": "https://es.flvto.top/",
+                            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                            "priority": "u=1, i"
+                            }
+                            response4 = requests.get(url4, headers=headers4)
+                            if response4.status_code == 200:
+                                status_data = response4.json()
+                                if status_data.get("status") == "completed":
+                                    download_link = status_data.get("download")
+                                    array_result["result"].append({f"url_{token_down['type']}": download_link, "type_format": token_down["type"]})
+                                    return jsonify({'creator': 'AmmarBN','status': True, 'result': array_result['result']})
+                            else:
+                                return jsonify({'status': False, 'msg': f'Error: respon4'})
+                        else:
+                          return jsonify({'status': False, 'msg': f'Error: respon3'})
+                else:
+                    return jsonify({'status': False, 'msg': f'Error: respon2'})
+            else:
+                return jsonify({'status': False, 'msg': f'Error: respon1'})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
