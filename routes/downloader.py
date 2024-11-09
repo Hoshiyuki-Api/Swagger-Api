@@ -553,6 +553,7 @@ class DownloadytResource(Resource):
                 }
                 response2 = requests.get(url2, headers=headers2)
                 authorization_token = response2.headers.get("Authorization")
+                return jsonify({'status': False, 'msg': response2.json()})
                 if response2.status_code == 200:
                     data2 = response2.json()
                     array_result.update({"title": data2['title']})
