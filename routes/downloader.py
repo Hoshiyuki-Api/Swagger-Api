@@ -531,8 +531,27 @@ class DownloadytResource(Resource):
         "priority": "u=1, i"
         }
         response1 = requests.get(url1, headers=headers1)
-        return jsonify(
-            {
-                'mssg': response1
-            }
-        )
+        data1 = response1.json()
+        video_id = data1["items"][0]["id"]
+        url2 = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
+        headers2 = {
+        "Host": "rr-02-bucket.cdn1313.net",
+        "sec-ch-ua-platform": "\"Android\"",
+        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+        "accept": "application/json",
+        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+        "content-type": "application/json",
+        "sec-ch-ua-mobile": "?1",
+        "origin": "https://es.flvto.top",
+        "sec-fetch-site": "cross-site",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-dest": "empty",
+        "referer": "https://es.flvto.top/",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+        "priority": "u=1, i"
+        }
+        response2 = requests.get(url2, headers=headers2).json
+        return jsonify({
+            'result': response2
+        })
