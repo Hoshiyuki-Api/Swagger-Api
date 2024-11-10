@@ -531,47 +531,8 @@ class DownloadytResource(Resource):
         "priority": "u=1, i"
         }
         response1 = requests.get(url1, headers=headers1)
-        if response1.status_code == 200:
-            data1 = response1.json()
-            video_id = data1["items"][0]["id"]
-            url2 = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
-            headers2 = {
-                "Host": "rr-02-bucket.cdn1313.net",
-                "sec-ch-ua-platform": "\"Android\"",
-                "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-                "accept": "application/json",
-                "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-                "content-type": "application/json",
-                "sec-ch-ua-mobile": "?1",
-                "origin": "https://es.flvto.top",
-                "sec-fetch-site": "cross-site",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-dest": "empty",
-                "referer": "https://es.flvto.top/",
-                "accept-encoding": "gzip, deflate, br, zstd",
-                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-                "priority": "u=1, i",
+        return jsonify(
+            {
+                'mssg': response1
             }
-            response2 = requests.get(url2, headers=headers2)
-            authorization_token = response2.headers.get("Authorization")
-            if response2.status_code == 200:
-                data2 = response2.json()
-                mp3_token = None
-                mp4_token = None
-
-                if "audio" in data2.get("formats", {}):
-                    for audio in data2["formats"]["audio"]["mp3"]:
-                        if audio["quality"] == 320:
-                            mp3_token = audio["token"]
-                
-                if "video" in data2.get("formats", {}):
-                    for video in data2["formats"]["video"]["mp4"]:
-                        if video["quality"] == "480p":
-                            mp4_token = video["token"]
-
-                return jsonify(
-                    {
-                        'mp4_token': mp4_token,
-                        'mp3_token': mp3_token
-                    }
-                )
+        )
