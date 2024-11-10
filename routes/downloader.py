@@ -487,7 +487,7 @@ class DownloadlaheluResource(Resource):
 @ytdlrek.route('')
 class DownloadytResource(Resource):
     @ytdlrek.doc(params={
-        'url': 'YouTube Video URL',
+        'url': 'Url YouTube',
         'apikey': 'API Key for authentication'
     })
     def get(self):
@@ -495,7 +495,7 @@ class DownloadytResource(Resource):
         Downloader YouTube Video & Audio.
 
         Parameters:
-        - url: YouTube video URL (required)
+        - url: Url YouTube (required)
         - apikey: API Key for authentication (required)
         """
         url = request.args.get('url')
@@ -504,113 +504,156 @@ class DownloadytResource(Resource):
         # Parameter validation
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
         if not apikey:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."}), 400
 
-        # Check request limit for API key
+        # Read existing users data
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-
-        # Step 1: Search for video info using the provided YouTube URL
-        search_url = f"https://api.flvto.top/@api/search/YouTube/{url}"
-        search_headers = self._get_default_headers()
-
-        search_response = requests.get(search_url, headers=search_headers)
-        if search_response.status_code != 200:
-            return self._handle_error(search_response, "First request failed")
-
-        search_data = search_response.json()
-        video_id = search_data["items"][0]["id"]
         
-        # Step 2: Fetch detailed video information
-        info_url = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
-        info_response = requests.get(info_url, headers=search_headers)
-        if info_response.status_code != 200:
-            return self._handle_error(info_response, "Second request failed")
+        url1 = f"https://api.flvto.top/@api/search/YouTube/{url}"
+        headers1 = {
+        "Host": "api.flvto.top",
+        "sec-ch-ua-platform": "\"Android\"",
+        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+        "accept": "/",
+        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?1",
+        "origin": "https://www.y2mate.onl",
+        "sec-fetch-site": "cross-site",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-dest": "empty",
+        "referer": "https://www.y2mate.onl/",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+        "priority": "u=1, i"
+        }
+        response1 = requests.get(url1, headers=headers1)
+        response1 = requests.get(url1, headers=headers1)
+        if response1.status_code == 200:
+            data1 = response1.json()
+            video_id = data1["items"][0]["id"]
+            url2 = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
+            headers2 = {
+                "Host": "rr-02-bucket.cdn1313.net",
+                "sec-ch-ua-platform": "\"Android\"",
+                "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                "accept": "application/json",
+                "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                "content-type": "application/json",
+                "sec-ch-ua-mobile": "?1",
+                "origin": "https://es.flvto.top",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://es.flvto.top/",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                "priority": "u=1, i",
+            }
+            response2 = requests.get(url2, headers=headers2)
+            authorization_token = response2.headers.get("Authorization")
+            if response2.status_code == 200:
+                data2 = response2.json()
+                mp3_token = None
+                mp4_token = None
 
-        info_data = info_response.json()
-        authorization_token = info_response.headers.get("Authorization")
+                if "audio" in data2.get("formats", {}):
+                    for audio in data2["formats"]["audio"]["mp3"]:
+                        if audio["quality"] == 320:
+                            mp3_token = audio["token"]
+                
+                if "video" in data2.get("formats", {}):
+                    for video in data2["formats"]["video"]["mp4"]:
+                        if video["quality"] == "480p":
+                            mp4_token = video["token"]
+                            
+                url3 = "https://rr-02-bucket.cdn1313.net/api/v4/convert"
+                headers3 = {
+                    "Host": "rr-02-bucket.cdn1313.net",
+                    "content-length": "184",
+                    "sec-ch-ua-platform": "\"Android\"",
+                    "authorization": authorization_token,
+                    "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                    "accept": "application/json",
+                    "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                    "content-type": "application/json",
+                    "sec-ch-ua-mobile": "?1",
+                    "origin": "https://es.flvto.top",
+                    "sec-fetch-site": "cross-site",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-dest": "empty",
+                    "referer": "https://es.flvto.top/",
+                    "accept-encoding": "gzip, deflate, br, zstd",
+                    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                    "priority": "u=1, i"
+                }
+                payload = {
+                    "token": mp3_token
+                }
+                response3 = requests.post(url3, headers=headers3, json=payload)
+                if response3.status_code == 201:
+                    data3 = response3.json()
+                    # Get the job id from the response
+                    job_id = data3.get("id", "")
+                    url4 = f"https://rr-02-bucket.cdn1313.net/api/v4/status/{job_id}"
+                    headers4 = {
+                        "Host": "rr-02-bucket.cdn1313.net",
+                        "authorization": authorization_token,
+                        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+                        "accept": "application/json",
+                        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+                        "content-type": "application/json",
+                        "sec-ch-ua-mobile": "?1",
+                        "origin": "https://es.flvto.top",
+                        "sec-fetch-site": "cross-site",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-dest": "empty",
+                        "referer": "https://es.flvto.top/",
+                        "accept-encoding": "gzip, deflate, br, zstd",
+                        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
+                        "priority": "u=1, i"
+                    }
+                    response4 = requests.get(url4, headers=headers4)
 
-        # Extract MP3 and MP4 tokens from the response
-        mp3_token = self._get_media_token(info_data, "audio", "mp3", 320)
-        mp4_token = self._get_media_token(info_data, "video", "mp4", "480p")
-
-        # Step 3: Convert the media to the selected format (e.g., MP3)
-        convert_url = "https://rr-02-bucket.cdn1313.net/api/v4/convert"
-        convert_headers = self._get_convert_headers(authorization_token)
-        convert_payload = {"token": mp3_token}
-        
-        convert_response = requests.post(convert_url, headers=convert_headers, json=convert_payload)
-        if convert_response.status_code != 201:
-            return self._handle_error(convert_response, "Third request failed")
-
-        convert_data = convert_response.json()
-        job_id = convert_data.get("id", "")
-
-        # Step 4: Check conversion status
-        status_url = f"https://rr-02-bucket.cdn1313.net/api/v4/status/{job_id}"
-        status_headers = self._get_convert_headers(authorization_token)
-        status_response = requests.get(status_url, headers=status_headers)
-        
-        if status_response.status_code != 200:
-            return self._handle_error(status_response, "Status request failed")
-
-        status_data = status_response.json()
-        if status_data.get("status") == "completed":
-            download_link = status_data.get("download")
-            return jsonify({"Download link": download_link})
+                    if response4.status_code == 200:
+                        status_data = response4.json()
+                        if status_data.get("status") == "completed":
+                            download_link = status_data.get("download")
+                            return jsonify(
+                                {
+                                    "Download": download_link
+                                }
+                            )
+                        else:
+                            return jsonify(
+                                {
+                                    "error": True
+                                }
+                            )
+                    else:
+                        return jsonify(
+                            {
+                                "error": True
+                            }
+                        )
+                else:
+                    return jsonify(
+                        {
+                            "error": True
+                        }
+                    )
+            else:
+                return jsonify(
+                    {
+                        "error": True
+                    }
+                )
         else:
-            return jsonify({"error": "Conversion not completed yet, please try again later."})
-
-    def _get_default_headers(self):
-        return {
-            "Host": "api.flvto.top",
-            "sec-ch-ua-platform": "\"Android\"",
-            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-            "accept": "*/*",
-            "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-            "sec-ch-ua-mobile": "?1",
-            "origin": "https://www.y2mate.onl",
-            "sec-fetch-site": "cross-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            "referer": "https://www.y2mate.onl/",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-            "priority": "u=1, i"
-        }
-
-    def _get_convert_headers(self, authorization_token):
-        return {
-            "Host": "rr-02-bucket.cdn1313.net",
-            "authorization": authorization_token,
-            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-            "accept": "application/json",
-            "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-            "content-type": "application/json",
-            "sec-ch-ua-mobile": "?1",
-            "origin": "https://es.flvto.top",
-            "sec-fetch-site": "cross-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            "referer": "https://es.flvto.top/",
-            "accept-encoding": "gzip, deflate, br, zstd",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-            "priority": "u=1, i"
-        }
-
-    def _get_media_token(self, data, media_type, format_type, quality):
-        """
-        Extracts the token for a specified media type, format, and quality from the data.
-        """
-        if media_type in data.get("formats", {}):
-            for item in data["formats"][media_type][format_type]:
-                if item["quality"] == quality:
-                    return item["token"]
-        return None
-
-    def _handle_error(self, response, message):
-        """
-        Handle error responses and return a structured error message.
-        """
-        return jsonify({"error": f"{message}: {response.status_code}"}), response.status_code
+            return jsonify(
+                {
+                    "error": True
+                }
+            )
