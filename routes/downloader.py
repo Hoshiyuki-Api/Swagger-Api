@@ -1,4 +1,4 @@
-import requests, re, json, os, base64, urllib.parse
+import requests, re, json, os, time, base64, urllib.parse
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
@@ -531,7 +531,6 @@ class DownloadytResource(Resource):
         "priority": "u=1, i"
         }
         response1 = requests.get(url1, headers=headers1)
-        response1 = requests.get(url1, headers=headers1)
         if response1.status_code == 200:
             data1 = response1.json()
             video_id = data1["items"][0]["id"]
@@ -554,6 +553,7 @@ class DownloadytResource(Resource):
                 "priority": "u=1, i",
             }
             response2 = requests.get(url2, headers=headers2)
+            time.sleep(4)
             authorization_token = response2.headers.get("Authorization")
             if response2.status_code == 200:
                 data2 = response2.json()
@@ -593,6 +593,7 @@ class DownloadytResource(Resource):
                 payload = {
                     "token": mp3_token
                 }
+                time.sleep(5)
                 response3 = requests.post(url3, headers=headers3, json=payload)
                 if response3.status_code == 201:
                     data3 = response3.json()
