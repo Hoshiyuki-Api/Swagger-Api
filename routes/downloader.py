@@ -551,6 +551,7 @@ class DownloadytResource(Resource):
         "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
         "priority": "u=1, i"
         }
+        time.sleep(7)
         response2 = requests.get(url2, headers=headers2).json()
         return jsonify({
             'result': response2
