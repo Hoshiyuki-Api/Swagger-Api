@@ -553,7 +553,6 @@ class DownloadytResource(Resource):
                 "priority": "u=1, i",
             }
             response2 = requests.get(url2, headers=headers2)
-            time.sleep(4)
             authorization_token = response2.headers.get("Authorization")
             if response2.status_code == 200:
                 data2 = response2.json()
