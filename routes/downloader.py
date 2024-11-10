@@ -628,33 +628,3 @@ class DownloadytResource(Resource):
                                     "Download": download_link
                                 }
                             )
-                        else:
-                            return jsonify(
-                                {
-                                    "errorc": True
-                                }
-                            )
-                    else:
-                        return jsonify(
-                            {
-                                "error4": True
-                            }
-                        )
-                else:
-                    return jsonify(
-                        {
-                            "error3": True
-                        }
-                    )
-            else:
-                return jsonify(
-                    {
-                        "error2": True
-                    }
-                )
-        else:
-            return jsonify(
-                {
-                    "error1": True
-                }
-            )
