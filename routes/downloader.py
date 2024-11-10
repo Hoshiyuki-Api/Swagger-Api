@@ -553,7 +553,6 @@ class DownloadytResource(Resource):
                 }
                 response2 = requests.get(url2, headers=headers2)
                 authorization_token = response2.headers.get("Authorization")
-                return jsonify({'status': False, 'msg': response2.json()})
                 if response2.status_code == 200:
                     data2 = response2.json()
                     array_result.update({"title": data2['title']})
@@ -595,7 +594,6 @@ class DownloadytResource(Resource):
                         "token": token_down["token"]
                         }
                         response3 = requests.post(url3, headers=headers3, json=payload)
-                        time.sleep(3)
                         if response3.status_code == 201:
                             data3 = response3.json()
                             job_id = data3.get("id", "")
