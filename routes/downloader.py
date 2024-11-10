@@ -512,7 +512,7 @@ class DownloadytResource(Resource):
         limit_error = check_and_update_request_limit(apikey)
         if limit_error:
             return jsonify(limit_error[0]), limit_error[1]
-        
+        proxy = {'http': 'http://165.232.129.150:80','https': 'http://165.232.129.150:80'}
         url1 = f"https://api.flvto.top/@api/search/YouTube/{url}"
         headers1 = {
         "Host": "api.flvto.top",
@@ -552,7 +552,7 @@ class DownloadytResource(Resource):
         "priority": "u=1, i"
         }
         time.sleep(7)
-        response2 = requests.get(url2, headers=headers2).json()
+        response2 = requests.get(url2, headers=headers2, proxies=proxy).json()
         return jsonify({
             'result': response2
         })
