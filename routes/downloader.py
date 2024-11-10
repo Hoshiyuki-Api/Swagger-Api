@@ -568,62 +568,10 @@ class DownloadytResource(Resource):
                     for video in data2["formats"]["video"]["mp4"]:
                         if video["quality"] == "480p":
                             mp4_token = video["token"]
-                            
-                url3 = "https://rr-02-bucket.cdn1313.net/api/v4/convert"
-                headers3 = {
-                    "Host": "rr-02-bucket.cdn1313.net",
-                    "content-length": "184",
-                    "sec-ch-ua-platform": "\"Android\"",
-                    "authorization": authorization_token,
-                    "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-                    "accept": "application/json",
-                    "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-                    "content-type": "application/json",
-                    "sec-ch-ua-mobile": "?1",
-                    "origin": "https://es.flvto.top",
-                    "sec-fetch-site": "cross-site",
-                    "sec-fetch-mode": "cors",
-                    "sec-fetch-dest": "empty",
-                    "referer": "https://es.flvto.top/",
-                    "accept-encoding": "gzip, deflate, br, zstd",
-                    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-                    "priority": "u=1, i"
-                }
-                payload = {
-                    "token": mp3_token
-                }
-                time.sleep(5)
-                response3 = requests.post(url3, headers=headers3, json=payload)
-                if response3.status_code == 201:
-                    data3 = response3.json()
-                    # Get the job id from the response
-                    job_id = data3.get("id", "")
-                    url4 = f"https://rr-02-bucket.cdn1313.net/api/v4/status/{job_id}"
-                    headers4 = {
-                        "Host": "rr-02-bucket.cdn1313.net",
-                        "authorization": authorization_token,
-                        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-                        "accept": "application/json",
-                        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-                        "content-type": "application/json",
-                        "sec-ch-ua-mobile": "?1",
-                        "origin": "https://es.flvto.top",
-                        "sec-fetch-site": "cross-site",
-                        "sec-fetch-mode": "cors",
-                        "sec-fetch-dest": "empty",
-                        "referer": "https://es.flvto.top/",
-                        "accept-encoding": "gzip, deflate, br, zstd",
-                        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-                        "priority": "u=1, i"
-                    }
-                    response4 = requests.get(url4, headers=headers4)
 
-                    if response4.status_code == 200:
-                        status_data = response4.json()
-                        if status_data.get("status") == "completed":
-                            download_link = status_data.get("download")
-                            return jsonify(
-                                {
-                                    "Download": download_link
-                                }
-                            )
+                return jsonify(
+                    {
+                        'mp4_token': mp4_token,
+                        'mp3_token': mp3_token
+                    }
+                )
