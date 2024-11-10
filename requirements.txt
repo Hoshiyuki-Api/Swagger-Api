@@ -1,5 +1,5 @@
 claude-api
-brotli
+Brotli==1.1.0
 aniso8601==9.0.1
 attrs==23.2.0
 beautifulsoup4==4.12.3
