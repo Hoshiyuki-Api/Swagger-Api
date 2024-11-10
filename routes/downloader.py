@@ -630,30 +630,30 @@ class DownloadytResource(Resource):
                         else:
                             return jsonify(
                                 {
-                                    "error": True
+                                    "errorc": True
                                 }
                             )
                     else:
                         return jsonify(
                             {
-                                "error": True
+                                "error4": True
                             }
                         )
                 else:
                     return jsonify(
                         {
-                            "error": True
+                            "error3": True
                         }
                     )
             else:
                 return jsonify(
                     {
-                        "error": True
+                        "error2": True
                     }
                 )
         else:
             return jsonify(
                 {
-                    "error": True
+                    "error1": True
                 }
             )
