@@ -1,4 +1,4 @@
-import requests, re, json, os, time, base64, urllib.parse
+import requests, re, json, os, time, brotli, base64, urllib.parse
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
