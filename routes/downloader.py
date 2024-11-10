@@ -626,7 +626,7 @@ class DownloadytResource(Resource):
                         else:
                           return jsonify({'status': False, 'msg': f'Error: respon3'})
                 else:
-                    return jsonify({'status': False, 'msg': f'Error: respon2'})
+                    return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             else:
                 return jsonify({'status': False, 'msg': f'Error: respon1'})
         except Exception as e:
