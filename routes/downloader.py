@@ -561,7 +561,7 @@ class DownloadytResource(Resource):
 
         try:
             ddownr = Ddownr()
-            res = ddownr.download(url, "720")
+            ddownr.download(url, "720")
         #    return jsonify({res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
@@ -586,7 +586,7 @@ class Downloadytmp3Resource(Resource):
 
         try:
             ddownr = Ddownr()
-            res = ddownr.download(url, "mp3")
+            ddownr.download(url, "mp3")
          #   return jsonify({res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
