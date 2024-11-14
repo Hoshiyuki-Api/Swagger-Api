@@ -499,19 +499,19 @@ class Ddownr:
             )
             data = response.json()
             media = Ddownr.cek_progress(data['id'], max_retries)
-            return {
+            return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
                 'format': format,
                 'title': data['title'],
                 'thumbnail': data['info']['image'],
                 'downloadUrl': media
-            }
+            })
         except requests.RequestException as error:
-            return {
+            return jsonify({
                 'success': False,
                 'message': str(error)
-            }
+            })
 
     @staticmethod
     def cek_progress(id, max_retries):
@@ -531,15 +531,15 @@ class Ddownr:
                 else:
                     time.sleep(1)
                     retries += 1
-            return {
+            return jsonify({
                 'success': False,
                 'message': 'Exceeded max retries without completion'
-            }
+            })
         except requests.RequestException as error:
-            return {
+            return jsonify({
                 'success': False,
                 'message': str(error)
-            }
+            })
         
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
@@ -562,7 +562,7 @@ class DownloadytResource(Resource):
         try:
             ddownr = Ddownr()
             res = ddownr.download(url, "720")
-            return jsonify({res})
+        #    return jsonify({res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -587,6 +587,6 @@ class Downloadytmp3Resource(Resource):
         try:
             ddownr = Ddownr()
             res = ddownr.download(url, "mp3")
-            return jsonify({res})
+         #   return jsonify({res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
