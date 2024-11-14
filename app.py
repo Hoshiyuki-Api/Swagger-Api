@@ -97,8 +97,8 @@ api.add_namespace(fbdl_ns, path='/api/fbdl')      # NameSpace Untuk Facebook
 api.add_namespace(mdf_ns, path='/api/mediafire')  # NameSpace Untuk Mediafire
 api.add_namespace(pinvid_ns, path='/api/pinvid')  # NameSpace Untuk Pinterest Video
 api.add_namespace(lahelu_ns, path='/api/lahelu')  # NameSpace Untuk Lahelu
-api.add_namespace(ytdl4_ns, path='/api/mp4')
-api.add_namespace(ytdl3_ns, path='/api/mp3')
+api.add_namespace(ytdl4_ns, path='/api/ytmp4')
+api.add_namespace(ytdl3_ns, path='/api/ytmp3')
 # NameSpace Tools
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 api.add_namespace(removebg_ns, path='/api/removebg')
