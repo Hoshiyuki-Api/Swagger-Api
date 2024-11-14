@@ -499,19 +499,9 @@ class Ddownr:
             )
             data = response.json()
             media = Ddownr.cek_progress(data['id'], max_retries)
-            return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'format': format,
-                'title': data['title'],
-                'thumbnail': data['info']['image'],
-                'downloadUrl': media
-            })
+            return media
         except requests.RequestException as error:
-            return jsonify({
-                'success': False,
-                'message': str(error)
-            })
+            return str(error)
 
     @staticmethod
     def cek_progress(id, max_retries):
@@ -531,15 +521,9 @@ class Ddownr:
                 else:
                     time.sleep(1)
                     retries += 1
-            return jsonify({
-                'success': False,
-                'message': 'Exceeded max retries without completion'
-            })
+            return 'Exceeded max retries without completion'
         except requests.RequestException as error:
-            return jsonify({
-                'success': False,
-                'message': str(error)
-            })
+            return str(error)
         
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
@@ -561,8 +545,8 @@ class DownloadytResource(Resource):
 
         try:
             ddownr = Ddownr()
-            ddownr.download(url, "720")
-        #    return jsonify({res})
+            res= ddownr.download(url, "720")
+            return jsonify({"res": res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -586,7 +570,7 @@ class Downloadytmp3Resource(Resource):
 
         try:
             ddownr = Ddownr()
-            ddownr.download(url, "mp3")
-         #   return jsonify({res})
+            res = ddownr.download(url, "mp3")
+            return jsonify({"res": res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
