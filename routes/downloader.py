@@ -1,4 +1,4 @@
-import requests, re, json, os, time, brotli, base64, urllib.parse
+import requests, re, json, os, base64, urllib.parse
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
@@ -13,7 +13,8 @@ facebook_bp = Blueprint('facebook', __name__)
 mediafire_bp = Blueprint('mediafir', __name__)
 pinterestvid_bp = Blueprint('pinterestvid', __name__)#
 laheludl_bp = Blueprint('lahelu', __name__)
-ytdl_bp = Blueprint('youtubedl', __name__)
+ytdlmp4_bp = Blueprint('youtubedl', __name__)
+ytdlmp3_bp = Blueprint('youtubedl3', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -101,7 +102,8 @@ facebookdlrek = Namespace('downloader', description='Downloader Api')
 mediafiredlrek = Namespace('downloader', description='Downloader Api')
 pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
-ytdlrek = Namespace('downloader', description='Downloader Api')
+ytdlmp4rek = Namespace('downloader', description='Downloader Api')
+ytdlmp3rek = Namespace('downloader', description='Downloader Api')
 
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
@@ -483,76 +485,108 @@ class DownloadlaheluResource(Resource):
                 }
             )
 
+
+class Ddownr:
+    @staticmethod
+    def download(url, format, max_retries=10):
+        try:
+            response = requests.get(
+                f"https://p.oceansaver.in/ajax/download.php?copyright=0&format={format}&url={url}",
+                headers={
+                    'User-Agent': 'MyApp/1.0',
+                    'Referer': 'https://ddownr.com/enW7/youtube-video-downloader'
+                }
+            )
+            data = response.json()
+            media = Ddownr.cek_progress(data['id'], max_retries)
+            return {
+                'creator': 'AmmarBN',
+                'status': True,
+                'format': format,
+                'title': data['title'],
+                'thumbnail': data['info']['image'],
+                'downloadUrl': media
+            }
+        except requests.RequestException as error:
+            return {
+                'success': False,
+                'message': str(error)
+            }
+
+    @staticmethod
+    def cek_progress(id, max_retries):
+        retries = 0
+        try:
+            while retries < max_retries:
+                progress_response = requests.get(
+                    f"https://p.oceansaver.in/ajax/progress.php?id={id}",
+                    headers={
+                        'User-Agent': 'MyApp/1.0',
+                        'Referer': 'https://ddownr.com/enW7/youtube-video-downloader'
+                    }
+                )
+                data = progress_response.json()
+                if data['progress'] == 1000:
+                    return data['download_url']
+                else:
+                    time.sleep(1)
+                    retries += 1
+            return {
+                'success': False,
+                'message': 'Exceeded max retries without completion'
+            }
+        except requests.RequestException as error:
+            return {
+                'success': False,
+                'message': str(error)
+            }
         
-@ytdlrek.route('')
+@ytdlmp4rek.route('')
 class DownloadytResource(Resource):
-    @ytdlrek.doc(params={
-        'url': 'Url YouTube',
-        'apikey': 'API Key for authentication'
+    @ytdlmp4rek.doc(params={
+        'url': 'Url YouTube'
     })
     def get(self):
         """
-        Downloader YouTube Video & Audio.
+        Downloader YouTube Video.
 
         Parameters:
         - url: Url YouTube (required)
-        - apikey: API Key for authentication (required)
         """
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
-
+        
         # Parameter validation
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."}), 400
+        try:
+            ddownr = Ddownr()
+            res = ddownr.download(url, "720")
+            return jsonify({res})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+            
+@ytdlmp3rek.route('')
+class Downloadytmp3Resource(Resource):
+    @ytdlmp3rek.doc(params={
+        'url': 'Url YouTube'
+    })
+    def get(self):
+        """
+        Downloader YouTube Audio.
 
-        # Read existing users data
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        proxy = {'http': 'http://165.232.129.150:80','https': 'http://165.232.129.150:80'}
-        url1 = f"https://api.flvto.top/@api/search/YouTube/{url}"
-        headers1 = {
-        "Host": "api.flvto.top",
-        "sec-ch-ua-platform": "\"Android\"",
-        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-        "accept": "/",
-        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-        "sec-ch-ua-mobile": "?1",
-        "origin": "https://www.y2mate.onl",
-        "sec-fetch-site": "cross-site",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-dest": "empty",
-        "referer": "https://www.y2mate.onl/",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-        "priority": "u=1, i"
-        }
-        response1 = requests.get(url1, headers=headers1)
-        data1 = response1.json()
-        video_id = data1["items"][0]["id"]
-        url2 = f"https://rr-02-bucket.cdn1313.net/api/v4/info/{video_id}"
-        headers2 = {
-        "Host": "rr-02-bucket.cdn1313.net",
-        "sec-ch-ua-platform": "\"Android\"",
-        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
-        "accept": "application/json",
-        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-        "content-type": "application/json",
-        "sec-ch-ua-mobile": "?1",
-        "origin": "https://es.flvto.top",
-        "sec-fetch-site": "cross-site",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-dest": "empty",
-        "referer": "https://es.flvto.top/",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7,ms;q=0.6",
-        "priority": "u=1, i"
-        }
-        time.sleep(7)
-        response2 = requests.get(url2, headers=headers2, proxies=proxy).json()
-        return jsonify({
-            'result': response2
-        })
+        Parameters:
+        - url: Url YouTube (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            ddownr = Ddownr()
+            res = ddownr.download(url, "mp3")
+            return jsonify({res})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
