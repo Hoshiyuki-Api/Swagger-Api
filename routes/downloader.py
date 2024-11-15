@@ -199,6 +199,7 @@ class DownloadigResource(Resource):
         # api baru
         headers = {'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"','sec-ch-ua-platform': 'Android','Referer': 'https://instasave.website/','sec-ch-ua-mobile': '?1','User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36','Content-Type': 'application/x-www-form-urlencoded',}
         data = {'url': url}
+        rse = []
         html_content = requests.post('https://api.instasave.website/media', headers=headers, data=data).text
         inner_html_match = re.search(r'innerHTML\s*=\s*"(.*?)";', html_content, re.DOTALL)
         if inner_html_match:
@@ -207,9 +208,10 @@ class DownloadigResource(Resource):
         	link_vido = thumb_url.group(1)
         	urls = extracted_html #"https://dl.snapcdn.app/{}".format(link_vido.replace("\\", ""))
         else:urls = None
+        rse.append(extracted_html)
         return jsonify({
             "creator": "AmmarBN",
-            "result": [urls],
+            "result": rse,
             "status": True
         })
         
