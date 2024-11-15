@@ -209,7 +209,7 @@ class DownloadigResource(Resource):
         else:urls = None
         return jsonify({
             "creator": "AmmarBN",
-            "result": urls,
+            "result": [urls],
             "status": True
         })
         
