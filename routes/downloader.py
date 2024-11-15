@@ -204,14 +204,14 @@ class DownloadigResource(Resource):
         inner_html_match = re.search(r'innerHTML\s*=\s*"(.*?)";', html_content, re.DOTALL)
         if inner_html_match:
         	extracted_html = inner_html_match.group(1)
-        	#thumb_url = re.search('"https://dl.snapcdn.app/(.*?)"', extracted_html)
-        	#link_vido = thumb_url.group(1)
-        	urls = extracted_html #"https://dl.snapcdn.app/{}".format(link_vido.replace("\\", ""))
+        	thumb_url = re.search('"https://cdn.instasave.website/(.*?)"', extracted_html)
+        	link_vido = thumb_url.group(1)
+        	urls = "https://cdn.instasave.website/{}".format(link_vido.replace("\\", ""))
         else:urls = None
         rse.append(extracted_html)
         return jsonify({
             "creator": "AmmarBN",
-            "result": rse,
+            "result": urls,
             "status": True
         })
         
