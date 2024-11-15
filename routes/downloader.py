@@ -205,7 +205,7 @@ class DownloadigResource(Resource):
         	extracted_html = inner_html_match.group(1)
         	thumb_url = re.search('"https://dl.snapcdn.app/(.*?)"', extracted_html)
         	link_vido = thumb_url.group(1)
-        	urls = "https://dl.snapcdn.app/{}".format(link_vido.replace("\\", ""))
+        	urls = extracted_html #"https://dl.snapcdn.app/{}".format(link_vido.replace("\\", ""))
         else:urls = None
         return jsonify({
             "creator": "AmmarBN",
@@ -546,7 +546,7 @@ class DownloadytResource(Resource):
         try:
             ddownr = Ddownr()
             res= ddownr.download(url, "720")
-            return jsonify({"res": res})
+            return jsonify({'creator': 'AmmarBN','status': True,'result': res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -571,6 +571,6 @@ class Downloadytmp3Resource(Resource):
         try:
             ddownr = Ddownr()
             res = ddownr.download(url, "mp3")
-            return jsonify({"res": res})
+            return jsonify({'creator': 'AmmarBN','status': True,'result': res})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
