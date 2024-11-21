@@ -607,12 +607,11 @@ class DownloadytResource(Resource):
 
         try:
             output_format = "mp4"
-
             token = yt_download(url, output_format)
             result = url_down(token)
             if result:
                return jsonify({'creator': 'AmmarBN','status': True,'result': result})
-            else:return jsonify({'status': False, 'msg': f'url not found '}
+            else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -640,6 +639,6 @@ class Downloadytmp3Resource(Resource):
             result = url_down(token)
             if result:
                return jsonify({'creator': 'AmmarBN','status': True,'result': result})
-            else:return jsonify({'status': False, 'msg': f'url not found '}
+            else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
