@@ -1,0 +1,228 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-center text-gray-800">API Documentation</h1>
+        </header>
+        <nav class="mb-8">
+            <ul class="flex justify-center space-x-4">
+                <li><a href="#overview" class="text-blue-500 hover:underline">Overview</a></li>
+                <li><a href="#authentication" class="text-blue-500 hover:underline">Authentication</a></li>
+                <li><a href="#endpoints" class="text-blue-500 hover:underline">Endpoints</a></li>
+                <li><a href="#examples" class="text-blue-500 hover:underline">Examples</a></li>
+            </ul>
+        </nav>
+        <section id="overview" class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Overview</h2>
+            <p class="text-gray-600">This API allows you to interact with our service programmatically. You can retrieve, create, update, and delete resources using the endpoints provided.</p>
+        </section>
+        <section id="authentication" class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Authentication</h2>
+            <p class="text-gray-600">To use the API, you need to authenticate using an API key. Include the API key in the header of your requests as follows:</p>
+            <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">Authorization: Bearer YOUR_API_KEY</code></pre>
+        </section>
+        <section id="endpoints" class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Endpoints</h2>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">GET /api/v1/resources</h3>
+                <p class="text-gray-600 mb-2">Retrieve a list of resources.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600" onclick="window.location.href='https://api.example.com/v1/resources'">Try it out</button>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('get-resources')">Show Details</button>
+                <div id="get-resources" class="hidden mt-4">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Request</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">curl -X GET "https://api.example.com/v1/resources"</code></pre>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Response</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">{
+    "data": [
+        {
+            "id": 1,
+            "name": "Resource 1",
+            "description": "Description of Resource 1"
+        },
+        {
+            "id": 2,
+            "name": "Resource 2",
+            "description": "Description of Resource 2"
+        }
+    ]
+}</code></pre>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('get-resources')">Hide Details</button>
+                </div>
+            </div>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">POST /api/v1/resources</h3>
+                <p class="text-gray-600 mb-2">Create a new resource.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600" onclick="window.location.href='https://api.example.com/v1/resources'">Try it out</button>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('post-resources')">Show Details</button>
+                <div id="post-resources" class="hidden mt-4">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Request</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">curl -X POST "https://api.example.com/v1/resources" -d '{
+    "name": "New Resource",
+    "description": "Description of the new resource"
+}'</code></pre>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Response</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">{
+    "id": 3,
+    "name": "New Resource",
+    "description": "Description of the new resource"
+}</code></pre>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('post-resources')">Hide Details</button>
+                </div>
+            </div>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">PUT /api/v1/resources/{id}</h3>
+                <p class="text-gray-600 mb-2">Update an existing resource.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600" onclick="window.location.href='https://api.example.com/v1/resources/1'">Try it out</button>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('put-resources')">Show Details</button>
+                <div id="put-resources" class="hidden mt-4">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Request</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">curl -X PUT "https://api.example.com/v1/resources/1" -d '{
+    "name": "Updated Resource",
+    "description": "Updated description of the resource"
+}'</code></pre>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Response</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">{
+    "id": 1,
+    "name": "Updated Resource",
+    "description": "Updated description of the resource"
+}</code></pre>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('put-resources')">Hide Details</button>
+                </div>
+            </div>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">DELETE /api/v1/resources/{id}</h3>
+                <p class="text-gray-600 mb-2">Delete a resource.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600" onclick="window.location.href='https://api.example.com/v1/resources/1'">Try it out</button>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('delete-resources')">Show Details</button>
+                <div id="delete-resources" class="hidden mt-4">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Request</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">curl -X DELETE "https://api.example.com/v1/resources/1"</code></pre>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Sample Response</h4>
+                    <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">{
+    "message": "Resource deleted successfully"
+}</code></pre>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('delete-resources')">Hide Details</button>
+                </div>
+            </div>
+        </section>
+        <section id="examples" class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Examples</h2>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Example 1: Fetching Resources</h3>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('example-fetch')">Show Details</button>
+                <div id="example-fetch" class="hidden mt-4">
+                    <label for="language-select" class="block text-gray-700 font-semibold mb-2">Select Language:</label>
+                    <select id="language-select" class="block w-full p-2 border border-gray-300 rounded mb-4" onchange="showExample('fetch', this.value)">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="ruby">Ruby</option>
+                    </select>
+                    <div id="fetch-example-javascript" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">fetch('https://api.example.com/v1/resources', {
+    method: 'GET'
+})
+.then(response => response.json())
+.then(data => console.log(data));</code></pre>
+                    </div>
+                    <div id="fetch-example-python" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">import requests
+
+response = requests.get('https://api.example.com/v1/resources')
+print(response.json())</code></pre>
+                    </div>
+                    <div id="fetch-example-ruby" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">require 'net/http'
+require 'json'
+
+url = URI('https://api.example.com/v1/resources')
+response = Net::HTTP.get(url)
+puts JSON.parse(response)</code></pre>
+                    </div>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('example-fetch')">Hide Details</button>
+                </div>
+            </div>
+            <div class="bg-white shadow-md rounded p-4 mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Example 2: Creating a Resource</h3>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('example-create')">Show Details</button>
+                <div id="example-create" class="hidden mt-4">
+                    <label for="language-select-create" class="block text-gray-700 font-semibold mb-2">Select Language:</label>
+                    <select id="language-select-create" class="block w-full p-2 border border-gray-300 rounded mb-4" onchange="showExample('create', this.value)">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="ruby">Ruby</option>
+                    </select>
+                    <div id="create-example-javascript" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">fetch('https://api.example.com/v1/resources', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        name: 'New Resource',
+        description: 'Description of the new resource'
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data));</code></pre>
+                    </div>
+                    <div id="create-example-python" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">import requests
+
+data = {
+    'name': 'New Resource',
+    'description': 'Description of the new resource'
+}
+response = requests.post('https://api.example.com/v1/resources', json=data)
+print(response.json())</code></pre>
+                    </div>
+                    <div id="create-example-ruby" class="hidden">
+                        <pre class="bg-gray-200 p-4 rounded"><code class="text-gray-800">require 'net/http'
+require 'json'
+
+url = URI('https://api.example.com/v1/resources')
+http = Net::HTTP.new(url.host, url.port)
+request = Net::HTTP::Post.new(url)
+request['Content-Type'] = 'application/json'
+request.body = {
+    name: 'New Resource',
+    description: 'Description of the new resource'
+}.to_json
+response = http.request(request)
+puts JSON.parse(response.body)</code></pre>
+                    </div>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600" onclick="toggleDropdown('example-create')">Hide Details</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+        function toggleDropdown(id) {
+            const element = document.getElementById(id);
+            if (element.classList.contains('hidden')) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        }
+
+        function showExample(type, language) {
+            const examples = document.querySelectorAll(`#${type}-example-javascript, #${type}-example-python, #${type}-example-ruby`);
+            examples.forEach(example => example.classList.add('hidden'));
+            document.getElementById(`${type}-example-${language}`).classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
