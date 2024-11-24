@@ -1,4 +1,5 @@
 import requests, re, json, os, base64, urllib.parse, time
+from urllib.parse import urlparse, parse_qs
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
@@ -15,6 +16,7 @@ pinterestvid_bp = Blueprint('pinterestvid', __name__)#
 laheludl_bp = Blueprint('lahelu', __name__)
 ytdlmp4_bp = Blueprint('youtubedl', __name__)
 ytdlmp3_bp = Blueprint('youtubedl3', __name__)
+ytplaylist_bp = Blueprint('youtubeplist', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -104,7 +106,7 @@ pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
 ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
-
+ytplaylistrek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -640,5 +642,59 @@ class Downloadytmp3Resource(Resource):
             if result:
                return jsonify({'creator': 'AmmarBN','status': True,'result': result})
             else:return jsonify({'status': False, 'msg': f'url not found '})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+def extract_list_id(url):
+    parsed_url = urlparse(url)
+    query_params = parse_qs(parsed_url.query)  # Memparsing query string
+    list_id = query_params.get('list')  # Mencari parameter 'list'
+    return list_id[0] if list_id else None
+    
+@ytplaylistrek.route('')
+class DownloadytplaylistResource(Resource):
+    @ytplaylistrek.doc(params={
+        'url': 'Url YouTube Playlist'
+    })
+    def get(self):
+        """
+        Retrieve a list of YouTube playlist URLs.
+
+        Parameters:
+        - url: Url YouTube Playlist (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+        	list_id = extract_list_id(url)
+            if list_id:
+                        headers = {
+                            "Host": "www.googleapis.com",
+                            "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+                            "accept": "*/*",
+                            "origin": "https://ytplaylistdownloader.com",
+                            "x-client-data": "CI62yQEIpbbJAQipncoBCPjHygEIpM3KAQjc1coBGLDIygEYhZzLAQ==",
+                            "sec-fetch-site": "cross-site",
+                            "sec-fetch-mode": "cors",
+                            "sec-fetch-dest": "empty",
+                            "referer": "https://ytplaylistdownloader.com/",
+                            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+                        }
+                        params = {
+                            "part": "snippet,contentDetails",
+                            "maxResults": "50",
+                            "playlistId": list_id,
+                            "key": "AIzaSyAsJXQ7ZLziMCb88TGwNRGB7_ktN48kESE"
+                        }
+                        detail = []
+                        resp = requests.get("https://www.googleapis.com/youtube/v3/playlistItems", headers=headers, params=params)
+                        for x in resp.json()["items"]:
+                            detail.append({"title": x["snippet"]["title"], "description": x["snippet"]["description"], "thumbnails": x["snippet"]["thumbnails"]["medium"]["url"], "watchId": f'https://www.youtube.com/watch?v={x["contentDetails"]["videoId"]}'})
+                        return jsonify({'creator': 'AmmarBN','status': True,'playlist':len(detail),'result': detail})
+            else:return jsonify({'status': False, 'msg': f'the url you entered was not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
