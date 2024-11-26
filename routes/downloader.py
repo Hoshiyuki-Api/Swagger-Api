@@ -141,7 +141,6 @@ def tiktok2(query):
 class DownloadttResource(Resource):
     @tiktokdlrek.doc(params={
         'url': 'Url Tiktok',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -149,22 +148,12 @@ class DownloadttResource(Resource):
 
         Parameters:
         - url: Url Tiktok (required)
-        - apikey: API Key for authentication (required)
         """
         
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-            
+
         try:
              resl = tiktok2(url)
              return jsonify({'creator': 'AmmarBN', 'result': {'title': resl['title'], 'cover': resl['cover'], 'origin_cover': resl['origin_cover'], 'no_watermark': resl['no_watermark'], }})
@@ -175,22 +164,13 @@ class DownloadttResource(Resource):
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
         'url': 'Instagram URL',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
 
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
-        
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' is required."})
 
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         # Siapkan request ke API baru
         #resp = requests.get(f"https://widipe.com/download/igdl?url={url}")
@@ -212,6 +192,7 @@ class DownloadigResource(Resource):
         return jsonify({
             "creator": "AmmarBN",
             "result": urls,
+            "cek": rse,
             "status": True
         })
         
@@ -219,7 +200,6 @@ class DownloadigResource(Resource):
 class DownloadtwResource(Resource):
     @twitterdlrek.doc(params={
         'url': 'Url Twitter',
-        'apikey': 'API Key for authentication'
     })
     # @api.marshal_with(user_agent_model)
     def get(self):
@@ -228,21 +208,12 @@ class DownloadtwResource(Resource):
 
         Parameters:
         - url: Url twitter (required)
-        - apikey: API Key for authentication (required)
         """
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
-        
+
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
 
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
         try:
             data = {'URL': url}
             req = requests.post('https://twdown.net/download.php',data=data).text
@@ -270,7 +241,6 @@ class DownloadtwResource(Resource):
 class DownloadfbResource(Resource):
     @facebookdlrek.doc(params={
         'url': 'Url Facebook',
-        'apikey': 'API Key for authentication'
     })
     # @api.marshal_with(user_agent_model)
     def get(self):
@@ -279,20 +249,11 @@ class DownloadfbResource(Resource):
 
         Parameters:
         - url: Url Facebook (required)
-        - apikey: API Key for authentication (required)
         """
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
+
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        limit_error = check_and_update_request_limit(apikey)
-        
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
         
         try:
             api = requests.get(f'https://aemt.me/download/fbdl?url={url}')
@@ -324,7 +285,6 @@ class DownloadfbResource(Resource):
 class DownloadmediafireResource(Resource):
     @mediafiredlrek.doc(params={
         'url': 'Url Mediafire',
-        'apikey': 'API Key for authentication'
     })
     # @api.marshal_with(user_agent_model)
     def get(self):
@@ -333,23 +293,13 @@ class DownloadmediafireResource(Resource):
 
         Parameters:
         - url: Url Mediafire (required)
-        - apikey: API Key for authentication (required)
         """
         
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
         
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        limit_error = check_and_update_request_limit(apikey)
-        
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        
+
         res = requests.get(url)
         soup = BeautifulSoup(res.text, "html.parser")
         type = soup.find('div', {'class': 'filename'}).text.strip()
@@ -372,7 +322,6 @@ class DownloadmediafireResource(Resource):
 class DownloadPinVidResource(Resource):
     @pinterestviddlrek.doc(params={
         'url': 'Url Pinterest Video',
-        'apikey': 'API Key for authentication'
     })
     # @api.marshal_with(user_agent_model)
     def get(self):
@@ -381,22 +330,13 @@ class DownloadPinVidResource(Resource):
 
         Parameters:
         - url: Url Pinterest Video (required)
-        - apikey: API Key for authentication (required)
         """
         
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
         
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-            
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-            
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-            
+
         c = requests.post('https://pinterestvideodownloader.com/download.php',
         headers={
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -423,7 +363,6 @@ class DownloadPinVidResource(Resource):
 class DownloadlaheluResource(Resource):
     @laheludlrek.doc(params={
         'url': 'Url Lahelu',
-        'apikey': 'API Key for authentication'
     })
     # @api.marshal_with(user_agent_model)
     def get(self):
@@ -432,21 +371,12 @@ class DownloadlaheluResource(Resource):
 
         Parameters:
         - url: Url Lahellu Post (required)
-        - apikey: API Key for authentication (required)
         """
         
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
         
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         params = {"postID": url.replace("https://lahelu.com/post/", "")}
         headers = {"Host": "lahelu.com","accept": "application/json, text/plain, /","user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36","sec-fetch-site": "same-origin","sec-fetch-mode": "cors","sec-fetch-dest": "empty","accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7","cookie": "_ga=GA1.1.1763889101.1729515843; _gcl_au=1.1.1664196277.1729515843; _ga_ZD1YG9MSQ3=GS1.1.1729571966.2.1.1729573139.56.0.175494160","if-none-match": 'W/"257-Brv/UpPGmYCjDMihALxbhOUJX6s"'}
