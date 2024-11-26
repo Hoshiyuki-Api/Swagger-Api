@@ -113,8 +113,7 @@ imgtotext = Namespace('ai', description='AI Api')
 class DownloadaivoiceResource(Resource):
     @aivoicerek.doc(params={
         'text': 'Input Text',
-        'type': 'input Type Voice',
-        'apikey': 'API Key for authentication'
+        'type': 'input Type Voice'
     })
     def get(self):
         """
@@ -123,22 +122,14 @@ class DownloadaivoiceResource(Resource):
         Parameters:
         - text: Text (required)
         - type: Type Anime
-        - apikey: API Key for authentication (required)
         """
         text = request.args.get('text')
         type = request.args.get('type')
-        apikey = request.args.get('apikey')
 
         if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
         if not type:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'type' diperlukan."})
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         try:
             generate_random_ips = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
@@ -207,7 +198,6 @@ class DownloadaivoiceResource(Resource):
 class DownloadhercaiResource(Resource):
     @hercairek.doc(params={
         'text': 'Input Text',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -215,20 +205,11 @@ class DownloadhercaiResource(Resource):
 
         Parameters:
         - text: Text (required)
-        - apikey: API Key for authentication (required)
         """
         text = request.args.get('text')
-        apikey = request.args.get('apikey')
 
         if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
-
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         try:
             cai = requests.get(
@@ -250,7 +231,6 @@ class DownloadhercaiResource(Resource):
 class DownloadblackboxResource(Resource):
     @blackboxrek.doc(params={
         'text': 'Input Text',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -258,20 +238,11 @@ class DownloadblackboxResource(Resource):
 
         Parameters:
         - text: Text (required)
-        - apikey: API Key for authentication (required)
         """
         text = request.args.get('text')
-        apikey = request.args.get('apikey')
 
         if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
-
-        if not apikey:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         url = "https://www.blackbox.ai/api/chat"
         headers = {
@@ -319,7 +290,6 @@ class DownloadblackboxResource(Resource):
 class DownloaddeepaiResource(Resource):
     @deepairek.doc(params={
         'text': 'Input Text',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -327,21 +297,11 @@ class DownloaddeepaiResource(Resource):
 
         Parameters:
         - text: Text (required)
-        - apikey: API Key for authentication (required)
         """
         text = request.args.get('text')
-        apikey = request.args.get('apikey')
 
         if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-
         url = "https://www.blackbox.ai/api/chat"
         headers = {
             "Accept": "*/*",
@@ -390,7 +350,6 @@ class DownloaddeepaiResource(Resource):
 class DownloadsimiResource(Resource):
     @simirek.doc(params={
         'text': 'Input Text',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -398,20 +357,11 @@ class DownloadsimiResource(Resource):
 
         Parameters:
         - text: Text (required)
-        - apikey: API Key for authentication (required)
         """
         text = request.args.get('text')
-        apikey = request.args.get('apikey')
 
         if not text:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         a = requests.post("https://simsimi.vn/web/simtalk",
         headers={
@@ -441,7 +391,6 @@ class DownloadsimiResource(Resource):
 class DownloadosmageResource(Resource):
     @osmagerek.doc(params={
         'url': 'Input Url Image',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -449,20 +398,11 @@ class DownloadosmageResource(Resource):
 
         Parameters:
         - url: url (required)
-        - apikey: API Key for authentication (required)
         """
         url = request.args.get('url')
-        apikey = request.args.get('apikey')
 
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         headers = {
             'authority': 'locate-image-7cs5mab6na-uc.a.run.app',
@@ -519,7 +459,6 @@ class DownloadosmageResource(Resource):
 class DownloadtextiResource(Resource):
     @texttirek.doc(params={
         'prompt': 'Input Prompt',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -527,20 +466,11 @@ class DownloadtextiResource(Resource):
 
         Parameters:
         - prompt: prompt (required)
-        - apikey: API Key for authentication (required)
         """
         prompt = request.args.get('prompt')
-        apikey = request.args.get('apikey')
 
         if not prompt:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         json_objects = []
         urls = []
@@ -637,7 +567,6 @@ class DownloadtextiResource(Resource):
 class DownloadanimediffResource(Resource):
     @animediff.doc(params={
         'prompt': 'Input Prompt',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -645,20 +574,11 @@ class DownloadanimediffResource(Resource):
 
         Parameters:
         - prompt: prompt (required)
-        - apikey: API Key for authentication (required)
         """
         prompt = request.args.get('prompt')
-        apikey = request.args.get('apikey')
 
         if not prompt:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         # Define global variables for storing data
         global json_objects, urls
@@ -850,7 +770,6 @@ class BingImageCreator:
 class DownloadbingimgResource(Resource):
     @bingimg.doc(params={
         'prompt': 'Input Prompt',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -858,20 +777,11 @@ class DownloadbingimgResource(Resource):
 
         Parameters:
         - prompt: prompt (required)
-        - apikey: API Key for authentication (required)
         """
         prompt = request.args.get('prompt')
-        apikey = request.args.get('apikey')
 
         if not prompt:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         # Bing Image Creator instance
         cookie = "1iDhiZ0fHzDJj3R8L-Y69d6QQoZsDkWHhLeXzbCQx4vjyxWO4zkoa8chlUKCjzfZ4gJxg_6AE0cFhMFkbMQejiUH5_-ADCnNe-OIwDPTRxcUJVgbGruxNpTRM763lDUZaHdes0FkOBE6-f9hpVXH8QhP4WUQlJxuQhUFixCgONRBIuU9FFhtb2e0lxegkd5mFdI61vtu_aEdGGagWS8Lxgg"  # Replace with your actual cookie
@@ -896,7 +806,6 @@ class DownloadbingimgResource(Resource):
 class DownloadimgtotextResource(Resource):
     @imgtotext.doc(params={
         'url': 'Input URL Image',
-        'apikey': 'API Key for authentication'
     })
     def get(self):
         """
@@ -904,20 +813,11 @@ class DownloadimgtotextResource(Resource):
 
         Parameters:
         - url: URL of the image (required)
-        - apikey: API Key for authentication (required)
         """
         url_img = request.args.get('url')
-        apikey = request.args.get('apikey')
 
         if not url_img:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         try:
             # Get configuration data
