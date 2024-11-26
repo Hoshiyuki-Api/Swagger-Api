@@ -102,7 +102,6 @@ sswebgrek = Namespace('tools', description='Tools Api')
 class Resourceigstalk(Resource):
     @stalkigrek.doc(params={
         'username': 'Input Instagram Username',
-        'apikey': 'API key for authenticated'
     })
     def get(self):
         """
@@ -110,23 +109,13 @@ class Resourceigstalk(Resource):
 
         Parameters:
         - username: Username Instagram (required)
-        - apikey: API Key for authentication (required)
         """
         
         username = request.args.get('username')
-        apikey = request.args.get('apikey')
 
         if not username:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        
+
         try:
             url = f'https://www.instagram.com/{username}/'
             headers = {
@@ -220,7 +209,6 @@ def upload_to_telegraph(file):
 class Resourcermbg(Resource):
     @removebgrek.doc(params={
         'url': 'Input Url Image',
-        'apikey': 'API key for authenticated'
     })
     def get(self):
         """
@@ -228,22 +216,12 @@ class Resourcermbg(Resource):
 
         Parameters:
         - url: Url Image (required)
-        - apikey: API Key for authentication (required)
         """
         
         image_url = request.args.get('url')
-        apikey = request.args.get('apikey')
 
         if not image_url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         try:
             # Process image and upload
@@ -340,7 +318,6 @@ def ff_stalk(id):
 class Resourceffstalk(Resource):
     @ffstalkgrek.doc(params={
         'id': 'Input Id FreeFire',
-        'apikey': 'API key for authenticated'
     })
     def get(self):
         """
@@ -348,23 +325,13 @@ class Resourceffstalk(Resource):
 
         Parameters:
         - id: Id FreeFire (required)
-        - apikey: API Key for authentication (required)
         """
         
         Id_ff = request.args.get('id')
-        apikey = request.args.get('apikey')
 
         if not Id_ff:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'username' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
-        
+
         try:
             result = ff_stalk(Id_ff)
             return jsonify({
@@ -381,7 +348,6 @@ class Resourceffstalk(Resource):
 class Resourceremovebg2(Resource):
     @removebg2grek.doc(params={
         'url': 'Input Url Image',
-        'apikey': 'API key for authenticated'
     })
     def get(self):
         """
@@ -389,22 +355,12 @@ class Resourceremovebg2(Resource):
 
         Parameters:
         - url: Url Image (required)
-        - apikey: API Key for authentication (required)
         """
         
         image_url = request.args.get('url')
-        apikey = request.args.get('apikey')
 
         if not image_url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-        
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
 
         try:
             filename = image_url
@@ -468,7 +424,6 @@ class Resourcessweb(Resource):
     @sswebgrek.doc(params={
         'url': 'Input Url Website',
         'mode': 'Input Mode desktop and mobile',
-        'apikey': 'API key for authenticated'
     })
     def get(self):
         """
@@ -477,24 +432,16 @@ class Resourcessweb(Resource):
         Parameters:
         - url: Url Website (required)
         - mode: desktop and mobile ssweb
-        - apikey: API Key for authentication (required)
         """
         
         image_url = request.args.get('url')
         mode = request.args.get('mode')
-        apikey = request.args.get('apikey')
 
         if not image_url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
         if not mode:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'mode' diperlukan."})
-        if apikey is None:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'apikey' diperlukan."})
-        
-        # Periksa dan perbarui batas permintaan
-        limit_error = check_and_update_request_limit(apikey)
-        if limit_error:
-            return jsonify(limit_error[0]), limit_error[1]
+
         try:
              unix_timestamp = int(time.time())
              headers = {
