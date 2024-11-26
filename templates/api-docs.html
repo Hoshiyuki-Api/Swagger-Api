@@ -3,25 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://i.ibb.co.com/sH8sDrm/img-icon.png" type="image/x-icon">
     <title>API Docs</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f3f4f6;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --accent-color: #3b82f6;
-            --border-color: #e5e7eb;
-            --card-bg: #ffffff;
-            --button-bg: #3b82f6;
-            --button-text: #ffffff;
-            --toggle-bg: #e5e7eb;
-            --toggle-circle: #ffffff;
-            --square-color: rgba(59, 130, 246, 0.1);
-        }
-
-        .dark {
             --bg-primary: #111827;
             --bg-secondary: #1f2937;
             --text-primary: #f9fafb;
@@ -34,6 +20,45 @@
             --toggle-bg: #4b5563;
             --toggle-circle: #111827;
             --square-color: rgba(96, 165, 250, 0.1);
+            /* --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --accent-color: #3b82f6;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --button-bg: #3b82f6;
+            --button-text: #ffffff;
+            --toggle-bg: #e5e7eb;
+            --toggle-circle: #ffffff;
+            --square-color: rgba(59, 130, 246, 0.1); */
+        }
+
+        .light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --accent-color: #3b82f6;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --button-bg: #3b82f6;
+            --button-text: #ffffff;
+            --toggle-bg: #e5e7eb;
+            --toggle-circle: #ffffff;
+            --square-color: rgba(59, 130, 246, 0.1);
+            /* --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --accent-color: #60a5fa;
+            --border-color: #374151;
+            --card-bg: #1f2937;
+            --button-bg: #60a5fa;
+            --button-text: #111827;
+            --toggle-bg: #4b5563;
+            --toggle-circle: #111827;
+            --square-color: rgba(96, 165, 250, 0.1); */
         }
 
         * {
@@ -272,10 +297,48 @@
                 right: 0.5rem;
             }
         }
+
+        .copyright {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .logo-container {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-container img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-container span {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            color: #ef4444;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
     <div class="animated-background" id="animated-background"></div>
+    <div class="logo-container">
+        <img src="https://i.ibb.co.com/sH8sDrm/img-icon.png" alt="Logo" onerror="this.onerror=null; this.src='https://api.ryochinel.my.id/favicon.ico';">
+        <span>API Docs</span>
+    </div>
     <div class="theme-toggle">
         <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
         <label for="theme-toggle" class="theme-toggle-label">
@@ -284,7 +347,7 @@
         </label>
     </div>
     <div class="container">
-        <h1>API Endpoints</h1>
+        <h1>API Downloader</h1>
         <div class="endpoint">
             <h2>Lahelu Downloader</h2>
             <p class="endpoint-description">Download Lahelu Post</p>
@@ -319,6 +382,47 @@
 }</pre>
                 </div>
             </div>
+            <div class="input-group">
+                <input type="text" id="apiUrl1" placeholder="Enter Lahelu post URL">
+                <button onclick="tryItOut('apiUrl1', 'errorMsg1', '/api/lahelu')">Try it out</button>
+                <p id="errorMsg1" class="error-message"></p>
+            </div>
+        </div>
+        <div class="endpoint">
+            <h2>Tiktok Downloader</h2>
+            <p class="endpoint-description">Download Tiktok Post</p>
+            <span class="endpoint-method">GET</span>
+            <span class="endpoint-url">/api/tiktok</span>
+            <div class="details">
+                <div class="details-title" onclick="toggleDetails(this)" aria-expanded="false">
+                    <span>Show Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="details-content">
+                    <h3>Sample Request:</h3>
+                    <pre>{
+    "url": "https://www.tiktok.com/@f4ottball/video/7439042323516001592?is_from_webapp=1&sender_device=pc"
+}</pre>
+                    <h3>Sample Response:</h3>
+                    <pre>{
+    "creator": "AmmarBN",
+    "result": {
+        "cover": "https://example.com/image.jpeg",
+        "no_watermark": "https://example.com/download",
+        "origin_cover": "https://example.com/download",
+        "title": "Title Video"
+        }
+}
+}</pre>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="apiUrl2" placeholder="Enter Tiktok URL">
+                <button onclick="tryItOut('apiUrl2', 'errorMsg2', '/api/tiktok')">Try it out</button>
+                <p id="errorMsg2" class="error-message"></p>
+            </div>
         </div>
         <div class="endpoint">
             <h2>YouTube MP4 Downloader</h2>
@@ -349,13 +453,17 @@
 }</pre>
                 </div>
             </div>
+            <div class="input-group">
+                <input type="text" id="apiUrl3" placeholder="Enter YouTube video URL">
+                <button onclick="tryItOut('apiUrl3', 'errorMsg3', '/api/ytmp4')">Try it out</button>
+                <p id="errorMsg3" class="error-message"></p>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="text" id="apiUrl" placeholder="Enter Lahelu post or YouTube video URL">
-            <button onclick="tryItOut()">Try it out</button>
+        <div class="copyright">
+            Copyright © 2024 AmmarBN. All rights reserved.<br>api.ryochinel.my.id
         </div>
     </div>
-    <script>
+<script>
         function toggleDetails(element) {
             const detailsContent = element.nextElementSibling;
             const isOpen = detailsContent.style.display === 'block';
@@ -367,15 +475,22 @@
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
             createSquares(); // Recreate squares when toggling theme
         }
 
-        function tryItOut() {
-            // const apiUrl = document.getElementById('apiUrl').value;
+        function tryItOut(inputId, errorMsgId, apiEndpoint) {
+            const apiUrl = document.getElementById(inputId).value;
+            const errorMsg = document.getElementById(errorMsgId);
+
+            if (!apiUrl.trim()) {
+                errorMsg.textContent = "Please enter a URL before submitting.";
+                return;
+            }
+
+            errorMsg.textContent = ""; // Clear any previous error message
             console.log('Trying out with URL:', apiUrl);
-            window.location.href = "https://api.ryochinel.my.id/api/lahelu?url=",apiUrl,"&apikey=yk";
-            // Implement the API call logic here
+            window.location.href = `https://api.ryochinel.my.id${apiEndpoint}?url=${encodeURIComponent(apiUrl)}&apikey=yk`;
         }
 
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
