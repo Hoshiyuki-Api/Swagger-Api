@@ -160,6 +160,45 @@ class DownloadttResource(Resource):
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
+def find_asu(text):
+    # Menemukan semua pola dalam tanda kutip
+    matches = re.findall(r'"([^"]*)"', text)
+    return (matches[-2])
+    
+def base_convert(d, e, f):
+    g = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
+    h = g[:e]
+    i = g[:f]
+    j = 0
+    for c, char in enumerate(reversed(d)):
+        if char in h:
+            j += h.index(char) * (e ** c)
+    
+    k = ""
+    while j > 0:
+        k = i[j % f] + k
+        j //= f
+    
+    return k or "0"
+
+def decode(encoded, u, n, t, e, r):
+    r = ""
+    i = 0
+    while i < len(encoded):
+        s = ""
+        while encoded[i] != n[e]:
+            s += encoded[i]
+            i += 1
+        i += 1  # Move past the separator
+        
+        for j in range(len(n)):
+            s = s.replace(n[j], str(j))
+        
+        decoded_char = chr(int(base_convert(s, e, 10)) - t)
+        r += decoded_char
+    
+    return r
+    
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
@@ -177,25 +216,58 @@ class DownloadigResource(Resource):
         #urls = resp.json()["result"][0]["url"]
         
         # api baru
-        headers = {'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"','sec-ch-ua-platform': 'Android','Referer': 'https://instasave.website/','sec-ch-ua-mobile': '?1','User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36','Content-Type': 'application/x-www-form-urlencoded',}
-        data = {'url': url}
-        rse = []
-        html_content = requests.post('https://api.instasave.website/media', headers=headers, data=data).text
-        inner_html_match = re.search(r'innerHTML\s*=\s*"(.*?)";', html_content, re.DOTALL)
-        extracted_html = inner_html_match.group(1)
-#        if inner_html_match:
-#            try:
-#               extracted_html = inner_html_match.group(1)
-#               thumb_url = re.search('"https://cdn.instasave.website/(.*?)"', extracted_html)
-#               link_vido = thumb_url.group(1)
-#               urls = "https://cdn.instasave.website/{}".format(link_vido.replace("\\", ""))
-#            except:urls = None
-#        else:urls = None
-        rse.append(extracted_html)
+        headers = {
+            "Host": "saveclip.app",
+            "Cache-Control": "max-age=0",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-User": "?1",
+            "Sec-Fetch-Dest": "document",
+            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+        }
+
+        token = requests.get("https://saveclip.app/en", headers=headers)
+        cs = re.search(',k_exp="(.*?)",k_token="(.*?)"', token.text)
+        headers = {
+            "Host": "v3.saveclip.app",
+            "Content-Length": "194",
+            "Accept": "*/*",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Origin": "https://saveclip.app",
+            "Sec-Fetch-Site": "same-site",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "Referer": "https://saveclip.app/",
+#    "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        }
+
+# Data payload
+        data = {
+            "k_exp": cs.group(1),
+            "k_token": cs.group(2),
+            "q": url,
+            "t": "media",
+            "lang": "en",
+            "v": "v2",
+        }
+        res = requests.post("https://v3.saveclip.app/api/ajaxSearch", headers=headers, data=data)
+        encoded_string = find_asu(urllib.parse.unquote(res.json()["data"]))
+        decoded_result = decode(encoded_string, 1, "abcdefghi", 1, 2, 1)
+        inner_html_match = re.search(r'innerHTML = "(.*?)";', decoded_result)
+        decoded_url = urllib.parse.unquote(inner_html_match.group(1))
+        code_html = parser(decoded_url, "html.parser")
+        list = ([a.get("href") for a in code_html.find_all("a")])
+        url_t, url_d = list[0], list[1]
+        url_rt = (url_d.replace('"', '').replace("\\", ""))
+        url_rd = (url_t.replace('"', '').replace("\\", ""))
         return jsonify({
             "creator": "AmmarBN",
-#            "result": urls,
-            "cek": rse,
+            "result": url_rd,
             "status": True
         })
         
