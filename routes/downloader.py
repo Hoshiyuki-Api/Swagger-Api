@@ -263,8 +263,8 @@ class DownloadigResource(Resource):
         code_html = parser(decoded_url, "html.parser")
         list = ([a.get("href") for a in code_html.find_all("a")])
         url_t, url_d = list[0], list[1]
-        url_rt = (url_d.replace('"', '').replace("\\", ""))
-        url_rd = (url_t.replace('"', '').replace("\\", ""))
+        url_rt = (url_t.replace('"', '').replace("\\", ""))
+        url_rd = (url_d.replace('"', '').replace("\\", ""))
         return jsonify({
             "creator": "AmmarBN",
             "result": url_rd,
