@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from flask_restx import Namespace, Resource, fields
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+from bs4 import BeautifulSoup
 
 igstalk_bp = Blueprint('igstalk', __name__)
 remove_bp = Blueprint('removebg', __name__)
@@ -12,6 +13,7 @@ cuaca_bp = Blueprint('cuaca', __name__)
 ffstalk_bp = Blueprint('ffstalk', __name__)
 removebg2_bp = Blueprint('removebg2', __name__)
 ssweb_bp = Blueprint('ssweb', __name__)
+wape_bp = Blueprint('wattpad', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -97,6 +99,7 @@ cuacarek = Namespace('tools', description='Tools Api')
 ffstalkgrek = Namespace('tools', description='Tools Api')
 removebg2grek = Namespace('tools', description='Tools Api')
 sswebgrek = Namespace('tools', description='Tools Api')
+wapegrek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -478,6 +481,92 @@ class Resourcessweb(Resource):
                       })
                   time.sleep(interval)
              return jsonify({"status": "in_progress", "message": "Task is still processing. Please check back later."})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+class Wattpad:
+    base_url = "https://www.wattpad.com"
+
+    @staticmethod
+    def search(query):
+        url = f"{Wattpad.base_url}/search/{query}"
+        headers = {
+    "Host": "www.wattpad.com",
+    "cache-control": "max-age=0",
+    "upgrade-insecure-requests": "1",
+    "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "sec-fetch-site": "none",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-user": "?1",
+    "sec-fetch-dest": "document",
+    "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+    "cookie": (
+        "wp_id=8e94bf42-cded-4209-9489-c08489bb2f99; "
+        "locale=id_ID; lang=1; feat-fedcm-rollout=1; "
+        "_gcl_au=1.1.51497984.1732782637; _fbp=fb.1.1732782637433.629470476324396246; "
+        "_col_uuid=67823971-6aa8-4d12-9f50-9927894bc3fc-hvfc; _gid=GA1.2.1416226195.1732782638; "
+        "adMetrics=0; _pbkvid05_=0; _pbeb_=0; _afp25f_=0; ff=1; dpr=1.75; tz=-7; "
+        "X-Time-Zone=Asia%2FJakarta; fs__exp=2; sn__time=j%3Anull; signupFrom=search; "
+        "te_session_id=1732850628196; _ga_FNDTZ0MZDQ=GS1.1.1732850629.3.0.1732850629.0.0.0; "
+        "AMP_TOKEN=%24NOT_FOUND; _ga=GA1.2.1231341048.1732782636; "
+        "RT=r=https%3A%2F%2Fwww.wattpad.com%2Fsearch%2Fgood&ul=1732850664985"
+    )
+        }
+        response = requests.get(url, headers=headers)
+        html = response.text
+        soup = BeautifulSoup(html, "html.parser")
+
+        results = []
+        stories = soup.select("section#section-results-stories article#results-stories ul.list-group li.list-group-item")
+#        print (soup)
+        for story in stories:
+            link = Wattpad.base_url + story.select_one(".story-card")["href"]
+            image = story.select_one(".cover img")["src"]
+            title = story.select_one('.story-info .title[aria-hidden="true"]').text.strip()
+            stats_values = story.select(".new-story-stats .stats-value")
+            read_count = stats_values[0].text if len(stats_values) > 0 else None
+            vote_count = stats_values[1].text if len(stats_values) > 1 else None
+            chapter_count = stats_values[2].text if len(stats_values) > 2 else None
+            description = story.select_one(".description").text.strip()
+
+            results.append({
+                "link": link,
+                "image": image,
+                "title": title,
+                "readCount": read_count,
+                "voteCount": vote_count,
+                "chapterCount": chapter_count,
+                "description": description,
+            })
+        return results
+        
+@wapegrek.route('')
+class Resourcewapen(Resource):
+    @wapegrek.doc(params={
+        'query': 'Category input romance, anime',
+    })
+    def get(self):
+        """
+        Search for Novels from categories 
+
+        Parameters:
+        - query: Category input romance, anime, and others (required)
+        """
+        
+        query = request.args.get('query')
+
+        if not query:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'query' diperlukan."})
+
+        try:
+             wattpad = Wattpad()
+             results = wattpad.search(query)
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  results
+             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
