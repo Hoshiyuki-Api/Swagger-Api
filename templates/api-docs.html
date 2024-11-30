@@ -385,6 +385,30 @@
                 flex-direction: column;
             }
         }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+
+        .notification button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -552,6 +576,10 @@
             Copyright © 2024 AmmarBN. All rights reserved.<br>api.ryochinel.my.id
         </div>
     </div>
+    <div id="notification" class="notification">
+        <p id="notification-message"></p>
+        <button onclick="closeNotification()">OK</button>
+    </div>
     <script>
         function toggleDetails(element) {
             const detailsContent = element.nextElementSibling;
@@ -631,12 +659,19 @@
             document.execCommand('copy');
             document.body.removeChild(textArea);
             
-            const copyIcon = document.querySelector(`#${resultId} .copy-icon`);
-            const originalColor = getComputedStyle(copyIcon).color;
-            copyIcon.style.color = 'var(--accent-color)';
-            setTimeout(() => {
-                copyIcon.style.color = originalColor;
-            }, 2000);
+            showNotification('Result copied!');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            notificationMessage.textContent = message;
+            notification.style.display = 'block';
+        }
+
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.style.display = 'none';
         }
 
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
@@ -664,4 +699,3 @@
     </script>
 </body>
 </html>
-</ReactProject>
