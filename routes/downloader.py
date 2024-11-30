@@ -105,7 +105,7 @@ pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
 ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
-pornhubrek = Namespace('doenloader', description='Downloader Api)
+pornhubrek = Namespace('downloader', description='Downloader Api)
 
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
