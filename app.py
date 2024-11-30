@@ -17,7 +17,7 @@ from routes.dash_regis import regis_app
 from routes.dashboard import dashboard_bp
 # Routes Downloader
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
-from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdlmp3_bp, ytdlmp4_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlmp4rek as ytdl4_ns,  ytdlmp3rek as ytdl3_ns, pornhubrek as pornhub_ns
+from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdlmp3_bp, ytdlmp4_bp, pornhub_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlmp4rek as ytdl4_ns,  ytdlmp3rek as ytdl3_ns, pornhubrek as pornhub_ns
 # Routes Tools
 from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns
 # Routes api
