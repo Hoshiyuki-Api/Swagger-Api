@@ -335,6 +335,18 @@
             flex: 1;
         }
 
+        .copy-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .copy-icon:hover {
+            color: var(--accent-color);
+        }
+
         @media (max-width: 640px) {
             h1 {
                 font-size: 1.875rem;
@@ -432,7 +444,9 @@
             <div id="result1" class="result-container">
                 <div class="result-header">
                     <div class="result-title">Result:</div>
-                    <button class="copy-button" onclick="copyResult('result1')">Copy Result</button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="copy-icon" onclick="copyResult('result1')">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                    </svg>
                 </div>
                 <pre class="result-content"></pre>
             </div>
@@ -477,7 +491,9 @@
             <div id="result2" class="result-container">
                 <div class="result-header">
                     <div class="result-title">Result:</div>
-                    <button class="copy-button" onclick="copyResult('result2')">Copy Result</button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="copy-icon" onclick="copyResult('result2')">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                    </svg>
                 </div>
                 <pre class="result-content"></pre>
             </div>
@@ -522,7 +538,9 @@
             <div id="result3" class="result-container">
                 <div class="result-header">
                     <div class="result-title">Result:</div>
-                    <button class="copy-button" onclick="copyResult('result3')">Copy Result</button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="copy-icon" onclick="copyResult('result3')">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                    </svg>
                 </div>
                 <pre class="result-content"></pre>
             </div>
@@ -613,11 +631,11 @@
             document.execCommand('copy');
             document.body.removeChild(textArea);
             
-            const copyButton = document.querySelector(`#${resultId} .copy-button`);
-            const originalText = copyButton.textContent;
-            copyButton.textContent = 'Copied!';
+            const copyIcon = document.querySelector(`#${resultId} .copy-icon`);
+            const originalColor = getComputedStyle(copyIcon).color;
+            copyIcon.style.color = 'var(--accent-color)';
             setTimeout(() => {
-                copyButton.textContent = originalText;
+                copyIcon.style.color = originalColor;
             }, 2000);
         }
 
