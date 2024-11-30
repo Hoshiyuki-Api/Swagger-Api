@@ -15,6 +15,7 @@ pinterestvid_bp = Blueprint('pinterestvid', __name__)#
 laheludl_bp = Blueprint('lahelu', __name__)
 ytdlmp4_bp = Blueprint('youtubedl', __name__)
 ytdlmp3_bp = Blueprint('youtubedl3', __name__)
+pornhub_bp = Blueprint('pornhub', __name__)
 
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -104,6 +105,7 @@ pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
 ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
+pornhubrek = Namespace('doenloader', description='Downloader Api)
 
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
@@ -648,3 +650,64 @@ class Downloadytmp3Resource(Resource):
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
+@pornhubrek.route('')
+class DownloadpornResource(Resource):
+    @pornhubrek.doc(params={
+        'url': 'Url Pornhub'
+    })
+    def get(self):
+        """
+        Downloader Pornhub.
+
+        Parameters:
+        - url: Url Pornhub (required)
+        """
+        url = request.args.get('url')
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+        try:
+            api = "https://apimain.p2mate.com/mates/en/analyze/ajax"
+            headers = {
+    "Host": "apimain.p2mate.com",
+    "Sec-Ch-Ua": '"Not;A=Brand";v="24", "Chromium";v="128"',                                                                                                "Accept": "*/*",
+    "Sec-Ch-Ua-Platform": '"Windows"',
+    "Accept-Language": "en-GB,en;q=0.9",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.6613.120 Safari/537.36",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",                                                                                     "Origin": "https://ssspornhub.com",
+    "Sec-Fetch-Site": "cross-site",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Dest": "empty",
+    "Referer": "https://ssspornhub.com/",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Priority": "u=1, i"
+            }
+            data = f"url={url}"
+            response = requests.post(api, headers=headers, data=data)
+            encoded_response = response.text
+            decoded_response = base64.b64decode(encoded_response).decode('utf-8')
+            byte_data = bytes.fromhex(decoded_response)
+            decode_string = byte_data.decode('utf-8')
+            json_data = json.loads(decode_string)
+            video_uploader = json_data.get('video_uploader')
+            video_title = json_data.get('video_title')
+            video_cover = json_data.get('video_cover')
+            download_url_480p = None
+            for format in json_data.get('format', []):
+                if format.get('resolution') == '480':
+                    download_url_480p = format.get('download_url')
+                    break
+            return jsonify(
+                {
+                    "creator": "AmmarBN",
+                    "result": {
+                        "video_uploader": video_uploader,
+                        "video_title": video_title,
+                        "video_cover": video_cover,
+                        "download_url": download_url_480p
+                    },
+                    "status": True
+                }
+            )
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
