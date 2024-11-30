@@ -293,9 +293,15 @@
             display: none;
         }
 
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
         .result-title {
             font-weight: 600;
-            margin-bottom: 0.5rem;
         }
 
         .result-content {
@@ -317,6 +323,16 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .button-group button {
+            flex: 1;
         }
 
         @media (max-width: 640px) {
@@ -351,6 +367,10 @@
 
             .logo-container span {
                 display: none;
+            }
+
+            .button-group {
+                flex-direction: column;
             }
         }
     </style>
@@ -410,8 +430,14 @@
                 <p id="errorMsg1" class="error-message"></p>
             </div>
             <div id="result1" class="result-container">
-                <div class="result-title">Result:</div>
+                <div class="result-header">
+                    <div class="result-title">Result:</div>
+                    <button class="copy-button" onclick="copyResult('result1')">Copy Result</button>
+                </div>
                 <pre class="result-content"></pre>
+            </div>
+            <div class="button-group">
+                <button onclick="toggleResult('result1')">Show/Hide Result</button>
             </div>
         </div>
         <div class="endpoint">
@@ -449,8 +475,14 @@
                 <p id="errorMsg2" class="error-message"></p>
             </div>
             <div id="result2" class="result-container">
-                <div class="result-title">Result:</div>
+                <div class="result-header">
+                    <div class="result-title">Result:</div>
+                    <button class="copy-button" onclick="copyResult('result2')">Copy Result</button>
+                </div>
                 <pre class="result-content"></pre>
+            </div>
+            <div class="button-group">
+                <button onclick="toggleResult('result2')">Show/Hide Result</button>
             </div>
         </div>
         <div class="endpoint">
@@ -488,15 +520,21 @@
                 <p id="errorMsg3" class="error-message"></p>
             </div>
             <div id="result3" class="result-container">
-                <div class="result-title">Result:</div>
+                <div class="result-header">
+                    <div class="result-title">Result:</div>
+                    <button class="copy-button" onclick="copyResult('result3')">Copy Result</button>
+                </div>
                 <pre class="result-content"></pre>
+            </div>
+            <div class="button-group">
+                <button onclick="toggleResult('result3')">Show/Hide Result</button>
             </div>
         </div>
         <div class="copyright">
             Copyright © 2024 AmmarBN. All rights reserved.<br>api.ryochinel.my.id
         </div>
     </div>
-<script>
+    <script>
         function toggleDetails(element) {
             const detailsContent = element.nextElementSibling;
             const isOpen = detailsContent.style.display === 'block';
@@ -517,6 +555,7 @@
             const errorMsg = document.getElementById(errorMsgId);
             const resultContainer = document.getElementById(resultId);
             const resultContent = resultContainer.querySelector('.result-content');
+            const toggleButton = document.querySelector(`button[onclick="toggleResult('${resultId}')"]`);
 
             if (!apiUrl.trim()) {
                 errorMsg.textContent = "Please enter a URL before submitting.";
@@ -526,6 +565,7 @@
             errorMsg.textContent = ""; // Clear any previous error message
             resultContainer.style.display = 'none';
             resultContent.textContent = '';
+            toggleButton.textContent = 'Show Result';
 
             const button = document.querySelector(`#${inputId}`).nextElementSibling;
             const originalButtonText = button.textContent;
@@ -533,7 +573,7 @@
             button.disabled = true;
 
             try {
-                const response = await fetch(`https://api.ryochinel.my.id${apiEndpoint}?url=${encodeURIComponent(apiUrl)}`);
+                const response = await fetch(`https://api.ryochinel.my.id${apiEndpoint}?url=${encodeURIComponent(apiUrl)}&apikey=yk`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -541,6 +581,7 @@
 
                 resultContent.textContent = JSON.stringify(data, null, 2);
                 resultContainer.style.display = 'block';
+                toggleButton.textContent = 'Hide Result';
             } catch (error) {
                 console.error('Fetch error:', error);
                 errorMsg.textContent = `An error occurred: ${error.message}. Please check your URL and try again.`;
@@ -548,6 +589,36 @@
                 button.innerHTML = originalButtonText;
                 button.disabled = false;
             }
+        }
+
+        function toggleResult(resultId) {
+            const resultContainer = document.getElementById(resultId);
+            const toggleButton = document.querySelector(`button[onclick="toggleResult('${resultId}')"]`);
+            
+            if (resultContainer.style.display === 'none') {
+                resultContainer.style.display = 'block';
+                toggleButton.textContent = 'Hide Result';
+            } else {
+                resultContainer.style.display = 'none';
+                toggleButton.textContent = 'Show Result';
+            }
+        }
+
+        function copyResult(resultId) {
+            const resultContent = document.querySelector(`#${resultId} .result-content`);
+            const textArea = document.createElement('textarea');
+            textArea.value = resultContent.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            const copyButton = document.querySelector(`#${resultId} .copy-button`);
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 2000);
         }
 
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
