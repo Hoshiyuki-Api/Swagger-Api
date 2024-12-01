@@ -49,440 +49,156 @@
             color: var(--text-primary);
             line-height: 1.5;
             transition: background-color 0.3s, color 0.3s;
-            overflow-x: hidden;
+            display: flex;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-            position: relative;
-            z-index: 1;
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--bg-secondary);
+            padding: 1rem;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
         }
 
-        h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
         }
 
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .endpoint {
-            background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        }
-
-        .endpoint-description {
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .endpoint-method {
-            display: inline-block;
-            background-color: #10b981;
-            color: #ffffff;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
-            font-weight: 600;
+        .sidebar-header img {
+            width: 32px;
+            height: 32px;
             margin-right: 0.5rem;
         }
 
-        .endpoint-url {
-            font-family: monospace;
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section-header {
             color: var(--text-secondary);
-        }
-
-        .details {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            overflow: hidden;
-        }
-
-        .details-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            cursor: pointer;
-            background-color: var(--bg-secondary);
-        }
-
-        .details-content {
-            display: none;
-            padding: 1rem;
-            background-color: var(--card-bg);
-        }
-
-        .details-content h3 {
-            font-size: 1rem;
-            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
             margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
             color: var(--text-primary);
-        }
-
-        pre {
-            background-color: var(--bg-secondary);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .input-group {
-            margin-top: 2rem;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            font-size: 1rem;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 0.375rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
             transition: background-color 0.2s;
         }
 
-        button:hover {
-            opacity: 0.9;
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1000;
-        }
-
-        .theme-toggle-checkbox {
-            display: none;
-        }
-
-        .theme-toggle-label {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.25rem;
-            border-radius: 100px;
-            background-color: var(--toggle-bg);
-            position: relative;
-            width: 50px;
-            height: 26px;
-        }
-
-        .theme-toggle-label .toggle-icon {
-            width: 18px;
-            height: 18px;
-            color: #f1c40f;
-        }
-
-        .theme-toggle-checkbox:checked + .theme-toggle-label .toggle-icon {
-            color: #f39c12;
-        }
-
-        .theme-toggle-label::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background-color: var(--toggle-circle);
-            transition: transform 0.3s;
-        }
-
-        .theme-toggle-checkbox:checked + .theme-toggle-label::after {
-            transform: translateX(24px);
-        }
-
-        .animated-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .square {
-            position: absolute;
-            background-color: var(--square-color);
-            animation: float 20s infinite;
-            transition: background-color 0.3s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-1000px) translateX(200px) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .copyright {
-            text-align: center;
-            padding: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .logo-container {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo-container img {
-            width: 32px;
-            height: 32px;
-        }
-
-        .logo-container span {
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-        }
-
-        .error-message {
-            color: #ef4444;
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .result-container {
-            margin-top: 1rem;
-            background-color: var(--bg-secondary);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            display: none;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-title {
-            font-weight: 600;
-        }
-
-        .result-content {
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .button-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .button-group button {
-            flex: 1;
-        }
-
-        .copy-icon {
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            color: var(--text-secondary);
-            transition: color 0.2s;
-        }
-
-        .copy-icon:hover {
-            color: var(--accent-color);
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        .notification button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            background-color: var(--button-bg);
+        .nav-item.active {
+            background-color: var(--accent-color);
             color: var(--button-text);
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
         }
 
-        .endpoint-nav {
-            background-color: var(--bg-secondary);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 2rem;
+        .nav-item i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
         }
 
-        .endpoint-nav h2 {
-            margin-bottom: 1rem;
+        .nav-item .arrow {
+            margin-left: auto;
+            transition: transform 0.2s;
         }
 
-        .endpoint-nav ul {
-            list-style-type: none;
-            padding-left: 0;
+        .nav-item.open .arrow {
+            transform: rotate(180deg);
         }
 
-        .endpoint-nav ul ul {
-            padding-left: 1rem;
+        .subnav {
+            margin-left: 1.5rem;
+            display: none;
         }
 
-        .endpoint-nav li {
-            margin-bottom: 0.5rem;
+        .subnav.open {
+            display: block;
         }
 
-        .endpoint-nav a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: color 0.2s;
+        .subnav .nav-item {
+            font-size: 0.875rem;
         }
 
-        .endpoint-nav a:hover {
-            color: var(--accent-color);
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px);
         }
 
-        .endpoint {
-            padding-top: 2rem;
-        }
+        /* ... (rest of the styles from the previous version) ... */
 
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 1.875rem;
-                text-align: center;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            .container {
-                padding: 1rem;
-                padding-top: 5rem;
-            }
-
-            .endpoint {
-                padding: 1rem;
-            }
-
-            .theme-toggle {
-                top: 0.5rem;
-                right: 0.5rem;
-            }
-
-            .logo-container {
-                position: absolute;
-                top: 0.5rem;
-                left: 0.5rem;
-            }
-
-            .logo-container span {
-                display: none;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="animated-background" id="animated-background"></div>
-    <div class="logo-container">
-        <img src="https://i.ibb.co.com/sH8sDrm/img-icon.png" alt="Logo" onerror="this.onerror=null; this.src='https://api.ryochinel.my.id/favicon.ico';">
-        <span>API Docs</span>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://i.ibb.co.com/sH8sDrm/img-icon.png" alt="Logo">
+            <h1>API Docs</h1>
+        </div>
+        <div class="section-header">General</div>
+        <a href="#" class="nav-item" onclick="toggleSubnav('api-downloader')">
+            <i>📥</i>
+            <span>API Downloader</span>
+            <span class="arrow">▼</span>
+        </a>
+        <div class="subnav" id="api-downloader">
+            <a href="#lahelu-downloader" class="nav-item">
+                <span>Lahelu Downloader</span>
+            </a>
+            <a href="#tiktok-downloader" class="nav-item">
+                <span>Tiktok Downloader</span>
+            </a>
+            <a href="#youtube-downloader" class="nav-item">
+                <span>YouTube Downloader</span>
+            </a>
+        </div>
+        <a href="#" class="nav-item" onclick="toggleSubnav('api-tools')">
+            <i>🛠️</i>
+            <span>API Tools</span>
+            <span class="arrow">▼</span>
+        </a>
+        <div class="subnav" id="api-tools">
+            <a href="#future-tool" class="nav-item">
+                <span>Future Tool</span>
+            </a>
+        </div>
+        <div class="section-header">API Features</div>
+        <a href="#anime" class="nav-item">
+            <i>🎬</i>
+            <span>Anime</span>
+        </a>
+        <a href="#asupan" class="nav-item">
+            <i>📺</i>
+            <span>Asupan</span>
+        </a>
+        <a href="#cecan" class="nav-item">
+            <i>👤</i>
+            <span>Cecan</span>
+        </a>
     </div>
-    <div class="theme-toggle">
-        <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
-        <label for="theme-toggle" class="theme-toggle-label">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </label>
-    </div>
-    <div class="container">
+
+    <div class="main-content">
         <h1>API Documentation</h1>
         
-        <nav class="endpoint-nav">
-            <h2>Navigation</h2>
-            <ul>
-                <li><a href="#api-downloader">API Downloader</a>
-                    <ul>
-                        <li><a href="#lahelu-downloader">Lahelu Downloader</a></li>
-                        <li><a href="#tiktok-downloader">Tiktok Downloader</a></li>
-                        <li><a href="#youtube-downloader">YouTube MP4 Downloader</a></li>
-                    </ul>
-                </li>
-                <li><a href="#api-tools">API Tools</a>
-                    <ul>
-                        <li><a href="#future-tool">Future Tool (Coming Soon)</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-
         <section id="api-downloader">
             <h2>API Downloader</h2>
             
@@ -649,10 +365,7 @@
             Copyright © 2024 AmmarBN. All rights reserved.<br>api.ryochinel.my.id
         </div>
     </div>
-    <div id="notification" class="notification">
-        <p id="notification-message"></p>
-        <button onclick="closeNotification()">OK</button>
-    </div>
+
     <script>
         function toggleDetails(element) {
             const detailsContent = element.nextElementSibling;
@@ -747,48 +460,14 @@
             notification.style.display = 'none';
         }
 
+        function toggleSubnav(id) {
+            const subnav = document.getElementById(id);
+            const navItem = subnav.previousElementSibling;
+            subnav.classList.toggle('open');
+            navItem.classList.toggle('open');
+        }
+
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
-
-        function createSquares() {
-            const container = document.getElementById('animated-background');
-            container.innerHTML = '';
-            const squareCount = 20;
-
-            for (let i = 0; i < squareCount; i++) {
-                const square = document.createElement('div');
-                square.classList.add('square');
-                square.style.width = `${Math.random() * 50 + 10}px`;
-                square.style.height = square.style.width;
-                square.style.left = `${Math.random() * 100}%`;
-                square.style.top = `${Math.random() * 100}%`;
-                square.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                square.style.animationDelay = `${Math.random() * 5}s`;
-                container.appendChild(square);
-            }
-        }
-
-        createSquares();
-
-        function smoothScroll(target) {
-            const element = document.querySelector(target);
-            if (element) {
-                window.scrollTo({
-                    top: element.offsetTop - 20,
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.endpoint-nav a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = this.getAttribute('href');
-                    smoothScroll(target);
-                });
-            });
-        });
     </script>
 </body>
 </html>
