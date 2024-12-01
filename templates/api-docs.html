@@ -5,478 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Documentation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f3f4f6;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --accent-color: #3b82f6;
-            --border-color: #e5e7eb;
-            --card-bg: #ffffff;
-            --button-bg: #3b82f6;
-            --button-text: #ffffff;
-            --toggle-bg: #ffffff;
-            --toggle-border: #d1d5db;
-        }
-
-        .dark-mode {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --accent-color: #60a5fa;
-            --border-color: #374151;
-            --card-bg: #1f2937;
-            --button-bg: #60a5fa;
-            --button-text: #111827;
-            --toggle-bg: #4b5563;
-            --toggle-border: #6b7280;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            display: flex;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: var(--bg-secondary);
-            padding: 1rem;
-            position: fixed;
-            left: 0;
-            top: 0;
-            overflow-y: auto;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-header img {
-            width: 32px;
-            height: 32px;
-            margin-right: 0.5rem;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
-            color: var(--text-primary);
-        }
-
-        .section-header {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            color: var(--text-primary);
-            text-decoration: none;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
-        }
-
-        .nav-item:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        .nav-item.active {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .nav-item i {
-            margin-right: 0.75rem;
-            font-size: 1.25rem;
-        }
-
-        .nav-item .arrow {
-            margin-left: auto;
-            transition: transform 0.2s;
-        }
-
-        .nav-item.open .arrow {
-            transform: rotate(180deg);
-        }
-
-        .subnav {
-            margin-left: 1.5rem;
-            display: none;
-        }
-
-        .subnav.open {
-            display: block;
-        }
-
-        .subnav .nav-item {
-            font-size: 0.875rem;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-            max-width: 800px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: var(--text-primary);
-        }
-
-        .endpoint {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .endpoint h2 {
-            margin-top: 0;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .endpoint-description {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .endpoint-method {
-            display: inline-block;
-            background-color: #22c55e;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .endpoint-url {
-            font-family: monospace;
-            background-color: var(--bg-secondary);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            color: var(--text-primary);
-        }
-
-        .details-title {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            margin-top: 1rem;
-        }
-
-        .details-title span {
-            margin-right: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .details-content {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: var(--bg-secondary);
-            border-radius: 4px;
-            color: var(--text-primary);
-        }
-
-        .details-content h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .details-content pre {
-            background-color: var(--bg-primary);
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            color: var(--text-primary);
-        }
-
-        .input-group {
-            display: flex;
-            margin-top: 1rem;
-        }
-
-        .input-group input {
-            flex-grow: 1;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px 0 0 4px;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        .input-group button {
-            padding: 0.5rem 1rem;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .input-group button:hover {
-            background-color: #2563eb;
-        }
-
-        .error-message {
-            color: #ef4444;
-            margin-top: 0.5rem;
-        }
-
-        .result-container {
-            display: none;
-            margin-top: 1rem;
-            background-color: var(--bg-secondary);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .result-title {
-            font-weight: bold;
-        }
-
-        .copy-icon {
-            cursor: pointer;
-        }
-
-        .result-content {
-            padding: 1rem;
-            white-space: pre-wrap;
-            word-break: break-word;
-            color: var(--text-primary);
-        }
-
-        .button-group {
-            margin-top: 1rem;
-        }
-
-        .button-group button {
-            padding: 0.5rem 1rem;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .button-group button:hover {
-            background-color: #2563eb;
-        }
-
-        .copyright {
-            margin-top: 2rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        #notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            display: none;
-            z-index: 1000;
-        }
-
-        #notification-close {
-            margin-left: 10px;
-            cursor: pointer;
-        }
-
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .theme-switch {
-            display: inline-block;
-            height: 34px;
-            position: relative;
-            width: 60px;
-        }
-
-        .theme-switch input {
-            display: none;
-        }
-
-        .slider {
-            background-color: var(--toggle-bg);
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-        }
-
-        .slider:before {
-            background-color: var(--bg-primary);
-            bottom: 4px;
-            content: "";
-            height: 26px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 26px;
-        }
-
-        input:checked + .slider {
-            background-color: var(--accent-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .slider.round {
-            border-radius: 34px;
-        }
-
-        .slider.round:before {
-            border-radius: 50%;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/docs.css') }}">
 </head>
 <body>
+    <div class="animated-background" id="animated-background"></div>
     <div class="sidebar">
         <div class="sidebar-header">
-            <img src="https://i.ibb.co.com/sH8sDrm/img-icon.png" alt="Logo">
-            <h1>API Docs</h1>
+            <div class="logo-container">
+                <img src="https://i.ibb.co.com/sH8sDrm/img-icon.png" alt="Logo" onerror="this.onerror=null; this.src='https://api.ryochinel.my.id/favicon.ico';">
+                <span>API Docs</span>
+                <button class="sidebar-close" aria-label="Close sidebar">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
         </div>
-        <div class="theme-switch-wrapper">
-            <label class="theme-switch" for="checkbox">
-                <input type="checkbox" id="checkbox" />
-                <div class="slider round"></div>
-            </label>
-            <em>Enable Dark Mode</em>
-        </div>
-        <div class="section-header">General</div>
         <nav>
-            <ul>
-                <li>
-                    <a href="#" class="nav-item" onclick="toggleSubnav('api-downloader')">
-                        <i>📥</i>
-                        <span>API Downloader</span>
-                        <span class="arrow">▼</span>
-                    </a>
-                    <ul class="subnav" id="api-downloader">
-                        <li><a href="#lahelu-downloader" class="nav-item">Lahelu Downloader</a></li>
-                        <li><a href="#tiktok-downloader" class="nav-item">Tiktok Downloader</a></li>
-                        <li><a href="#youtube-downloader" class="nav-item">YouTube Downloader</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#" class="nav-item" onclick="toggleSubnav('api-tools')">
-                        <i>🛠️</i>
-                        <span>API Tools</span>
-                        <span class="arrow">▼</span>
-                    </a>
-                    <ul class="subnav" id="api-tools">
-                        <li><a href="#future-tool" class="nav-item">Future Tool</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-        <div class="section-header">API Features</div>
-        <nav>
-            <ul>
-                <li><a href="#anime" class="nav-item"><i>🎬</i><span>Anime</span></a></li>
-                <li><a href="#asupan" class="nav-item"><i>📺</i><span>Asupan</span></a></li>
-                <li><a href="#cecan" class="nav-item"><i>👤</i><span>Cecan</span></a></li>
+            <ul class="modern-list">
+                <li><a href="#lahelu-downloader"><i class='bx bx-download'></i>Lahelu Downloader</a></li>
+                <li><a href="#tiktok-downloader"><i class='bx bx-video'></i>Tiktok Downloader</a></li>
+                <li><a href="#youtube-mp4-downloader"><i class='bx bx-movie-play'></i>YouTube MP4 Downloader</a></li>
             </ul>
         </nav>
     </div>
-
     <div class="main-content">
-        <h1>API Documentation</h1>
-        
-        <div id="lahelu-downloader" class="endpoint">
-            <h2>Lahelu Downloader</h2>
-            <p class="endpoint-description">Download Lahelu Post</p>
-            <span class="endpoint-method">GET</span>
-            <span class="endpoint-url">/api/lahelu</span>
-            <div class="details">
-                <div class="details-title" onclick="toggleDetails(this)">
-                    <span>Show Details</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </div>
-                <div class="details-content">
-                    <h3>Sample Request:</h3>
-                    <pre>{
+        <header>
+            <div class="header-left">
+                <button class="sidebar-toggle" aria-label="Toggle sidebar">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <h1>API Documentation</h1>
+            </div>
+            <div class="theme-toggle">
+                <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
+                <label for="theme-toggle" class="theme-toggle-label">
+                    <i class='bx bx-sun'></i>
+                    <i class='bx bx-moon'></i>
+                </label>
+            </div>
+        </header>
+        <main>
+            <section id="lahelu-downloader" class="endpoint">
+                <h2>Lahelu Downloader</h2>
+                <p class="endpoint-description">Download Lahelu Post</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/lahelu</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
     "url": "https://lahelu.com/post/123456"
-}</pre>
-                    <h3>Sample Response:</h3>
-                    <pre>{
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
     "status": true,
     "result": {
         "postID": "123456",
@@ -489,48 +74,42 @@
         ],
         "createTime": 1629571966000
     }
-}</pre>
+}</code></pre>
+                    </div>
                 </div>
-            </div>
-            <div class="input-group">
-                <input type="text" id="apiUrl1" placeholder="Enter Lahelu post URL">
-                <button onclick="tryItOut('apiUrl1', 'errorMsg1', 'result1', '/api/lahelu')">Try it out</button>
-            </div>
-            <p id="errorMsg1" class="error-message"></p>
-            <div id="result1" class="result-container">
-                <div class="result-header">
-                    <div class="result-title">Result:</div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="copy-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="copyResult('result1')">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
+                <div class="input-group">
+                    <input type="text" id="apiUrl1" placeholder="Enter Lahelu post URL">
+                    <button onclick="tryItOut('apiUrl1', 'errorMsg1', 'result1', '/api/lahelu')">Try it out</button>
+                    <p id="errorMsg1" class="error-message"></p>
                 </div>
-                <pre class="result-content"></pre>
-            </div>
-            <div class="button-group">
-                <button onclick="toggleResult('result1')">Show/Hide Result</button>
-            </div>
-        </div>
-
-        <div id="tiktok-downloader" class="endpoint">
-            <h2>Tiktok Downloader</h2>
-            <p class="endpoint-description">Download Tiktok Post</p>
-            <span class="endpoint-method">GET</span>
-            <span class="endpoint-url">/api/tiktok</span>
-            <div class="details">
-                <div class="details-title" onclick="toggleDetails(this)">
-                    <span>Show Details</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                <div id="result1" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
                 </div>
-                <div class="details-content">
-                    <h3>Sample Request:</h3>
-                    <pre>{
+                <div class="button-group">
+                    <button onclick="toggleResult('result1')">Show/Hide Result</button>
+                </div>
+            </section>
+            <section id="tiktok-downloader" class="endpoint">
+                <h2>Tiktok Downloader</h2>
+                <p class="endpoint-description">Download Tiktok Post</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/tiktok</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
     "url": "https://www.tiktok.com/@username/video/1234567890123456789"
-}</pre>
-                    <h3>Sample Response:</h3>
-                    <pre>{
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
     "creator": "AmmarBN",
     "result": {
         "cover": "https://example.com/image.jpeg",
@@ -538,48 +117,42 @@
         "origin_cover": "https://example.com/download",
         "title": "Title Video"
     }
-}</pre>
+}</code></pre>
+                    </div>
                 </div>
-            </div>
-            <div class="input-group">
-                <input type="text" id="apiUrl2" placeholder="Enter Tiktok URL">
-                <button onclick="tryItOut('apiUrl2', 'errorMsg2', 'result2', '/api/tiktok')">Try it out</button>
-            </div>
-            <p id="errorMsg2" class="error-message"></p>
-            <div id="result2" class="result-container">
-                <div class="result-header">
-                    <div class="result-title">Result:</div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="copy-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="copyResult('result2')">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
+                <div class="input-group">
+                    <input type="text" id="apiUrl2" placeholder="Enter Tiktok URL">
+                    <button onclick="tryItOut('apiUrl2', 'errorMsg2', 'result2', '/api/tiktok')">Try it out</button>
+                    <p id="errorMsg2" class="error-message"></p>
                 </div>
-                <pre class="result-content"></pre>
-            </div>
-            <div class="button-group">
-                <button onclick="toggleResult('result2')">Show/Hide Result</button>
-            </div>
-        </div>
-
-        <div id="youtube-downloader" class="endpoint">
-            <h2>YouTube MP4 Downloader</h2>
-            <p class="endpoint-description">Download YouTube video as MP4</p>
-            <span class="endpoint-method">GET</span>
-            <span class="endpoint-url">/api/ytmp4</span>
-            <div class="details">
-                <div class="details-title" onclick="toggleDetails(this)">
-                    <span>Show Details</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                <div id="result2" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
                 </div>
-                <div class="details-content">
-                    <h3>Sample Request:</h3>
-                    <pre>{
+                <div class="button-group">
+                    <button onclick="toggleResult('result2')">Show/Hide Result</button>
+                </div>
+            </section>
+            <section id="youtube-mp4-downloader" class="endpoint">
+                <h2>YouTube MP4 Downloader</h2>
+                <p class="endpoint-description">Download YouTube video as MP4</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/ytmp4</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
     "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-}</pre>
-                    <h3>Sample Response:</h3>
-                    <pre>{
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
     "status": true,
     "result": {
         "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)",
@@ -587,156 +160,32 @@
         "quality": "720p",
         "downloadUrl": "https://example.com/download/dQw4w9WgXcQ.mp4"
     }
-}</pre>
+}</code></pre>
+                    </div>
                 </div>
-            </div>
-            <div class="input-group">
-                <input type="text" id="apiUrl3" placeholder="Enter YouTube video URL">
-                <button onclick="tryItOut('apiUrl3', 'errorMsg3', 'result3', '/api/ytmp4')">Try it out</button>
-            </div>
-            <p id="errorMsg3" class="error-message"></p>
-            <div id="result3" class="result-container">
-                <div class="result-header">
-                    <div class="result-title">Result:</div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="copy-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="copyResult('result3')">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
+                <div class="input-group">
+                    <input type="text" id="apiUrl3" placeholder="Enter YouTube video URL">
+                    <button onclick="tryItOut('apiUrl3', 'errorMsg3', 'result3', '/api/ytmp4')">Try it out</button>
+                    <p id="errorMsg3" class="error-message"></p>
                 </div>
-                <pre class="result-content"></pre>
-            </div>
-            <div class="button-group">
-                <button onclick="toggleResult('result3')">Show/Hide Result</button>
-            </div>
-        </div>
-
-        <div class="copyright">
-            Copyright © 2024 AmmarBN. All rights reserved.<br>api.ryochinel.my.id
-        </div>
+                <div id="result3" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleResult('result3')">Show/Hide Result</button>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>Copyright © 2024 AmmarBN. All rights reserved.</p>
+            <p>api.ryochinel.my.id</p>
+        </footer>
     </div>
-
-    <div id="notification">
-        <span id="notification-message"></span>
-        <span id="notification-close" onclick="closeNotification()">×</span>
-    </div>
-
-    <script>
-        // Theme switcher
-        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
-        const currentTheme = localStorage.getItem('theme');
-
-        if (currentTheme) {
-            document.documentElement.setAttribute('class', currentTheme);
-
-            if (currentTheme === 'dark-mode') {
-                toggleSwitch.checked = true;
-            }
-        }
-
-        function switchTheme(e) {
-            if (e.target.checked) {
-                document.documentElement.setAttribute('class', 'dark-mode');
-                localStorage.setItem('theme', 'dark-mode');
-            }
-            else {
-                document.documentElement.setAttribute('class', '');
-                localStorage.setItem('theme', 'light-mode');
-            }    
-        }
-
-        toggleSwitch.addEventListener('change', switchTheme, false);
-
-        // Toggle subnav
-        function toggleSubnav(id) {
-            const subnav = document.getElementById(id);
-            const arrow = event.currentTarget.querySelector('.arrow');
-            subnav.classList.toggle('open');
-            arrow.textContent = subnav.classList.contains('open') ? '▲' : '▼';
-        }
-
-        // Toggle details
-        function toggleDetails(element) {
-            const content = element.nextElementSibling;
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-        }
-
-        // Try it out functionality
-        function tryItOut(inputId, errorId, resultId, apiEndpoint) {
-            const input = document.getElementById(inputId);
-            const errorElement = document.getElementById(errorId);
-            const resultContainer = document.getElementById(resultId);
-            const resultContent = resultContainer.querySelector('.result-content');
-
-            // Clear previous errors and results
-            errorElement.textContent = '';
-            resultContent.textContent = '';
-
-            // Validate input
-            if (!input.value) {
-                errorElement.textContent = 'Please enter a URL';
-                return;
-            }
-
-            // Simulate API call (replace with actual API call in production)
-            resultContent.textContent = 'Loading...';
-            resultContainer.style.display = 'block';
-
-            setTimeout(() => {
-                resultContent.textContent = JSON.stringify({
-                    status: 'success',
-                    message: `Simulated ${apiEndpoint} response for ${input.value}`,
-                    data: {
-                        url: input.value,
-                        downloadUrl: 'https://example.com/download/file.mp4'
-                    }
-                }, null, 2);
-            }, 1000);
-        }
-
-        // Toggle result visibility
-        function toggleResult(resultId) {
-            const resultContainer = document.getElementById(resultId);
-            resultContainer.style.display = resultContainer.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Copy result to clipboard
-        function copyResult(resultId) {
-            const resultContent = document.getElementById(resultId).querySelector('.result-content');
-            const textArea = document.createElement('textarea');
-            textArea.value = resultContent.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showNotification('Result copied to clipboard!');
-        }
-
-        // Show notification
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            const notificationMessage = document.getElementById('notification-message');
-            notificationMessage.textContent = message;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // Close notification
-        function closeNotification() {
-            document.getElementById('notification').style.display = 'none';
-        }
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/docs.js') }}"></script>
 </body>
 </html>
 
