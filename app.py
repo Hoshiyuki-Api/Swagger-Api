@@ -8,7 +8,6 @@ from flask import Flask, render_template
 from flask_restx import Api
 # Index
 from routes.index import index_app
-from routes.docs import docs_app
 # Login/Register
 from routes.dash_login import dash_app
 from routes.auth import auth_bp
@@ -19,7 +18,7 @@ from routes.dashboard import dashboard_bp
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdlmp3_bp, ytdlmp4_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlmp4rek as ytdl4_ns,  ytdlmp3rek as ytdl3_ns
 # Routes Tools
-from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns
+from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, brat_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns, bratgrek as brat_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
@@ -33,8 +32,6 @@ app.secret_key = os.urandom(24)
 
 # Index
 app.register_blueprint(index_app)
-# Dokumentasi
-app.register_blueprint(docs_app)
 # 404
 @app.errorhandler(404)
 def not_found_error(error):
@@ -65,7 +62,6 @@ app.register_blueprint(pinterestvid_bp, url_path='/api/pinvid')
 app.register_blueprint(laheludl_bp, url_prefix='/api/laheludl')
 app.register_blueprint(ytdlmp4_bp, url_prefix='/api/ytmp4')
 app.register_blueprint(ytdlmp3_bp, url_prefix='/api/ytmp3')
-#app.register_blueprint(pornhub_bp, url_prefix='/api/pornhub')
 # Register tools
 app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 app.register_blueprint(remove_bp, url_prefix='/api/removebg')
@@ -74,6 +70,7 @@ app.register_blueprint(ffstalk_bp, url_prefix='/api/ffstalk')
 app.register_blueprint(removebg2_bp, url_prefix='/api/removebg2')
 app.register_blueprint(ssweb_bp, url_prefix='/api/ssweb')
 app.register_blueprint(wape_bp, url_prefix='/api/novel')
+app.register_blueprint(brat_bp, url_prefix='/api/brat')
 # Register Ai
 app.register_blueprint(aivoice_bp, url_prefix='/api/aivoice')
 app.register_blueprint(hercai_bp, url_prefix='/api/hercai')
@@ -104,7 +101,6 @@ api.add_namespace(pinvid_ns, path='/api/pinvid')  # NameSpace Untuk Pinterest Vi
 api.add_namespace(lahelu_ns, path='/api/lahelu')  # NameSpace Untuk Lahelu
 api.add_namespace(ytdl4_ns, path='/api/ytmp4')
 api.add_namespace(ytdl3_ns, path='/api/ytmp3')
-#api.add_namespace(pornhub_ns, path='/api/pornhub')
 # NameSpace Tools
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 api.add_namespace(removebg_ns, path='/api/removebg')
@@ -113,6 +109,7 @@ api.add_namespace(ffstalk_ns, path='/api/ffstalk')
 api.add_namespace(remove2_ns, path='/api/removebg2')
 api.add_namespace(ssweb_ns, path='/api/ssweb')
 api.add_namespace(wape_ns, path='/api/novel')
+api.add_namespace(brat_ns, path='/api/brat')
 # NameSpace AI
 api.add_namespace(aivoice_ns, path='/api/aivoice')
 api.add_namespace(hercai_ns, path='/api/hercai')
