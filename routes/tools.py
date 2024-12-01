@@ -14,6 +14,7 @@ ffstalk_bp = Blueprint('ffstalk', __name__)
 removebg2_bp = Blueprint('removebg2', __name__)
 ssweb_bp = Blueprint('ssweb', __name__)
 wape_bp = Blueprint('wattpad', __name__)
+brat_bp = Blueprint('brat', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -100,6 +101,7 @@ ffstalkgrek = Namespace('tools', description='Tools Api')
 removebg2grek = Namespace('tools', description='Tools Api')
 sswebgrek = Namespace('tools', description='Tools Api')
 wapegrek = Namespace('tools', description='Tools Api')
+bratgrek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -570,3 +572,61 @@ class Resourcewapen(Resource):
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
+import requests
+import base64
+
+def bratg(text):
+    """
+    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format Base64.
+
+    Args:
+        text (str): Teks yang akan dimasukkan ke dalam API.
+
+    Returns:
+        str: Gambar yang dikodekan dalam Base64, atau pesan kesalahan.
+    """
+    try:
+        # API endpoint
+        url = "https://api.ryzendesu.vip/api/sticker/brat"
+        params = {"text": text}
+
+        # Step 1: Fetch the image from the API
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            # Step 2: Encode the image content in Base64
+            image_base64 = base64.b64encode(response.content).decode('utf-8')
+            return image_base64
+        else:
+            return f"Error: Failed to fetch the image. Status code: {response.status_code}"
+    
+    except Exception as e:
+        return f"Error: {str(e)}"
+        
+@bratgrek.route('')
+class Resourcebrat(Resource):
+    @bratgrek.doc(params={
+        'text': 'Input Text',
+    })
+    def get(self):
+        """
+        text to img brat
+
+        Parameters:
+        - text: input text (required)
+        """
+        
+        query = request.args.get('text')
+
+        if not query:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+             results = bratg(query)
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  results
+             })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
