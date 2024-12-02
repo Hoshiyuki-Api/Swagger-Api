@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedBackground.appendChild(square);
     }
 
-    // Theme toggle
+    // Themetoggle
     themeToggle.addEventListener('change', () => {
         body.classList.toggle('light');
     });
@@ -61,6 +61,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Add this new section for sidebar dropdowns
+    const sidebarDropdowns = document.querySelectorAll('.sidebar-dropdown');
+    sidebarDropdowns.forEach(dropdown => {
+        const menuItem = dropdown.querySelector('.sidebar-menu-item');
+        menuItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        });
+    });
+
+    // Modify the existing smooth scrolling code
+    document.querySelectorAll('.sidebar-submenu a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    });
+
+
     // Toggle details content
     detailsTitles.forEach(title => {
         title.addEventListener('click', () => {
@@ -72,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Copy result to clipboard
+    // Copy resultto clipboard
     copyIcons.forEach(icon => {
         icon.addEventListener('click', () => {
             const resultContent = icon.closest('.result-container').querySelector('.result-content');
@@ -137,4 +165,3 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
         loadingIndicator.remove();
     }
 }
-
