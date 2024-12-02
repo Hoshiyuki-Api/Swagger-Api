@@ -8,6 +8,7 @@ from flask import Flask, render_template
 from flask_restx import Api
 # Index
 from routes.index import index_app
+from routes.docs import docs_app
 # Login/Register
 from routes.dash_login import dash_app
 from routes.auth import auth_bp
@@ -32,6 +33,7 @@ app.secret_key = os.urandom(24)
 
 # Index
 app.register_blueprint(index_app)
+app.register_blueprint(docs_app)
 # 404
 @app.errorhandler(404)
 def not_found_error(error):
