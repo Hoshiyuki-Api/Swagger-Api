@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-    	:root {
+:root {
     --bg-primary: #111827;
     --bg-secondary: #1f2937;
     --text-primary: #f9fafb;
@@ -88,7 +88,7 @@ body {
     bottom: 0;
     width: var(--sidebar-width);
     background-color: var(--bg-secondary);
-    padding: 1rem;
+    padding: 1.5rem;
     overflow-y: auto;
     z-index: 1000;
     transition: transform 0.3s ease-in-out;
@@ -104,7 +104,8 @@ body {
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
+    width: 100%;
 }
 
 .logo-container img {
@@ -116,33 +117,90 @@ body {
     font-weight: 600;
     font-size: 1.25rem;
     color: var(--text-primary);
+    flex: 1;
 }
 
 .sidebar-close {
-    display: none;
     background: none;
     border: none;
     color: var(--text-primary);
     font-size: 1.5rem;
     cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
 }
 
-.sidebar nav ul {
+.sidebar-menu {
     list-style-type: none;
+    padding: 0;
 }
 
-.sidebar nav ul li {
-    margin-bottom: 1rem;
+.sidebar-menu > li {
+    margin-bottom: 0.5rem;
 }
 
-.sidebar nav ul li a {
-    color: var(--text-secondary);
+.sidebar-menu-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.75rem 0.5rem;
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 1rem;
-    transition: color 0.2s;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-radius: 0.375rem;
 }
 
-.sidebar nav ul li a:hover {
+.sidebar-menu-item:hover {
+    background-color: var(--bg-primary);
+    color: var(--accent-color);
+}
+
+.sidebar-menu-item i:first-child {
+    margin-right: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.sidebar-menu-item i:last-child {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-dropdown.active .sidebar-menu-item i:last-child {
+    transform: rotate(-180deg);
+}
+
+.sidebar-submenu {
+    list-style-type: none;
+    padding-left: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+}
+
+.sidebar-dropdown.active .sidebar-submenu {
+    max-height: 1000px;
+    transition: max-height 1s ease-in-out;
+}
+
+.sidebar-submenu li {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-submenu a {
+    display: block;
+    padding: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    border-radius: 0.375rem;
+}
+
+.sidebar-submenu a:hover {
+    background-color: var(--bg-primary);
     color: var(--accent-color);
 }
 
@@ -407,36 +465,6 @@ footer {
     font-size: 0.875rem;
 }
 
-.modern-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-.modern-list li {
-    margin-bottom: 0.25rem;
-}
-
-.modern-list li a {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 1rem;
-    transition: all 0.2s;
-    border-radius: 0.375rem;
-}
-
-.modern-list li a:hover {
-    background-color: var(--bg-primary);
-    color: var(--accent-color);
-}
-
-.modern-list li a i {
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-}
-
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -447,16 +475,9 @@ footer {
     .sidebar.active {
         transform: translateX(0);
     }
-    
-    .sidebar-close {
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 10;
-    display: flex;
-    align-items: center;
+
+    .sidebar-header {
+        padding-right: 2.5rem;
     }
 
     .main-content {
@@ -484,6 +505,14 @@ footer {
         margin-bottom: 1rem;
         padding: 1rem;
     }
+
+    .sidebar-menu-item {
+        font-size: 0.9375rem;
+    }
+
+    .sidebar-submenu a {
+        font-size: 0.8125rem;
+    }
 }
 
 
@@ -502,10 +531,29 @@ footer {
             </div>
         </div>
         <nav>
-            <ul class="modern-list">
-                <li><a href="#lahelu-downloader"><i class='bx bx-download'></i>Lahelu Downloader</a></li>
-                <li><a href="#tiktok-downloader"><i class='bx bx-video'></i>Tiktok Downloader</a></li>
-                <li><a href="#youtube-mp4-downloader"><i class='bx bx-movie-play'></i>YouTube MP4 Downloader</a></li>
+            <ul class="sidebar-menu">
+                <li class="sidebar-dropdown">
+                    <a href="#" class="sidebar-menu-item">
+                        <i class='bx bx-download mr-2'></i>
+                        <span>Downloader</span>
+                        <i class='bx bx-chevron-down ml-auto'></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="#lahelu-downloader">Lahelu Downloader</a></li>
+                        <li><a href="#youtube-mp4-downloader">YouTube MP4 Downloader</a></li>
+                        <li><a href="#tiktok-downloader">Tiktok Downloader</a></li>
+                    </ul>
+                </li>
+                <li class="sidebar-dropdown">
+                    <a href="#" class="sidebar-menu-item">
+                        <i class='bx bx-wrench mr-2'></i>
+                        <span>Random Tools</span>
+                        <i class='bx bx-chevron-down ml-auto'></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="#sample-tool">Sample Tool</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
     </div>
@@ -574,49 +622,6 @@ footer {
                     <button onclick="toggleResult('result1')">Show/Hide Result</button>
                 </div>
             </section>
-            <section id="tiktok-downloader" class="endpoint">
-                <h2>Tiktok Downloader</h2>
-                <p class="endpoint-description">Download Tiktok Post</p>
-                <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/tiktok</span>
-                <div class="details">
-                    <div class="details-title">
-                        <span>Show Details</span>
-                        <i class='bx bx-chevron-down'></i>
-                    </div>
-                    <div class="details-content">
-                        <h3>Sample Request:</h3>
-                        <pre><code>{
-    "url": "https://www.tiktok.com/@username/video/1234567890123456789"
-}</code></pre>
-                        <h3>Sample Response:</h3>
-                        <pre><code>{
-    "creator": "AmmarBN",
-    "result": {
-        "cover": "https://example.com/image.jpeg",
-        "no_watermark": "https://example.com/download",
-        "origin_cover": "https://example.com/download",
-        "title": "Title Video"
-    }
-}</code></pre>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="apiUrl2" placeholder="Enter Tiktok URL">
-                    <button onclick="tryItOut('apiUrl2', 'errorMsg2', 'result2', '/api/tiktok')">Try it out</button>
-                    <p id="errorMsg2" class="error-message"></p>
-                </div>
-                <div id="result2" class="result-container">
-                    <div class="result-header">
-                        <div class="result-title">Result:</div>
-                        <i class='bx bx-copy copy-icon'></i>
-                    </div>
-                    <pre class="result-content"></pre>
-                </div>
-                <div class="button-group">
-                    <button onclick="toggleResult('result2')">Show/Hide Result</button>
-                </div>
-            </section>
             <section id="youtube-mp4-downloader" class="endpoint">
                 <h2>YouTube MP4 Downloader</h2>
                 <p class="endpoint-description">Download YouTube video as MP4</p>
@@ -645,8 +650,51 @@ footer {
                     </div>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="apiUrl3" placeholder="Enter YouTube video URL">
-                    <button onclick="tryItOut('apiUrl3', 'errorMsg3', 'result3', '/api/ytmp4')">Try it out</button>
+                    <input type="text" id="apiUrl2" placeholder="Enter YouTube video URL">
+                    <button onclick="tryItOut('apiUrl2', 'errorMsg2', 'result2', '/api/ytmp4')">Try it out</button>
+                    <p id="errorMsg2" class="error-message"></p>
+                </div>
+                <div id="result2" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleResult('result2')">Show/Hide Result</button>
+                </div>
+            </section>
+            <section id="tiktok-downloader" class="endpoint">
+                <h2>Tiktok Downloader</h2>
+                <p class="endpoint-description">Download Tiktok Post</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/tiktok</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
+    "url": "https://www.tiktok.com/@username/video/1234567890123456789"
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
+    "creator": "AmmarBN",
+    "result": {
+        "cover": "https://example.com/image.jpeg",
+        "no_watermark": "https://example.com/download",
+        "origin_cover": "https://example.com/download",
+        "title": "Title Video"
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="apiUrl3" placeholder="Enter Tiktok URL">
+                    <button onclick="tryItOut('apiUrl3', 'errorMsg3', 'result3', '/api/tiktok')">Try it out</button>
                     <p id="errorMsg3" class="error-message"></p>
                 </div>
                 <div id="result3" class="result-container">
@@ -660,6 +708,44 @@ footer {
                     <button onclick="toggleResult('result3')">Show/Hide Result</button>
                 </div>
             </section>
+            <section id="sample-tool" class="endpoint">
+                <h2>Sample Tool</h2>
+                <p class="endpoint-description">This is a sample tool</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/sample</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
+    "param": "example"
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
+    "status": true,
+    "result": "This is a sample result"
+}</code></pre>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="apiUrl4" placeholder="Enter sample parameter">
+                    <button onclick="tryItOut('apiUrl4', 'errorMsg4', 'result4', '/api/sample')">Try it out</button>
+                    <p id="errorMsg4" class="error-message"></p>
+                </div>
+                <div id="result4" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleResult('result4')">Show/Hide Result</button>
+                </div>
+            </section>
         </main>
         <footer>
             <p>Copyright © 2024 AmmarBN. All rights reserved.</p>
@@ -667,7 +753,7 @@ footer {
         </footer>
     </div>
     <script>
-    	document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     const animatedBackground = document.getElementById('animated-background');
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
@@ -729,6 +815,34 @@ footer {
             }
         });
     });
+
+    // Add this new section for sidebar dropdowns
+    const sidebarDropdowns = document.querySelectorAll('.sidebar-dropdown');
+    sidebarDropdowns.forEach(dropdown => {
+        const menuItem = dropdown.querySelector('.sidebar-menu-item');
+        menuItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        });
+    });
+
+    // Modify the existing smooth scrolling code
+    document.querySelectorAll('.sidebar-submenu a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    });
+
 
     // Toggle details content
     detailsTitles.forEach(title => {
@@ -806,9 +920,7 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
         loadingIndicator.remove();
     }
 }
-
-
-   </script>
+    </script>
 </body>
 </html>
 
