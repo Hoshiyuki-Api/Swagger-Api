@@ -789,7 +789,7 @@ class DownloadteraboxResource(Resource):
             files = terabox(url)
             for file in files:
                 list.append(file)
-            if result:
+            if list:
                return jsonify({'creator': 'AmmarBN','status': True,'result': list})
             else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
