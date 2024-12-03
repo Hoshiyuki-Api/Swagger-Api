@@ -15,7 +15,7 @@ pinterestvid_bp = Blueprint('pinterestvid', __name__)#
 laheludl_bp = Blueprint('lahelu', __name__)
 ytdlmp4_bp = Blueprint('youtubedl', __name__)
 ytdlmp3_bp = Blueprint('youtubedl3', __name__)
-
+spoty_bp = Blueprint('spoty', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -104,7 +104,7 @@ pinterestviddlrek = Namespace('downloader', description='Downloader Api')
 laheludlrek = Namespace('downloader', description='Downloader Api')
 ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
-
+spotyrek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -647,4 +647,73 @@ class Downloadytmp3Resource(Resource):
             else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+@spotyrek.route('')
+class DownloadspotyResource(Resource):
+    @spotyrek.doc(params={
+        'url': 'Url Spotify'
+    })
+    def get(self):
+        """
+        Downloader Spotify Audio.
+
+        Parameters:
+        - url: Url Spotify (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            urls = "https://spotify-down.com/api/metadata"
+            params = {
+                "link": "https://open.spotify.com/track/4b8mFdxfCSTarIUfhMY8yR?si=bnyzZlIlRoeGyqmORK2ZvA"
+            }
+
+            headers = {
+                "Host": "spotify-down.com",
+                "Content-Length": "0",
+                "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+                "Content-Type": "application/json",
+                "Accept": "*/*",
+                "Origin": "https://spotify-down.com",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Dest": "empty",
+                "Referer": "https://spotify-down.com/",
+            #    "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Cookie": "_ga_NPMTFQ207N=GS1.1.1733203589.1.0.1733203589.0.0.0; _ga=GA1.1.1034080416.1733203590; __gads=ID=334f15667f202da8:T=1733203592:RT=1733203592:S=ALNI_MaT4xYx0hxE9JjQnKqETVI4uKjjRg; __gpi=UID=00000f7e8c8134cf:T=1733203592:RT=1733203592:S=ALNI_MaSe9q5GGXgr49kmsNdFcR8LRD7RQ; __eoi=ID=5b772c3430346844:T=1733203592:RT=1733203592:S=AA-AfjZ9Hq1Y2iHwfAhsVE_RShau"
+            }
+
+            res = requests.post(urls, headers=headers, params=params, data="")
+            urlss = "https://spotify-down.com/api/download"
+            params = {
+                "link": res.json()["data"]["link"]
+                "n": res.json()["data"]["title"],
+                "a": res.json()["data"]["artists"]
+            }
+
+            headers = {
+                "Host": "spotify-down.com",
+                "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+                "Accept": "*/*",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Dest": "empty",
+                "Referer": "https://spotify-down.com/",
+            #    "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Cookie": "_ga=GA1.1.1034080416.1733203590; __gads=ID=334f15667f202da8:T=1733203592:RT=1733203592:S=ALNI_MaT4xYx0hxE9JjQnKqETVI4uKjjRg; __gpi=UID=00000f7e8c8134cf:T=1733203592:RT=1733203592:S=ALNI_MaSe9q5GGXgr49kmsNdFcR8LRD7RQ; __eoi=ID=5b772c3430346844:T=1733203592:RT=1733203592:S=AA-AfjZ9Hq1Y2iHwfAhsVE_RShau; _ga_NPMTFQ207N=GS1.1.1733203589.1.1.1733203615.0.0.0"
+            }
+
+            resp = requests.get(urlss, headers=headers, params=params)
+            if resp.json()["data"]["success"] == True:
+               return jsonify({'creator': 'AmmarBN','status': True,'result': resp.json()["data"]["link"]})
+            else:return jsonify({'status': False, 'msg': f'url not found '})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
 
