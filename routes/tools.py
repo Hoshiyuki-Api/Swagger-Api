@@ -579,31 +579,30 @@ import base64
 
 def bratg(text):
     """
-    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format Base64.
+    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format binary.
 
     Args:
         text (str): Teks yang akan dimasukkan ke dalam API.
 
     Returns:
-        str: Gambar yang dikodekan dalam Base64, atau pesan kesalahan.
+        bytes: Gambar dalam format binary, atau pesan kesalahan.
     """
     try:
         # API endpoint
         url = "https://api.ryzendesu.vip/api/sticker/brat"
         params = {"text": text}
 
-        # Step 1: Fetch the image from the API
+        # Fetch the image from the API
         response = requests.get(url, params=params)
-        
+
         if response.status_code == 200:
-            # Step 2: Encode the image content in Base64
-            image_base64 = base64.b64encode(response.content).decode('utf-8')
-            return image_base64
+            # Return raw binary content
+            return response.content
         else:
-            return f"Error: Failed to fetch the image. Status code: {response.status_code}"
-    
+            return None, f"Error: Failed to fetch the image. Status code: {response.status_code}"
+
     except Exception as e:
-        return f"Error: {str(e)}"
+        return None, f"Error: {str(e)}"
         
 @bratgrek.route('')
 class Resourcebrat(Resource):
@@ -612,26 +611,26 @@ class Resourcebrat(Resource):
     })
     def get(self):
         """
-        text to img brat
+        Text to image brat (returns PNG directly)
 
         Parameters:
         - text: input text (required)
         """
-        
         query = request.args.get('text')
 
         if not query:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
         try:
-             results = bratg(query)
-             return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'result':  results
-             })
+            image_binary, error = bratg(query)
+            if error:
+                return jsonify({'creator': 'AmmarBN', 'status': False, 'msg': error})
+
+            # Return image directly with content type 'image/png'
+            return Response(image_binary, content_type='image/png')
+
         except Exception as e:
-            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+            return jsonify({'creator': 'AmmarBN', 'status': False, 'msg': f'Error: {str(e)}'})
 
 def upcoming():
     try:
