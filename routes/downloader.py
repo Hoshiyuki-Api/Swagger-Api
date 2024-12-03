@@ -669,7 +669,7 @@ class DownloadspotyResource(Resource):
         try:
             urls = "https://spotify-down.com/api/metadata"
             params = {
-                "link": "https://open.spotify.com/track/4b8mFdxfCSTarIUfhMY8yR?si=bnyzZlIlRoeGyqmORK2ZvA"
+                "link": url
             }
 
             headers = {
