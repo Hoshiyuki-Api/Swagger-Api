@@ -691,7 +691,7 @@ class DownloadspotyResource(Resource):
             res = requests.post(urls, headers=headers, params=params, data="")
             urlss = "https://spotify-down.com/api/download"
             params = {
-                "link": res.json()["data"]["link"]
+                "link": res.json()["data"]["link"],
                 "n": res.json()["data"]["title"],
                 "a": res.json()["data"]["artists"]
             }
