@@ -19,7 +19,7 @@ from routes.dashboard import dashboard_bp
 from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, spoty_bp, trera_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns, spotyrek as spoty_ns, terarek as tera_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdlmp3_bp, ytdlmp4_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlmp4rek as ytdl4_ns,  ytdlmp3rek as ytdl3_ns
 # Routes Tools
-from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, brat_bp, theater_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns, bratgrek as brat_ns, theatergrek as theater_ns
+from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, brat_bp, theater_bp, glimg_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns, bratgrek as brat_ns, theatergrek as theater_ns, glimggrek as glimg_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
@@ -76,6 +76,7 @@ app.register_blueprint(ssweb_bp, url_prefix='/api/ssweb')
 app.register_blueprint(wape_bp, url_prefix='/api/novel')
 app.register_blueprint(brat_bp, url_prefix='/api/brat')
 app.register_blueprint(theater_bp, url_prefix='/api/theater')
+app.register_blueprint(glimg_bp, url_prefix='/api/gimg')
 # Register Ai
 app.register_blueprint(aivoice_bp, url_prefix='/api/aivoice')
 app.register_blueprint(hercai_bp, url_prefix='/api/hercai')
@@ -118,6 +119,7 @@ api.add_namespace(ssweb_ns, path='/api/ssweb')
 api.add_namespace(wape_ns, path='/api/novel')
 api.add_namespace(brat_ns, path='/api/brat')
 api.add_namespace(theater_ns, path='/api/theater')
+api.add_namespace(glimg_ns, path='/api/gimg')
 # NameSpace AI
 api.add_namespace(aivoice_ns, path='/api/aivoice')
 api.add_namespace(hercai_ns, path='/api/hercai')
