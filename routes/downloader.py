@@ -16,6 +16,7 @@ laheludl_bp = Blueprint('lahelu', __name__)
 ytdlmp4_bp = Blueprint('youtubedl', __name__)
 ytdlmp3_bp = Blueprint('youtubedl3', __name__)
 spoty_bp = Blueprint('spoty', __name__)
+trera_bp = Blueprint('terabox', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -105,6 +106,7 @@ laheludlrek = Namespace('downloader', description='Downloader Api')
 ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
 spotyrek = Namespace('downloader', description='Downloader Api')
+terarek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -716,4 +718,80 @@ class DownloadspotyResource(Resource):
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
+def terabox(url):
+    try:
+        # Step 1: Get the file list
+        response = requests.post('https://teradl-api.dapuntaratya.com/generate_file', json={'mode': 1, 'url': url})
+        response.raise_for_status()
+        data = response.json()
+        
+        file_list = data.get('list', [])
+        js_token = data['js_token']
+        cookie = data['cookie']
+        sign = data['sign']
+        timestamp = data['timestamp']
+        shareid = data['shareid']
+        uk = data['uk']
+        
+        result = []
+        
+        # Step 2: Generate download links for each file
+        for file in file_list:
+            try:
+                payload = {
+                    'js_token': js_token,
+                    'cookie': cookie,
+                    'sign': sign,
+                    'timestamp': timestamp,
+                    'shareid': shareid,
+                    'uk': uk,
+                    'fs_id': file['fs_id']
+                }
+                dl_response = requests.post('https://teradl-api.dapuntaratya.com/generate_link', json=payload)
+                dl_response.raise_for_status()
+                dl_data = dl_response.json()
+                
+                if 'download_link' in dl_data:
+                    result.append({
+                        'fileName': file['name'],
+                        'type': file['type'],
+                        'thumb': file.get('image'),
+                        'url': dl_data['download_link']['url_1']
+                    })
+            except Exception as e:
+                return (f"Failed to generate link for file {file['name']}: {e}")
+        
+        return result
+    except Exception as e:
+        return []
+
+
+@terarek.route('')
+class DownloadteraboxResource(Resource):
+    @terarek.doc(params={
+        'url': 'Url Terabox'
+    })
+    def get(self):
+        """
+        Downloader Terabox.
+
+        Parameters:
+        - url: Url Terabox (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            list = []
+            files = terabox(url)
+            for file in files:
+                list.append(file)
+            if result:
+               return jsonify({'creator': 'AmmarBN','status': True,'result': list})
+            else:return jsonify({'status': False, 'msg': f'url not found '})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
