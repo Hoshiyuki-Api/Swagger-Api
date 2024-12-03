@@ -1,5 +1,5 @@
 import requests
-from flask import Blueprint, Response, jsonify, request
+from flask import Blueprint, jsonify, request
 import json, instaloader, uuid, base64, time
 from datetime import datetime
 import os
@@ -581,13 +581,13 @@ import base64
 
 def bratg(text):
     """
-    Fungsi untuk mengambil gambar dari API dan mengembalikannya sebagai bytes.
+    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format Base64.
 
     Args:
         text (str): Teks yang akan dimasukkan ke dalam API.
 
     Returns:
-        bytes: Data gambar dalam format bytes, atau pesan kesalahan.
+        str: Gambar yang dikodekan dalam Base64, atau pesan kesalahan.
     """
     try:
         # API endpoint
@@ -598,15 +598,15 @@ def bratg(text):
         response = requests.get(url, params=params)
         
         if response.status_code == 200:
-            # Return the image content as bytes
-            return response.content
+            # Step 2: Encode the image content in Base64
+            image_base64 = base64.b64encode(response.content).decode('utf-8')
+            return image_base64
         else:
-            return None, f"Error: Failed to fetch the image. Status code: {response.status_code}"
+            return f"Error: Failed to fetch the image. Status code: {response.status_code}"
     
     except Exception as e:
-        return None, f"Error: {str(e)}"
-
-
+        return f"Error: {str(e)}"
+        
 @bratgrek.route('')
 class Resourcebrat(Resource):
     @bratgrek.doc(params={
@@ -626,12 +626,12 @@ class Resourcebrat(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
         try:
-            image_data, error = bratg(query)
-            if image_data:
-                # Return the image with appropriate headers
-                return Response(image_data, content_type="image/png")
-            else:
-                return jsonify({"creator": "AmmarBN", "status": False, "error": error})
+             results = bratg(query)
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  results
+             })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
@@ -714,7 +714,7 @@ class Resourcegimg(Resource):
              return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
-                'result':  list
+                'result':  [response.json()]
              })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
