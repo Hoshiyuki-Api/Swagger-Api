@@ -15,6 +15,7 @@ removebg2_bp = Blueprint('removebg2', __name__)
 ssweb_bp = Blueprint('ssweb', __name__)
 wape_bp = Blueprint('wattpad', __name__)
 brat_bp = Blueprint('brat', __name__)
+theater_bp = Blueprint('theater', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -102,6 +103,7 @@ removebg2grek = Namespace('tools', description='Tools Api')
 sswebgrek = Namespace('tools', description='Tools Api')
 wapegrek = Namespace('tools', description='Tools Api')
 bratgrek = Namespace('tools', description='Tools Api')
+theatergrek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -623,6 +625,53 @@ class Resourcebrat(Resource):
 
         try:
              results = bratg(query)
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  results
+             })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+def upcoming():
+    try:
+        response = requests.get('https://www.teater.co/upcoming')
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        upcoming_films = []
+        film_list = soup.select('#filmListResult li')
+
+        for film in film_list:
+            title = film.select_one('h3').get_text(strip=True)
+            link = film.select_one('a')['href']
+            image = film.select_one('img')['src']
+            upcoming_films.append({
+                'title': title,
+                'link': link,
+                'image': image
+            })
+
+        return upcoming_films
+    except Exception as e:
+        print(f'Error fetching data: {e}')
+        return {
+            'success': False,
+            'error': str(e)
+        }
+
+
+@theatergrek.route('')
+class Resourcetheater(Resource):
+    def get(self):
+        """
+        List theater upcoming
+
+        Parameters:
+        - none
+        """
+        try:
+             results = upcoming()
              return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
