@@ -25,7 +25,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, aivoicerek as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns
+from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, claudeai_bp, aivoicerek as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns, claudeai as claudeai_ns
 from routes.ai import textti_bp, animediff_bp, bingimg_bp, imgtotext_bp, texttirek as textti_ns, animediff as animediff_ns, bingimg as bingimg_ns, imgtotext as imgtotext_ns
 
 app = Flask(__name__)
@@ -87,7 +87,7 @@ app.register_blueprint(textti_bp, url_prefix='/api/texttoimg')
 app.register_blueprint(animediff_bp, url_prefix='/api/animediff')
 app.register_blueprint(bingimg_bp, url_prefix='/api/bingimg')
 app.register_blueprint(imgtotext_bp, url_prefix='/api/imgtotext')
-
+app.register_blueprint(claudeai_bp, url_prefix='/api/claudeai')
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
           description='A Simple Documentation API Created Using Flask-RestX\nThx For Xenzi-XN1 & YukiSmall',
@@ -129,6 +129,6 @@ api.add_namespace(textti_ns, path='/api/texttoimg')
 api.add_namespace(animediff_ns, path='/api/animediff')
 api.add_namespace(bingimg_ns, path='/api/bingimg')
 api.add_namespace(imgtotext_ns, path='/api/imgtotext')
-
+api.add_namespace(claudeai_ns, path='/api/claudeai')
 if __name__ == '__main__':
     app.run(debug=True)
