@@ -16,6 +16,7 @@ ssweb_bp = Blueprint('ssweb', __name__)
 wape_bp = Blueprint('wattpad', __name__)
 brat_bp = Blueprint('brat', __name__)
 theater_bp = Blueprint('theater', __name__)
+glimg_bp  = Blueprint('gimg', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -104,6 +105,7 @@ sswebgrek = Namespace('tools', description='Tools Api')
 wapegrek = Namespace('tools', description='Tools Api')
 bratgrek = Namespace('tools', description='Tools Api')
 theatergrek = Namespace('tools', description='Tools Api')
+glimggrek = Namespace('tools', description='Tools Api')
 
 @stalkigrek.route('')
 class Resourceigstalk(Resource):
@@ -579,29 +581,32 @@ import base64
 
 def bratg(text):
     """
-    Fungsi untuk mengambil gambar dari API eksternal dan mengembalikannya dalam format binary.
+    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format Base64.
 
     Args:
         text (str): Teks yang akan dimasukkan ke dalam API.
 
     Returns:
-        tuple: (bytes, None) jika sukses, atau (None, str) jika gagal.
+        str: Gambar yang dikodekan dalam Base64, atau pesan kesalahan.
     """
     try:
-        # API eksternal untuk mendapatkan gambar
+        # API endpoint
         url = "https://api.ryzendesu.vip/api/sticker/brat"
         params = {"text": text}
 
+        # Step 1: Fetch the image from the API
         response = requests.get(url, params=params)
-
+        
         if response.status_code == 200:
-            return response.content, None
+            # Step 2: Encode the image content in Base64
+            image_base64 = base64.b64encode(response.content).decode('utf-8')
+            return image_base64
         else:
-            return None, f"Failed to fetch the image. Status code: {response.status_code}"
-
+            return f"Error: Failed to fetch the image. Status code: {response.status_code}"
+    
     except Exception as e:
-        return None, f"Error: {str(e)}"
-
+        return f"Error: {str(e)}"
+        
 @bratgrek.route('')
 class Resourcebrat(Resource):
     @bratgrek.doc(params={
@@ -609,26 +614,26 @@ class Resourcebrat(Resource):
     })
     def get(self):
         """
-        Text to image brat (returns PNG directly)
+        text to img brat
 
         Parameters:
         - text: input text (required)
         """
+        
         query = request.args.get('text')
 
         if not query:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
         try:
-            image_binary, error = bratg(query)
-            if error:
-                return jsonify({'creator': 'AmmarBN', 'status': False, 'msg': error})
-
-            # Return image directly with content type 'image/png'
-            return Response(image_binary, content_type='image/png')
-
+             results = bratg(query)
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  results
+             })
         except Exception as e:
-            return jsonify({'creator': 'AmmarBN', 'status': False, 'msg': f'Error: {str(e)}'})
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
 def upcoming():
     try:
@@ -673,6 +678,43 @@ class Resourcetheater(Resource):
                 'creator': 'AmmarBN',
                 'status': True,
                 'result':  results
+             })
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+@glimggrek.route('')
+class Resourcegimg(Resource):
+    @glimggrek.doc(params={
+        'text': 'Input Text',
+    })
+    def get(self):
+        """
+        Search img google
+
+        Parameters:
+        - text: input text (required)
+        """
+        
+        query = request.args.get('text')
+
+        if not query:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+             url = "https://api.ryzendesu.vip/api/search/gimage"
+             # Query parameters
+             params = {
+                 "query": query
+             }
+             # Sending GET request
+             list = []
+             response = requests.get(url, params=params)
+             for x in response:
+                  list.append({"link": x["url"]})
+             return jsonify({
+                'creator': 'AmmarBN',
+                'status': True,
+                'result':  list
              })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
