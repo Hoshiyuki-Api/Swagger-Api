@@ -712,8 +712,8 @@ class Resourcegimg(Resource):
              # Sending GET request
              list = []
              response = requests.get(url, params=params)
-             for x in response.json():
-                  list.append(x["image'"])
+             #for x in response.json():
+              #    list.append(x["image'"])
              return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
