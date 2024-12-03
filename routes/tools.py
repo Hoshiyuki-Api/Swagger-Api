@@ -579,31 +579,29 @@ import base64
 
 def bratg(text):
     """
-    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format binary.
+    Fungsi untuk mengambil gambar dari API eksternal dan mengembalikannya dalam format binary.
 
     Args:
         text (str): Teks yang akan dimasukkan ke dalam API.
 
     Returns:
-        bytes: Gambar dalam format binary, atau pesan kesalahan.
+        tuple: (bytes, None) jika sukses, atau (None, str) jika gagal.
     """
     try:
-        # API endpoint
+        # API eksternal untuk mendapatkan gambar
         url = "https://api.ryzendesu.vip/api/sticker/brat"
         params = {"text": text}
 
-        # Fetch the image from the API
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
-            # Return raw binary content
-            return response.content
+            return response.content, None
         else:
-            return None, f"Error: Failed to fetch the image. Status code: {response.status_code}"
+            return None, f"Failed to fetch the image. Status code: {response.status_code}"
 
     except Exception as e:
         return None, f"Error: {str(e)}"
-        
+
 @bratgrek.route('')
 class Resourcebrat(Resource):
     @bratgrek.doc(params={
