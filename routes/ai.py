@@ -16,6 +16,7 @@ textti_bp = Blueprint('textoimg', __name__)
 animediff_bp = Blueprint('animediff', __name__)
 bingimg_bp = Blueprint('bingimage', __name__)
 imgtotext_bp = Blueprint('gambartext', __name__)
+claudeai_bp = Blueprint('claudeai', __name__)
 
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
@@ -108,6 +109,7 @@ texttirek = Namespace('ai', description='AI Api')
 animediff = Namespace('ai', description='AI Api')
 bingimg = Namespace('ai', description='AI Api')
 imgtotext = Namespace('ai', description='AI Api')
+claudeai = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -938,3 +940,38 @@ class DownloadimgtotextResource(Resource):
 
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
+
+@claudeai.route('')
+class DownloadclaudeResource(Resource):
+    @claudeai.doc(params={
+        'text': 'Input Text',
+    })
+    def get(self):
+        """
+        Claude ai Api.
+
+        Parameters:
+        - text: Text (required)
+        """
+        text = request.args.get('text')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+            url = "https://api.ryzendesu.vip/api/ai/claude"
+
+            # Query parameters
+            params = {
+                "text": text
+            }
+
+            # Sending GET request
+            response = requests.get(url, params=params)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': response.json()["response"],
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
