@@ -42,7 +42,7 @@
                         <i class='bx bx-chevron-down ml-auto'></i>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="#sample-tool">Sample Tool</a></li>
+                        <li><a href="#animediff-tool">Anime Diffusion</a></li>
                         <li><a href="#brat-tool">Brat Text to Image</a></li>
                     </ul>
                 </li>
@@ -247,11 +247,11 @@
                     <button onclick="toggleResult('result4')">Show/Hide Result</button>
                 </div>
             </section>
-            <section id="sample-tool" class="endpoint">
-                <h2>Sample Tool</h2>
-                <p class="endpoint-description">This is a sample tool</p>
+            <section id="spotify-downloader" class="endpoint">
+                <h2>Spotify Downloader</h2>
+                <p class="endpoint-description">Download Spotify Music</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/sample</span>
+                <span class="endpoint-url">/api/spotify</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -260,18 +260,19 @@
                     <div class="details-content">
                         <h3>Sample Request:</h3>
                         <pre><code>{
-    "param": "example"
+    "url": "https://open.spotify.com/track/4v7DCN09hgXkKazefkznDQ?si=4350b4e80c8d49b0"
 }</code></pre>
                         <h3>Sample Response:</h3>
                         <pre><code>{
-    "status": true,
-    "result": "This is a sample result"
+  "creator": "AmmarBN",
+  "result": "https://spotifydown.com/stream/downloadlink",
+  "status": true
 }</code></pre>
                     </div>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="apiUrl5" placeholder="Enter sample parameter">
-                    <button onclick="tryItOut('apiUrl5', 'errorMsg5', 'result5', '/api/sample')">Try it out</button>
+                    <input type="text" id="apiUrl5" placeholder="Enter Spotify URL">
+                    <button onclick="tryItOut('apiUrl5', 'errorMsg5', 'result5', '/api/spotify')">Try it out</button>
                     <p id="errorMsg5" class="error-message"></p>
                 </div>
                 <div id="result5" class="result-container">
@@ -285,6 +286,43 @@
                 </div>
                 <div class="button-group">
                     <button onclick="toggleResult('result5')">Show/Hide Result</button>
+                </div>
+            </section>
+
+            
+            <section id="animediff-tool" class="endpoint">
+                <h2>Anime Diffusion</h2>
+                <p class="endpoint-description">Create Waifu from Prompt</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/animediff</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
+    "text": "Your text here"
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <p>An image file (PNG format)</p>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="animeText" placeholder="Enter text for Anime image">
+                    <button onclick="tryItOut('animeText', 'errorMsgAnime', 'resultAnime', '/api/animediff')">Try it out</button>
+                    <p id="errorMsgAnime" class="error-message"></p>
+                </div>
+                <div id="resultAnime" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                    </div>
+                    <img class="result-image" style="display: none; max-width: 100%; height: auto;">
+                    <button class="download-button" style="display: none;">Download Image</button>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleResult('resultBrat')">Show/Hide Result</button>
                 </div>
             </section>
             <section id="brat-tool" class="endpoint">
