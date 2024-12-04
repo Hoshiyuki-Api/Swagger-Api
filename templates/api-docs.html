@@ -205,6 +205,47 @@
                     <button onclick="toggleResult('result3')">Show/Hide Result</button>
                 </div>
             </section>
+            <section id="instagram-downloader" class="endpoint">
+                <h2>Tiktok Downloader</h2>
+                <p class="endpoint-description">Download Instagram Post</p>
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-url">/api/igdl</span>
+                <div class="details">
+                    <div class="details-title">
+                        <span>Show Details</span>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="details-content">
+                        <h3>Sample Request:</h3>
+                        <pre><code>{
+    "url": "https://www.instagram.com/ammarbn27/reel/Czbqnpcvuft/"
+}</code></pre>
+                        <h3>Sample Response:</h3>
+                        <pre><code>{
+  "creator": "AmmarBN",
+  "result": "https://dl.snapcdn.app/saveinsta?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJodHRwczovL3Njb250ZW50LmNkbmluc3RhZ3JhbS5jb20vbzEvdi90MTYvZjEvbTgyLzlFNDQwMzE0NzVCMjdCQUEyQ0Y0REFBNUI2ODQ1REExX3ZpZGVvX2Rhc2hpbml0Lm1wND9zdHA9ZHN0LW1wNCZlZmc9ZXlKeFpWOW5jbTkxY0hNaU9pSmJYQ0pwWjE5M1pXSmZaR1ZzYVhabGNubGZkblJ6WDI5MFpsd2lYU0lzSW5abGJtTnZaR1ZmZEdGbklqb2lkblJ6WDNadlpGOTFjbXhuWlc0dVkyeHBjSE11WXpJdU56SXdMbUpoYzJWc2FXNWxJbjAmX25jX2NhdD0xMTEmdnM9OTAwODg1ODgxNjM0NzAzXzE1OTcyNzY2NzAmX25jX3ZzPUhCa3NGUUlZVDJsblgzaHdkbDl5WldWc2MxOXdaWEp0WVc1bGJuUmZjSEp2WkM4NVJUUTBNRE14TkRjMVFqSTNRa0ZCTWtOR05FUkJRVFZDTmpnME5VUkJNVjkyYVdSbGIxOWtZWE5vYVc1cGRDNXRjRFFWQUFMSUFRQVZBaGc2Y0dGemMzUm9jbTkxWjJoZlpYWmxjbk4wYjNKbEwwZENjbEEzVW1aT1lWVnhia2g1TkVSQlFrTm1hRTVIYjAxM1VtVmljVjlGUVVGQlJoVUNBc2dCQUNnQUdBQWJBQlVBQUNiaWh1MkJ2NXowUHhVQ0tBSkRNeXdYUURaTXpNek16TTBZRW1SaGMyaGZZbUZ6Wld4cGJtVmZNVjkyTVJFQWRmNEhBQSUzRCUzRCZjY2I9OS00Jm9oPTAwX0FZQmo4X21sWGROTEJCdGxId1I5b1N5VjFkbzlma2NDUTZVRHp3d0JKUm1NUEEmb2U9Njc1MjQzMTMmX25jX3NpZD1kODg1YTIiLCJmaWxlbmFtZSI6IlNhdmVDbGlwLkFwcF85RTQ0MDMxNDc1QjI3QkFBMkNGNERBQTVCNjg0NURBMV92aWRlb19kYXNoaW5pdC5tcDQiLCJuYmYiOjE3MzMzMjkxMTQsImV4cCI6MTczMzMzMjcxNCwiaWF0IjoxNzMzMzI5MTE0fQ.cZRKRXnkXiouUBnf1W2jPuQ6AVTfO4hX4ZVJ0ZEPEEQ",
+  "status": true
+}</code></pre>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="apiUrl4" placeholder="Enter Instagram URL">
+                    <button onclick="tryItOut('apiUrl4', 'errorMsg4', 'result4', '/api/igdl')">Try it out</button>
+                    <p id="errorMsg4" class="error-message"></p>
+                </div>
+                <div id="result4" class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Result:</div>
+                        <i class='bx bx-copy copy-icon'></i>
+                    </div>
+                    <pre class="result-content"></pre>
+                    <img class="result-image" style="display: none; max-width: 100%; height: auto;">
+                    <button class="download-button" style="display: none;">Download Image</button>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleResult('result4')">Show/Hide Result</button>
+                </div>
+            </section>
             <section id="sample-tool" class="endpoint">
                 <h2>Sample Tool</h2>
                 <p class="endpoint-description">This is a sample tool</p>
@@ -228,11 +269,11 @@
                     </div>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="apiUrl4" placeholder="Enter sample parameter">
-                    <button onclick="tryItOut('apiUrl4', 'errorMsg4', 'result4', '/api/sample')">Try it out</button>
-                    <p id="errorMsg4" class="error-message"></p>
+                    <input type="text" id="apiUrl5" placeholder="Enter sample parameter">
+                    <button onclick="tryItOut('apiUrl5', 'errorMsg5', 'result5', '/api/sample')">Try it out</button>
+                    <p id="errorMsg5" class="error-message"></p>
                 </div>
-                <div id="result4" class="result-container">
+                <div id="result5" class="result-container">
                     <div class="result-header">
                         <div class="result-title">Result:</div>
                         <i class='bx bx-copy copy-icon'></i>
@@ -242,7 +283,7 @@
                     <button class="download-button" style="display: none;">Download Image</button>
                 </div>
                 <div class="button-group">
-                    <button onclick="toggleResult('result4')">Show/Hide Result</button>
+                    <button onclick="toggleResult('result5')">Show/Hide Result</button>
                 </div>
             </section>
             <section id="brat-tool" class="endpoint">
