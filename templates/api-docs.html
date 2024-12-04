@@ -511,6 +511,11 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
             apiUrl += `?text=${encodeURIComponent(url)}`;
         } else {
             apiUrl += `?url=${encodeURIComponent(url)}`;
+        },
+        if (endpoint === '/api/animediff') {
+            apiUrl += `?text=${encodeURIComponent(url)}`;
+        } else {
+            apiUrl += `?url=${encodeURIComponent(url)}`;
         }
 
         const response = await fetch(apiUrl);
