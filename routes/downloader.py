@@ -836,7 +836,7 @@ class DownloadbilibiliResource(Resource):
             random_proxy = random.choice(proxies)
             proxy = {
                 "http": f"http://{random_proxy}",
-                "https": f"https://{random_proxy}",
+                #"https": f"https://{random_proxy}",
             }
             #title = re.search("<title>(.*?)</title>", requests.get(url, proxies=proxy).text).group(1)
             match = re.search(r'/video/(\d+)', url)
