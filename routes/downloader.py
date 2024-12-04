@@ -856,6 +856,7 @@ class DownloadbilibiliResource(Resource):
                  }
                  array_video = []
                  resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params)
+                 return jsonify({'creator': 'AmmarBN','status': True,'result': [resp.json()]})
                  for video in resp.json()['data']['playurl']['video']:
                      array_video.append({
                         "title": title,
