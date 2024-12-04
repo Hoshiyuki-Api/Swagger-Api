@@ -867,7 +867,7 @@ class DownloadbilibiliResource(Resource):
                      "sec-fetch-dest": "empty",
                      "sec-fetch-mode": "cors",
                      "sec-fetch-site": "same-site",
-                     "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                  }
                  array_video = []
                  resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params, proxies=proxy)
