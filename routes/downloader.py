@@ -1,4 +1,4 @@
-import requests, re, json, os, base64, urllib.parse, time
+import requests, re, json, os, base64, urllib.parse, time, random
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
@@ -823,7 +823,22 @@ class DownloadbilibiliResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            title = re.search("<title>(.*?)</title>", requests.get(url).text).group(1)
+            proxies = [
+                "199.195.253.141:1080",
+                "72.10.164.178:1417",
+                "63.35.64.177:3128",
+                "13.37.73.214:3128",
+                "13.37.89.201:3128",
+                "54.152.3.36:80",
+                "13.208.56.180:80",
+                "160.86.242.238:80"
+            ]
+            random_proxy = random.choice(proxies)
+            proxy = {
+                "http": f"http://{random_proxy}",
+                "https": f"https://{random_proxy}",
+            }
+            title = re.search("<title>(.*?)</title>", requests.get(url, proxies=proxy).text).group(1)
             match = re.search(r'/video/(\d+)', url)
             if match:
                  video_id = match.group(1)
@@ -855,7 +870,7 @@ class DownloadbilibiliResource(Resource):
                      "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
                  }
                  array_video = []
-                 resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params)
+                 resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params, proxies=proxy)
                  return jsonify({'creator': 'AmmarBN','status': True,'result': [resp.json()]})
                  for video in resp.json()['data']['playurl']['video']:
                      array_video.append({
