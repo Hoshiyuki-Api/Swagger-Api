@@ -507,17 +507,12 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
 
     try {
         let apiUrl = `https://api.ryochinel.my.id${endpoint}`;
-        if (endpoint === '/api/brat') {
-            apiUrl += `?text=${encodeURIComponent(url)}`;
-        } else {
-            apiUrl += `?url=${encodeURIComponent(url)}`;
-        },
-        if (endpoint === '/api/animediff') {
+        if (endpoint === '/api/brat' || endpoint === '/api/animediff') {
             apiUrl += `?text=${encodeURIComponent(url)}`;
         } else {
             apiUrl += `?url=${encodeURIComponent(url)}`;
         }
-
+        
         const response = await fetch(apiUrl);
         const contentType = response.headers.get('content-type');
 
