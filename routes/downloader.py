@@ -17,6 +17,7 @@ ytdlmp4_bp = Blueprint('youtubedl', __name__)
 ytdlmp3_bp = Blueprint('youtubedl3', __name__)
 spoty_bp = Blueprint('spoty', __name__)
 trera_bp = Blueprint('terabox', __name__)
+bilibili_bp = Blueprint('bilibili', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -107,6 +108,7 @@ ytdlmp4rek = Namespace('downloader', description='Downloader Api')
 ytdlmp3rek = Namespace('downloader', description='Downloader Api')
 spotyrek = Namespace('downloader', description='Downloader Api')
 terarek = Namespace('downloader', description='Downloader Api')
+bilibilirek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -791,6 +793,79 @@ class DownloadteraboxResource(Resource):
                 list.append(file)
             if list:
                return jsonify({'creator': 'AmmarBN','status': True,'result': list})
+            else:return jsonify({'status': False, 'msg': f'url not found '})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+def calculate_duration(duration_seconds):
+    hours = duration_seconds // 3600  # Hitung jam
+    minutes = (duration_seconds % 3600) // 60  # Hitung menit
+    seconds = duration_seconds % 60  # Hitung detik
+
+    return f"{hours:02}:{minutes:02}:{seconds:02}"
+    
+@bilibilirek.route('')
+class DownloadbilibiliResource(Resource):
+    @bilibilirek.doc(params={
+        'url': 'Url bilibili'
+    })
+    def get(self):
+        """
+        Downloader bilibili.
+
+        Parameters:
+        - url: Url bilibili (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            title = re.search("<title>(.*?)</title>", requests.get(url).text).group(1)
+            match = re.search(r'/video/(\d+)', url)
+            if match:
+                 video_id = match.group(1)
+                 params = {
+                     "s_locale": "en_US",
+                     "platform": "html5_a",
+                     "aid": video_id,
+                     "qn": "64",
+                     "type": "0",
+                     "device": "wap",
+                     "tf": "0",
+                     "spm_id": "bstar-web.ugc-video-detail.0.0",
+                     "from_spm_id": ""
+                 }
+
+                 headers = {
+                     "authority": "api.bilibili.tv",
+                     "accept": "application/json, text/plain, */*",
+                     "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+                     "cookie": "buvid3=5d7ab82a-30aa-4f72-91be-fa0ef656a34864680infoc; bstar-web-lang=id; _ga=GA1.1.1172665079.1733307593; _ga_X4BG3JXFB1=GS1.1.1733307593.1.1.1733307615.0.0.0",
+                     "origin": "https://www.bilibili.tv",
+                     "referer": url,
+                     "sec-ch-ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
+                     "sec-ch-ua-mobile": "?1",
+                     "sec-ch-ua-platform": '"Android"',
+                     "sec-fetch-dest": "empty",
+                     "sec-fetch-mode": "cors",
+                     "sec-fetch-site": "same-site",
+                     "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+                 }
+                 array_video = []
+                 resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params)
+                 for video in resp.json()['data']['playurl']['video']:
+                     array_video.append({
+                        "title": title,
+                        "url": video['video_resource']['url'],
+                        "url_backup": video['video_resource']['backup_url'][0],
+                        "quality": video['stream_info']['desc_words'],
+                        "duration": calculate_duration(video['video_resource']['duration']),
+                        "mime_type": video['video_resource']['mime_type'],
+                     })
+                 return jsonify({'creator': 'AmmarBN','status': True,'result': array_video})
             else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
