@@ -16,7 +16,7 @@ from routes.dash_check import check_bp
 from routes.dash_regis import regis_app
 from routes.dashboard import dashboard_bp
 # Routes Downloader
-from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, spoty_bp, trera_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns, spotyrek as spoty_ns, terarek as tera_ns
+from routes.downloader import tiktok_bp, igdl_bp, twitter_bp, spoty_bp, trera_bp, bilibili_bp, tiktokdlrek as tiktok_ns, instagramdlrek as igdl_ns, twitterdlrek as twitter_ns, spotyrek as spoty_ns, terarek as tera_ns, bilibilirek as bilibili_ns
 from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, laheludl_bp, ytdlmp3_bp, ytdlmp4_bp, facebookdlrek as fbdl_ns, mediafiredlrek as mdf_ns, pinterestviddlrek as pinvid_ns, laheludlrek as lahelu_ns,  ytdlmp4rek as ytdl4_ns,  ytdlmp3rek as ytdl3_ns
 # Routes Tools
 from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, brat_bp, theater_bp, glimg_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns, bratgrek as brat_ns, theatergrek as theater_ns, glimggrek as glimg_ns
@@ -66,6 +66,7 @@ app.register_blueprint(ytdlmp4_bp, url_prefix='/api/ytmp4')
 app.register_blueprint(ytdlmp3_bp, url_prefix='/api/ytmp3')
 app.register_blueprint(spoty_bp, url_prefix='/api/spotify')
 app.register_blueprint(trera_bp, url_prefix='/api/terabox')
+app.register_blueprint(bilibili_bp, url_prefix='/api/bilibili')
 # Register tools
 app.register_blueprint(igstalk_bp, url_prefix='/api/stalkig')
 app.register_blueprint(remove_bp, url_prefix='/api/removebg')
@@ -109,6 +110,7 @@ api.add_namespace(ytdl4_ns, path='/api/ytmp4')
 api.add_namespace(ytdl3_ns, path='/api/ytmp3')
 api.add_namespace(spoty_ns, path='/api/spotify')
 api.add_namespace(tera_ns, path='/api/terabox')
+api.add_namespace(bilibili_ns, path='/api/bilibili')
 # NameSpace Tools
 api.add_namespace(stalkig_ns, path='/api/stalkig')
 api.add_namespace(removebg_ns, path='/api/removebg')
