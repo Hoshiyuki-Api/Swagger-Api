@@ -838,7 +838,7 @@ class DownloadbilibiliResource(Resource):
                 "http": f"http://{random_proxy}",
                 "https": f"https://{random_proxy}",
             }
-            title = re.search("<title>(.*?)</title>", requests.get(url, proxies=proxy).text).group(1)
+            #title = re.search("<title>(.*?)</title>", requests.get(url, proxies=proxy).text).group(1)
             match = re.search(r'/video/(\d+)', url)
             if match:
                  video_id = match.group(1)
@@ -874,7 +874,7 @@ class DownloadbilibiliResource(Resource):
                  return jsonify({'creator': 'AmmarBN','status': True,'result': [resp.json()]})
                  for video in resp.json()['data']['playurl']['video']:
                      array_video.append({
-                        "title": title,
+                       # "title": title,
                         "url": video['video_resource']['url'],
                         "url_backup": video['video_resource']['backup_url'][0],
                         "quality": video['stream_info']['desc_words'],
