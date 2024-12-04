@@ -870,7 +870,7 @@ class DownloadbilibiliResource(Resource):
                      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                  }
                  array_video = []
-                 resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", headers=headers, params=params, proxies=proxy)
+                 resp = requests.get("https://api.bilibili.tv/intl/gateway/web/playurl", params=params, proxies=proxy)
                  return jsonify({'creator': 'AmmarBN','status': True,'result': [resp.json()]})
                  for video in resp.json()['data']['playurl']['video']:
                      array_video.append({
