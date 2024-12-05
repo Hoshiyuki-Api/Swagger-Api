@@ -732,14 +732,15 @@ class Resourceflux(Resource):
         - text: input text (required)
         """
         query = request.args.get('text')
-
         if not query:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+	    return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
         try:
-            api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt=a%20girl%20with%20glasses%20pink%20short%20hair%20with%20uniform%20and%20blussing%2C%20pixel%20art%20style"
-            response = requests.get(api_url)
+            api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt={query}"
+            response = requests.get(api_url, timeout=10)  # Timeout to avoid hanging indefinitely
+            if response.status_code != 200:
+                return jsonify({"status": False, "msg": "Failed to generate image, API error."})
             return Response(response.content, content_type="image/jpeg")
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
 BING_URL = "https://www.bing.com"
