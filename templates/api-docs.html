@@ -71,7 +71,7 @@
                 <h2>Lahelu Downloader</h2>
                 <p class="endpoint-description">Download Lahelu Post</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/lahelu</span>
+                <span class="endpoint-url">/api/lahelu?url=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -121,7 +121,7 @@
                 <h2>YouTube MP4 Downloader</h2>
                 <p class="endpoint-description">Download YouTube video as MP4</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/ytmp4</span>
+                <span class="endpoint-url">/api/ytmp4?url=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -166,7 +166,7 @@
                 <h2>Tiktok Downloader</h2>
                 <p class="endpoint-description">Download Tiktok Post</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/tiktok</span>
+                <span class="endpoint-url">/api/tiktok?url=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -211,7 +211,7 @@
                 <h2>Instagram Downloader</h2>
                 <p class="endpoint-description">Download Instagram Post</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/igdl</span>
+                <span class="endpoint-url">/api/igdl?url=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -298,7 +298,7 @@
                 <h2>Brat Text to Image</h2>
                 <p class="endpoint-description">Convert text to a Brat image</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/brat</span>
+                <span class="endpoint-url">/api/brat?text=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -333,7 +333,7 @@
                 <h2>Anime Diffusion</h2>
                 <p class="endpoint-description">Generate anime-style images from text prompts</p>
                 <span class="endpoint-method">GET</span>
-                <span class="endpoint-url">/api/animediff</span>
+                <span class="endpoint-url">/api/animediff?prompt=</span>
                 <div class="details">
                     <div class="details-title">
                         <span>Show Details</span>
@@ -342,7 +342,7 @@
                     <div class="details-content">
                         <h3>Sample Request:</h3>
                         <pre><code>{
-    "text": "A beautiful anime girl with long blue hair and blue eyes"
+    "prompt": "A beautiful anime girl with long blue hair and blue eyes"
 }</code></pre>
                         <h3>Sample Response:</h3>
                         <p>An image file (PNG format)</p>
