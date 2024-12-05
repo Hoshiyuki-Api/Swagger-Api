@@ -722,7 +722,7 @@ def fluxg(text):
 @fluxdiff.route('')
 class Resourceflux(Resource):
     @fluxdiff.doc(params={
-        'prompt': 'Input Text',
+        'text': 'Input Text',
     })
     def get(self):
         """
