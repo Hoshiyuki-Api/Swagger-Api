@@ -736,7 +736,7 @@ class Resourceflux(Resource):
         if not query:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
         try:
-            api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt={query}"
+            api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt=a%20girl%20with%20glasses%20pink%20short%20hair%20with%20uniform%20and%20blussing%2C%20pixel%20art%20style"
             response = requests.get(api_url)
             return Response(response.content, content_type="image/jpeg")
         except Exception as e:
