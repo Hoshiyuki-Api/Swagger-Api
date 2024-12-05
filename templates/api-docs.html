@@ -367,7 +367,7 @@
         </footer>
     </div>
     <script>
-    	document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     const animatedBackground = document.getElementById('animated-background');
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
@@ -512,7 +512,7 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
         } else {
             apiUrl += `?url=${encodeURIComponent(url)}`;
         }
-        
+
         const response = await fetch(apiUrl);
         const contentType = response.headers.get('content-type');
 
@@ -552,6 +552,8 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
         loadingIndicator.remove();
     }
 }
+
+
     </script>
 </body>
 </html>
