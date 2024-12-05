@@ -1,9 +1,10 @@
-import requests, re
+import requests, re, base64
 import json
 import os, time, random
+from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from datetime import datetime
-from flask import Blueprint, jsonify, request, redirect
+from flask import Blueprint, jsonify, request, redirect, Response
 from flask_restx import Namespace, Resource
 
 aivoice_bp = Blueprint('aivoice', __name__)
@@ -14,6 +15,7 @@ simi_bp = Blueprint('_openai_simi', __name__)
 osmage_bp = Blueprint('osmage', __name__)
 textti_bp = Blueprint('textoimg', __name__)
 animediff_bp = Blueprint('animediff', __name__)
+fluxdiff_bp = Blueprint('fluxdiff', __name__)
 bingimg_bp = Blueprint('bingimage', __name__)
 imgtotext_bp = Blueprint('gambartext', __name__)
 claudeai_bp = Blueprint('claudeai', __name__)
@@ -107,6 +109,7 @@ simirek = Namespace('ai', description='AI Api')
 osmagerek = Namespace('ai', description='AI Api')
 texttirek = Namespace('ai', description='AI Api')
 animediff = Namespace('ai', description='AI Api')
+fluxdiff = Namespace('ai', description='AI Api')
 bingimg = Namespace('ai', description='AI Api')
 imgtotext = Namespace('ai', description='AI Api')
 claudeai = Namespace('ai', description='AI Api')
@@ -684,6 +687,67 @@ class DownloadanimediffResource(Resource):
             return redirect('https://linaqruf-kivotos-xl-2-0.hf.space/file=' + first_image_url)
         else:
             return jsonify({"creator": "AmmarBN", "error": "Tidak ada gambar yang ditemukan.", "status": False})
+
+import requests
+import base64
+
+def fluxg(text):
+    """
+    Fungsi untuk mengambil gambar dari API dan mengembalikannya dalam format Base64.
+
+    Args:
+        text (str): Teks yang akan dimasukkan ke dalam API.
+
+    Returns:
+        str: Gambar yang dikodekan dalam Base64, atau pesan kesalahan.
+    """
+    try:
+        # API endpoint
+        url = "https://api.ryzendesu.vip/api/ai/flux-diffusion"
+        params = {"prompt": text}
+
+        # Step 1: Fetch the image from the API
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            # Step 2: Encode the image content in Base64
+            image_base64 = base64.b64encode(response.content).decode('utf-8')
+            return image_base64
+        else:
+            return f"Error: Failed to fetch the image. Status code: {response.status_code}"
+    
+    except Exception as e:
+        return f"Error: {str(e)}"
+        
+@fluxdiff.route('')
+class Resourceflux(Resource):
+    @fluxdiff.doc(params={
+        'prompt': 'Input Text',
+    })
+    def get(self):
+        """
+        Prompt to Image
+
+        Parameters:
+        - text: input text (required)
+        """
+        query = request.args.get('text')
+
+        if not query:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+            # Memanggil API eksternal
+            api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt={query}"
+            response = requests.get(api_url, timeout=10)
+
+            if response.status_code == 200:
+                # Mengembalikan gambar langsung dari data biner
+                return Response(response.content, content_type="image/png")
+            else:
+                return jsonify({"creator": "AmmarBN", "status": False, "error": f"Error from external API: {response.status_code}"})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
 BING_URL = "https://www.bing.com"
 
