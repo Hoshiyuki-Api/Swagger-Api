@@ -513,10 +513,7 @@
                 let apiUrl = `https://api.ryochinel.my.id${endpoint}`;
                 if (endpoint === '/api/brat') {
                     apiUrl += `?text=${encodeURIComponent(url)}`;
-                } else {
-                    apiUrl += `?url=${encodeURIComponent(url)}`;
-                }
-                if (endpoint === '/api/animediff') {
+                } else if (endpoint === '/api/animediff') {
                     apiUrl += `?prompt=${encodeURIComponent(url)}`;
                 } else {
                     apiUrl += `?url=${encodeURIComponent(url)}`;
