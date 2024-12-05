@@ -733,7 +733,7 @@ class Resourceflux(Resource):
         """
         query = request.args.get('text')
         if not query:
-	    return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
         try:
             api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt={query}"
             response = requests.get(api_url, timeout=10)  # Timeout to avoid hanging indefinitely
