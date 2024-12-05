@@ -739,11 +739,11 @@ class Resourceflux(Resource):
         try:
             # Memanggil API eksternal
             api_url = f"https://api.ryzendesu.vip/api/ai/flux-diffusion?prompt={query}"
-            response = requests.get(api_url, timeout=10)
+            response = requests.get(api_url)
 
             if response.status_code == 200:
                 # Mengembalikan gambar langsung dari data biner
-                return Response(response.content, content_type="image/png")
+                return Response(response.content, content_type="image/jpeg")
             else:
                 return jsonify({"creator": "AmmarBN", "status": False, "error": f"Error from external API: {response.status_code}"})
         except Exception as e:
