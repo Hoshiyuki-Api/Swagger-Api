@@ -507,7 +507,7 @@ async function tryItOut(inputId, errorMsgId, resultId, endpoint) {
 
     try {
         let apiUrl = `https://api.ryochinel.my.id${endpoint}`;
-        if (endpoint === '/api/brat') {
+        if (endpoint === '/api/brat' || endpoint === '/api/animediff') {
             apiUrl += `?text=${encodeURIComponent(url)}`;
         } else {
             apiUrl += `?url=${encodeURIComponent(url)}`;
