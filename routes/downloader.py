@@ -496,105 +496,61 @@ class DownloadlaheluResource(Resource):
                 }
             )
 
+def extract_youtube_id(url):
+    """Extract the video ID from a YouTube URL, including Shorts."""
+    pattern = r'(?:https?://)?(?:www\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([a-zA-Z0-9_-]{11})'
+    match = re.search(pattern, url)
+    if match:
+        return match.group(1)
+    return None
 
-def yt_download(video_url, output_format="mp4", lang="id", subscribed="false"):
-    headers = {
-        "Host": "s63.notube.net",
-        "Connection": "keep-alive",
-        "Accept": "text/html, */*; q=0.01",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "https://notube.net",
-        "Sec-Fetch-Site": "same-site",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Dest": "empty",
-        "Referer": "https://notube.net/",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-    }
-
-    url_weight = "https://s63.notube.net/recover_weight.php"
-    data_weight = {
-        "url": video_url,
-        "format": output_format,
-        "lang": lang,
-        "subscribed": subscribed
-    }
-
+def ytdlrawr(video_id, chs):
+    """Fetch video details from the target URL."""
     try:
-        # Request ke recover_weight.php
-        response_weight = requests.post(url_weight, headers=headers, data=data_weight)
-    except requests.exceptions.RequestException as e:
+        # Prepare form data
+        data = {'query': f"https://youtu.be/{video_id}"}
+
+        # Send POST request to the target URL
+        response = requests.post('https://yttomp4.pro/', data=data)
+        response.raise_for_status()  # Check for HTTP request errors
+
+        # Parse HTML response
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Extract information from the HTML
+        results = {
+            "status": True,
+            "creator": "AmmarBN",
+            "title": soup.select_one('.vtitle').text.strip() if soup.select_one('.vtitle') else None,
+            "duration": soup.select_one('.res_left p').text.replace('Duration: ', '').strip() if soup.select_one('.res_left p') else None,
+            "image": soup.select_one('.ac img')['src'] if soup.select_one('.ac img') else None,
+            "video": [],
+            "audio": [],
+            "other": []
+        }
+
+        # Extract file information
+        for tab in soup.select('.tab-item-data'):
+            tab_id = tab.get('id')
+            for row in tab.select('tbody tr'):
+                file_type = row.select_one('td:nth-of-type(1)').text.strip() if row.select_one('td:nth-of-type(1)') else None
+                file_size = row.select_one('td:nth-of-type(2)').text.strip() if row.select_one('td:nth-of-type(2)') else None
+                download_link = row.select_one('a.dbtn')['href'] if row.select_one('a.dbtn') else None
+                if chs == "mp4":
+                   if tab_id == 'tab-item-1':
+                       results["video"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
+                   elif tab_id == 'tab-item-3':
+                       results["other"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
+                elif chs == "mp3":
+                   if tab_id == 'tab-item-2':
+                    results["audio"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
+
+
+        return results
+
+    except Exception as error:
         return None
 
-    # Endpoint 2: recover_file.php
-    url_file = "https://s63.notube.net/recover_file.php?lang=id"
-    data_file = {
-        "url": video_url,
-        "format": output_format,
-        "name_mp4": response_weight.json()["name_mp4"],
-        "lang": lang,
-        "token": response_weight.json()["token"],
-        "subscribed": "false",
-        "playlist": "false",
-        "adblock": "false"
-    }
-
-    try:
-        # Request ke recover_file.php
-        response_file = requests.post(url_file, headers=headers, data=data_file)
-        return response_file.json()["token"]
-    except requests.exceptions.RequestException as e:
-        return None
-
-def url_down(token):
-    # Session setup
-    session = requests.Session()
-    
-    # Headers for the first request
-    headers_1 = {
-        "Host": "notube.net",
-        "cache-control": "max-age=0",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        "sec-fetch-site": "none",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-user": "?1",
-        "sec-fetch-dest": "document",
-        "accept-encoding": "gzip, deflate, br",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        "if-modified-since": "Wed, 20 Nov 2024 23:13:04 GMT",
-    }
-    cookies_1 = {
-        "__sharethis_cookie_test__": "1",
-        "_pk_ref.2.b650": '["", "", 1732152124, "https://www.google.com/"]',
-        "_pk_id.2.b650": "991ab9407c985471.1732152124.",
-        "_pk_ses.2.b650": "1",
-        "PHPSESSID": "i10midl51e1mnlab578t1751v0",
-        "lastSeenModal": "2024-11-21",
-        "__unam": "6cb5566-1934c500053-33834946-1",
-    }
-    
-    # First GET request
-    url_1 = "https://notube.net/id/youtube-app-46"
-    response_1 = session.get(url_1, headers=headers_1, cookies=cookies_1)
-    headers_2 = {
-        "Host": "notube.net",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        "sec-fetch-site": "same-origin",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-dest": "document",
-        "referer": "https://notube.net/id/youtube-app-46",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-    }
-    cookies_2 = cookies_1
-    url_2 = f"https://notube.net/id/download?token={token}"
-    response_2 = session.get(url_2, headers=headers_2, cookies=cookies_2)
-    try:
-        return re.search('id="downloadButton" class="btn btn-success btn-lg" href="(.*?)"', response_2.text).group(1)
-    except Exception as e:return None
 
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
@@ -615,11 +571,10 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            output_format = "mp4"
-            token = yt_download(url, output_format)
-            result = url_down(token)
-            if result:
-               return jsonify({'creator': 'AmmarBN','status': True,'result': result})
+            video_id = extract_youtube_id(url)
+            if video_id:
+                result = ytdlrawr(video_id, chs="mp4")
+                return jsonify(result)
             else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
@@ -643,11 +598,10 @@ class Downloadytmp3Resource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            output_format = "mp3"
-            token = yt_download(url, output_format)
-            result = url_down(token)
-            if result:
-               return jsonify({'creator': 'AmmarBN','status': True,'result': result})
+            video_id = extract_youtube_id(url)
+            if video_id:
+                result = ytdlrawr(video_id, chs="mp3")
+                return jsonify(result)
             else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
