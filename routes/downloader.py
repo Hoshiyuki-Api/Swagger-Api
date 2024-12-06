@@ -524,9 +524,6 @@ def ytdlrawr(video_id, chs):
             "title": soup.select_one('.vtitle').text.strip() if soup.select_one('.vtitle') else None,
             "duration": soup.select_one('.res_left p').text.replace('Duration: ', '').strip() if soup.select_one('.res_left p') else None,
             "image": soup.select_one('.ac img')['src'] if soup.select_one('.ac img') else None,
-            "video": [],
-            "audio": [],
-            "other": []
         }
 
         # Extract file information
@@ -538,12 +535,12 @@ def ytdlrawr(video_id, chs):
                 download_link = row.select_one('a.dbtn')['href'] if row.select_one('a.dbtn') else None
                 if chs == "mp4":
                    if tab_id == 'tab-item-1':
+                     if  file_type == '360p (.mp4) medium':
                        results["video"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
-                   elif tab_id == 'tab-item-3':
-                       results["other"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
                 elif chs == "mp3":
                    if tab_id == 'tab-item-2':
-                    results["audio"].append({"fileType": file_type, "fileSize": file_size, "downloadLink": download_link})
+                     if  file_type == 'MP3 - 128Kbps Audio Quality Medium':
+                       results.update({"result": download_link})
 
 
         return results
