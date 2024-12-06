@@ -535,7 +535,7 @@ def ytdlrawr(video_id, chs):
                 download_link = row.select_one('a.dbtn')['href'] if row.select_one('a.dbtn') else None
                 if chs == "mp4":
                    if tab_id == 'tab-item-1':
-                     if  file_type in '360p':
+                     if '360p' in file_type:
                        results.update({"result": download_link})
                 elif chs == "mp3":
                    if tab_id == 'tab-item-2':
