@@ -522,7 +522,7 @@ def ytdlrawr(video_id, chs):
             "status": True,
             "creator": "AmmarBN",
             "title": soup.select_one('.vtitle').text.strip() if soup.select_one('.vtitle') else None,
-            "duration": soup.select_one('.res_left p').text.replace('Duration: ', '').strip() if soup.select_one('.res_left p') else None,
+           # "duration": soup.select_one('.res_left p').text.replace('Duration: ', '').strip() if soup.select_one('.res_left p') else None,
             "image": soup.select_one('.ac img')['src'] if soup.select_one('.ac img') else None,
         }
 
@@ -535,7 +535,7 @@ def ytdlrawr(video_id, chs):
                 download_link = row.select_one('a.dbtn')['href'] if row.select_one('a.dbtn') else None
                 if chs == "mp4":
                    if tab_id == 'tab-item-1':
-                     if  file_type == '360p':
+                     if  file_type in '360p':
                        results.update({"result": download_link})
                 elif chs == "mp3":
                    if tab_id == 'tab-item-2':
