@@ -496,57 +496,120 @@ class DownloadlaheluResource(Resource):
                 }
             )
 
-def extract_youtube_id(url):
-    """Extract the video ID from a YouTube URL, including Shorts."""
-    pattern = r'(?:https?://)?(?:www\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([a-zA-Z0-9_-]{11})'
-    match = re.search(pattern, url)
-    if match:
-        return match.group(1)
-    return None
+class BigConv:
+    BASE_URL = "https://dd-n01.yt2api.com/api/v4"
 
-def ytdlrawr(video_id, chs):
-    """Fetch video details from the target URL."""
-    try:
-        # Prepare form data
-        data = {'query': f"https://youtu.be/{video_id}"}
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:131.0) Gecko/131.0 Firefox/131.0',
+        'Accept': 'application/json',
+        'accept-language': 'id-ID',
+        'referer': 'https://bigconv.com/',
+        'origin': 'https://bigconv.com',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'cross-site',
+        'priority': 'u=0',
+        'te': 'trailers'
+    }
 
-        # Send POST request to the target URL
-        response = requests.post('https://yttomp4.pro/', data=data)
-        response.raise_for_status()  # Check for HTTP request errors
+    def extract_video_id(self, url):
+        regex = r'(?:https?://)?(?:www\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([a-zA-Z0-9_-]{11})'
+        match = re.match(regex, url)
+        return match.group(1) if match else None
 
-        # Parse HTML response
-        soup = BeautifulSoup(response.text, 'html.parser')
+    def get_token(self, url):
+        video_id = self.extract_video_id(url)
+        if not video_id:
+            return {"status": "error", "message": "ID video tidak ditemukan. Pastikan link YouTube benar."}
+        
+        try:
+            response = requests.get(f"{self.BASE_URL}/info/{video_id}", headers=self.HEADERS)
+            response.raise_for_status()
+            data = response.json()
 
-        # Extract information from the HTML
-        results = {
-            "status": True,
-            "creator": "AmmarBN",
-            "title": soup.select_one('.vtitle').text.strip() if soup.select_one('.vtitle') else None,
-           # "duration": soup.select_one('.res_left p').text.replace('Duration: ', '').strip() if soup.select_one('.res_left p') else None,
-            "image": soup.select_one('.ac img')['src'] if soup.select_one('.ac img') else None,
+            cookies = response.headers.get("set-cookie", "").split(";")[0] if "set-cookie" in response.headers else ""
+            authorization = response.headers.get("authorization", "")
+
+            return {
+                "status": "success",
+                "data": data,
+                "cookie": cookies,
+                "authorization": authorization
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def convert(self, url, format, quality):
+        token_data = self.get_token(url)
+        if token_data["status"] != "success":
+            return token_data
+
+        formats = token_data["data"]["formats"]
+        try:
+            if format == "audio":
+                audio_options = formats["audio"]["mp3"]
+                selected_audio = next((opt for opt in audio_options if opt["quality"] == quality), None)
+                if not selected_audio:
+                    return {"status": "error", "message": f"Kualitas audio {quality} tidak tersedia."}
+                token = selected_audio["token"]
+            elif format == "video":
+                video_options = formats["video"]["mp4"]
+                selected_video = next((opt for opt in video_options if opt["quality"] == quality), None)
+                if not selected_video:
+                    return {"status": "error", "message": f"Kualitas video {quality} tidak tersedia."}
+                token = selected_video["token"]
+            else:
+                return {"status": "error", "message": 'Format tidak dikenali. Gunakan "audio" atau "video".'}
+
+            payload = {"token": token}
+            headers = {
+                **self.HEADERS,
+                'Content-Type': 'application/json',
+                'Cookie': token_data["cookie"],
+                'authorization': token_data["authorization"]
+            }
+
+            response = requests.post(f"{self.BASE_URL}/convert", json=payload, headers=headers)
+            response.raise_for_status()
+
+            return {
+                "status": "success",
+                "jobId": response.json()["id"],
+                "cookie": token_data["cookie"],
+                "authorization": token_data["authorization"]
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def download(self, url, format, quality):
+        convert_data = self.convert(url, format, quality)
+        if convert_data["status"] != "success":
+            return convert_data
+
+        job_id = convert_data["jobId"]
+        cookie = convert_data["cookie"]
+        authorization = convert_data["authorization"]
+
+        headers = {
+            **self.HEADERS,
+            'Cookie': cookie,
+            'authorization': authorization
         }
 
-        # Extract file information
-        for tab in soup.select('.tab-item-data'):
-            tab_id = tab.get('id')
-            for row in tab.select('tbody tr'):
-                file_type = row.select_one('td:nth-of-type(1)').text.strip() if row.select_one('td:nth-of-type(1)') else None
-                file_size = row.select_one('td:nth-of-type(2)').text.strip() if row.select_one('td:nth-of-type(2)') else None
-                download_link = row.select_one('a.dbtn')['href'] if row.select_one('a.dbtn') else None
-                if chs == "mp4":
-                   if tab_id == 'tab-item-1':
-                     if '360p' in file_type:
-                       results.update({"result": download_link})
-                elif chs == "mp3":
-                   if tab_id == 'tab-item-2':
-                     if  file_type == 'MP3 - 128Kbps Audio Quality Medium':
-                       results.update({"result": download_link})
+        for xs in range(15):
+            try:
+                response = requests.get(f"{self.BASE_URL}/status/{job_id}", headers=headers)
+                response.raise_for_status()
+                data = response.json()
 
-
-        return results
-
-    except Exception as error:
-        return None
+                if data["status"] == "completed":
+                    return data['download']
+                elif data["status"] == "failed":
+                    return {"status": "error", "message": "Conversion failed."}
+                else:
+                    time.sleep(5)
+            except Exception as e:
+                return {"status": "error", "message": str(e)}
 
 
 @ytdlmp4rek.route('')
@@ -568,11 +631,9 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            video_id = extract_youtube_id(url)
-            if video_id:
-                result = ytdlrawr(video_id, chs="mp4")
-                return jsonify(result)
-            else:return jsonify({'status': False, 'msg': f'url not found '})
+            bigconv = BigConv()
+            resl = bigconv.download(url, "video", "720p")
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -595,11 +656,9 @@ class Downloadytmp3Resource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            video_id = extract_youtube_id(url)
-            if video_id:
-                result = ytdlrawr(video_id, chs="mp3")
-                return jsonify(result)
-            else:return jsonify({'status': False, 'msg': f'url not found '})
+            bigconv = BigConv()
+            resl = bigconv.download(url, "audio", 320)
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
