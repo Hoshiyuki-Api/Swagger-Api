@@ -418,7 +418,7 @@ class Resourceremovebg2(Resource):
 
             # Save the response as an image file
             if resp.status_code == 200:
-                img_base64 = base64.b64encode(str(resp.content)).decode('utf-8')
+                img_base64 = base64.b64encode(resp.content).decode('utf-8')
                 return jsonify({
                     'creator': 'AmmarBN',
                     'status': True,
