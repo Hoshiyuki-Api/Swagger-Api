@@ -393,7 +393,7 @@ class DownloadmediafireResource(Resource):
             {
                 'creator': 'AmmarBN',
                 'status': True,
-                'url': media
+                'results': {'NamaFile': name, 'SizeFile': size, 'Upload': upload, 'Download': media}
             }
         )
 
