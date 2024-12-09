@@ -711,13 +711,13 @@ class Resourcegimg(Resource):
              }
              # Sending GET request
              list = []
-             response = requests.get(url, params=params)
-             #for x in response.json():
-              #    list.append(x["image'"])
+             response = requests.get(url, params=params).json()
+             for x in response:
+                   list.append(x["image'"])
              return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
-                'result':  response.json()
+                'result':  list
              })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
