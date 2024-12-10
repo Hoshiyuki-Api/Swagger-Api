@@ -19,7 +19,7 @@ fluxdiff_bp = Blueprint('fluxdiff', __name__)
 bingimg_bp = Blueprint('bingimage', __name__)
 imgtotext_bp = Blueprint('gambartext', __name__)
 claudeai_bp = Blueprint('claudeai', __name__)
-
+gpt3_bp = Blueprint('gpt3', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -113,6 +113,7 @@ fluxdiff = Namespace('ai', description='AI Api')
 bingimg = Namespace('ai', description='AI Api')
 imgtotext = Namespace('ai', description='AI Api')
 claudeai = Namespace('ai', description='AI Api')
+gpt3 = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -1029,6 +1030,60 @@ class DownloadclaudeResource(Resource):
             return jsonify({
                 'creator': 'AmmarBN',
                 'result': response.json()["response"],
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
+def send_request(qrty):
+    url = "https://chateverywhere.app/api/chat"
+    data = {
+        "model": {
+            "id": "gpt-3.5-turbo",
+            "name": "GPT-3.5",
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "completionTokenLimit": 2500,
+            "deploymentName": "gpt-35"
+        },
+        "messages": [
+            {
+                "role": "user",
+                "content": qrty,
+                "pluginId": None
+            }
+        ],
+        "prompt": "",
+        "temperature": 0.5,
+        "enableConversationPrompt": True
+    }
+
+    response = requests.post(url, json=data)
+    return f"{response.text}"
+
+
+@gpt3.route('')
+class Downloadgpt3Resource(Resource):
+    @gpt3.doc(params={
+        'text': 'Input Text',
+    })
+    def get(self):
+        """
+        GPT-3.5-turbo ai Api.
+
+        Parameters:
+        - text: Text (required)
+        """
+        text = request.args.get('text')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+            reslt = send_request(text)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': reslt,
                 'status': True
             })
         except Exception as e:
