@@ -704,7 +704,7 @@ class Resourcegimg(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
 
         try:
-             url = "https://api.ryzendesu.vip/api/search/gimage"
+             url = "https://btch.us.kg/googleimage"
              # Query parameters
              params = {
                  "query": query
@@ -712,13 +712,10 @@ class Resourcegimg(Resource):
              # Sending GET request
              list = []
              response = requests.get(url, params=params).json()
-             for x in response:
-                   list.append(x["image"])
              return jsonify({
                 'creator': 'AmmarBN',
                 'status': True,
-                'result':  list,
-                'tes': response
+                'result':  response["result"]
              })
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
