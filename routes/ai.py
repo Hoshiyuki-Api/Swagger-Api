@@ -1049,7 +1049,7 @@ class DownloadimgtotextResource(Resource):
                 "data": [
                     {
                         "path": resp.replace('["', '').replace('"]', ''),
-                        "url": f"https://gokaygokay-florence-2.hf.space/file={resp.replace('["', '').replace('"]', '')}",
+                        "url": "https://gokaygokay-florence-2.hf.space/file=" + resp.replace('["', '').replace('"]', ''),
                         "orig_name": "anime.jpg",
                         "size": 104003,
                         "mime_type": content_type,
