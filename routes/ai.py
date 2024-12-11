@@ -1001,7 +1001,7 @@ class DownloadimgtotextResource(Resource):
 
         try:
             filename = url_img
-            file = requests.get(filename)
+            img = requests.get(filename)
 
             # Infer the content type from the file extension
             if filename.endswith('jpg') or filename.endswith('jpeg'):
@@ -1027,7 +1027,7 @@ class DownloadimgtotextResource(Resource):
                 'user-agent': 'Mozilla/5.0 (Linux; Android 14; SM-X216B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.93 Safari/537.36'
             }
             files = {
-                'files': ('anime.jpg', file.content, content_type)
+                'files': ('anime.jpg', img.content, content_type)
             }
             resp = requests.post('https://gokaygokay-florence-2.hf.space/upload?upload_id=93j0mu7h1qk', headers=headers, files=files).text
 
