@@ -877,25 +877,7 @@ class DownloadbingimgResource(Resource):
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e), "status": False})
 
-
-@imgtotext.route('')
-class DownloadimgtotextResource(Resource):
-    @imgtotext.doc(params={
-        'url': 'Input URL Image',
-    })
-    def get(self):
-        """
-        Image To Text API.
-
-        Parameters:
-        - url: URL of the image (required)
-        """
-        url_img = request.args.get('url')
-
-        if not url_img:
-            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
-
-        try:
+"""
             # Get configuration data
             def getdat():
                 url = 'https://notegpt.io/image-summary'
@@ -921,20 +903,20 @@ class DownloadimgtotextResource(Resource):
 
             # Extract URLs from JSON
             def extract_urls(obj, itext):
-                if isinstance(obj, dict):
-                    for k, v in obj.items():
-                        if k == "message":
-                            itext.append(v)
-                        else:
-                            extract_urls(v, itext)
-                elif isinstance(obj, list):
-                    for item in obj:
-                        extract_urls(item, itext)
+                    if isinstance(obj, dict):
+                        for k, v in obj.items():
+                            if k == "message":
+                                itext.append(v)
+                            else:
+                                extract_urls(v, itext)
+                    elif isinstance(obj, list):
+                        for item in obj:
+                            extract_urls(item, itext)
 
             # Check image
             def cekft(url_img):
-                json_objects = []
-                itext = []
+                 json_objects = []
+                 itext = []
                 prm = getdat()
                 url = 'https://extensiondock.com/chatgpt/v4/completions'
                 params = {
@@ -972,31 +954,144 @@ class DownloadimgtotextResource(Resource):
 
                 response = requests.post(url, headers=headers, params=params, json=data).text
 
-                lines = response.splitlines()
-                for line in lines:
-                    match = re.search(r'\{.*\}', line)
-                    if match:
-                        json_str = match.group(0)
-                        try:
-                            json_obj = json.loads(json_str)
-                            json_objects.append(json_obj)
-                        except json.JSONDecodeError as e:
-                            print(f'Error decoding JSON: {e}')
-                            continue
+lines = response.splitlines()
+for line in lines:
+    match = re.search(r'\{.*\}', line)
+    if match:
+        json_str = match.group(0)
+        try:
+json_obj = json.loads(json_str)
+json_objects.append(json_obj)
+        except json.JSONDecodeError as e:
+            print(f'Error decoding JSON: {e}')
+            continue
 
-                for json_obj in json_objects:
-                    extract_urls(json_obj, itext)
+for json_obj in json_objects:
+    extract_urls(json_obj, itext)
 
-                return ''.join(itext)
+return ''.join(itext)
+"""
 
-            # Call the function and return the result
-            result = cekft(url_img)
-            return jsonify({
-                'creator': 'AmmarBN',
-                'status': True,
-                'result': result
-            })
+def extract_detailed_caption(logs):
+    for log in logs:
+        for k, v in log.items():
+            try:
+               if k == "output":
+                   return re.search(r"'<DETAILED_CAPTION>': '(.*?)'", v["data"][0]).group(1)
+            except (json.JSONDecodeError, KeyError, TypeError):
+              continue
+    return None
+    
+@imgtotext.route('')
+class DownloadimgtotextResource(Resource):
+    @imgtotext.doc(params={
+        'url': 'Input URL Image',
+    })
+    def get(self):
+        """
+        Image To Text API.
 
+        Parameters:
+        - url: URL of the image (required)
+        """
+        url_img = request.args.get('url')
+
+        if not url_img:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+        try:
+            filename = url_img
+            file = requests.get(filename)
+
+            # Infer the content type from the file extension
+            if filename.endswith('jpg') or filename.endswith('jpeg'):
+                content_type = 'image/jpeg'
+            elif filename.endswith('png'):
+                content_type = 'image/png'
+            elif filename.endswith('webp'):
+                content_type = 'image/webp'
+            else:
+                content_type = 'application/octet-stream'
+            headers = {
+                'accept': '*/*',
+                'accept-language': 'en-US,en;q=0.9,id;q=0.8',
+                'origin': 'https://gokaygokay-florence-2.hf.space',
+                'priority': 'u=1, i',
+                'referer': 'https://gokaygokay-florence-2.hf.space/?__theme=light',
+                'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Linux"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-origin',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 14; SM-X216B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.93 Safari/537.36'
+            }
+            files = {
+                'files': ('anime.jpg', file.content, content_type)
+            }
+            resp = requests.post('https://gokaygokay-florence-2.hf.space/upload?upload_id=93j0mu7h1qk', headers=headers, files=files).text
+
+            headers = {
+                "Host": "gokaygokay-florence-2.hf.space",
+                "content-length": "589",
+                "user-agent": "Mozilla/5.0 (Linux; Android 14; SM-X216B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.93 Safari/537.36",
+                "content-type": "application/json",
+                "accept": "*/*",
+                "origin": "https://gokaygokay-florence-2.hf.space",
+                "sec-fetch-site": "same-origin",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://gokaygokay-florence-2.hf.space/",
+                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            }
+
+            data = {
+                "data": [
+                    {
+                        "path": resp.replace('["', '').replace('"]', ''),
+                        "url": f"https://gokaygokay-florence-2.hf.space/file={resp.replace('["', '').replace('"]', '')}",
+                        "orig_name": "anime.jpg",
+                        "size": 104003,
+                        "mime_type": content_type,
+                        "meta": {"_type": "gradio.FileData"}
+                    },
+                    "Detailed Caption",
+                    "",
+                    "microsoft/Florence-2-large"
+                ],
+                "event_data": None,
+                "fn_index": 4,
+                "trigger_id": 10,
+                "session_hash": "6grnylr6yngb"
+            }
+            response = requests.post("https://gokaygokay-florence-2.hf.space/queue/join?=", headers=headers, data=json.dumps(data))
+            headers = {
+                "Host": "gokaygokay-florence-2.hf.space",
+                "accept": "text/event-stream",
+                "user-agent": "Mozilla/5.0 (Linux; Android 14; SM-X216B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.93 Safari/537.36",
+                "content-type": "application/json",
+                "sec-fetch-site": "same-origin",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://gokaygokay-florence-2.hf.space/",
+                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            }
+            response = requests.get("https://gokaygokay-florence-2.hf.space/queue/data?session_hash=6grnylr6yngb", headers=headers, stream=True)
+            if response.status_code == 200:
+                for line in response.iter_lines():
+                    if line:
+                        json_objects = []
+                        json_str =(re.search(r'\{.*\}', line.decode('utf-8')).group(0))
+                        json_obj = json.loads(json_str)
+                        json_objects.append(json_obj)
+                        res = extract_detailed_caption(json_objects)
+                        if res:
+                           return jsonify({
+                               'creator': 'AmmarBN',
+                               'status': True,
+                               'result': res
+                           })
+            else:return jsonify({"creator": "AmmarBN", "error": "404"})
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
