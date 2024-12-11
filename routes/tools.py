@@ -627,7 +627,7 @@ class Resourcebrat(Resource):
 
         try:
             # Memanggil API eksternal
-            api_url = f"https://api.ryzendesu.vip/api/sticker/brat?text={query}"
+            api_url = f"https://btch.us.kg/brat?text={query}"
             response = requests.get(api_url, timeout=10)
 
             if response.status_code == 200:
