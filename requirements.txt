@@ -1,4 +1,4 @@
-googletrans==4.0.0-rc1
+translate
 Brotli==1.1.0
 aniso8601==9.0.1
 attrs==23.2.0
