@@ -6,6 +6,7 @@ from fake_useragent import UserAgent
 from datetime import datetime
 from flask import Blueprint, jsonify, request, redirect, Response
 from flask_restx import Namespace, Resource
+from googletrans import Translator
 
 aivoice_bp = Blueprint('aivoice', __name__)
 hercai_bp = Blueprint('hercai', __name__)
@@ -1084,12 +1085,14 @@ class DownloadimgtotextResource(Resource):
                         json_str =(re.search(r'\{.*\}', line.decode('utf-8')).group(0))
                         json_obj = json.loads(json_str)
                         json_objects.append(json_obj)
-                        res = extract_detailed_caption(json_objects)
-                        if res:
+                        caption = extract_detailed_caption(json_objects)
+                        if caption:
+                           translator = Translator()
+                           translated_caption = translator.translate(caption, src="en", dest="id").text
                            return jsonify({
                                'creator': 'AmmarBN',
                                'status': True,
-                               'result': res
+                               'result': caption
                            })
             else:return jsonify({"creator": "AmmarBN", "error": "404"})
         except Exception as e:
