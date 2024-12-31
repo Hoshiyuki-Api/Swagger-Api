@@ -632,7 +632,7 @@ class Resourcebrat(Resource):
 
             if response.status_code == 200:
                 # Mengembalikan gambar langsung dari data biner
-                return Response(response.content, content_type="image/webp")
+                return Response(response.content, content_type="image/png")
             else:
                 return jsonify({"creator": "AmmarBN", "status": False, "error": f"Error from external API: {response.status_code}"})
         except Exception as e:
