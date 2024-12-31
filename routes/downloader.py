@@ -220,55 +220,58 @@ class DownloadigResource(Resource):
         #urls = resp.json()["result"][0]["url"]
         
         # api baru
-        headers = {
-            "Host": "saveclip.app",
-            "Cache-Control": "max-age=0",
-            "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-User": "?1",
-            "Sec-Fetch-Dest": "document",
-            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-        }
+#        headers = {
+#            "Host": "saveclip.app",
+#            "Cache-Control": "max-age=0",
+#            "Upgrade-Insecure-Requests": "1",
+#            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+#            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+#            "Sec-Fetch-Site": "none",
+#            "Sec-Fetch-Mode": "navigate",
+#            "Sec-Fetch-User": "?1",
+#            "Sec-Fetch-Dest": "document",
+#            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+#        }
 
-        token = requests.get("https://saveclip.app/en", headers=headers)
-        cs = re.search(',k_exp="(.*?)",k_token="(.*?)"', token.text)
-        headers = {
-            "Host": "v3.saveclip.app",
-            "Content-Length": "194",
-            "Accept": "*/*",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Origin": "https://saveclip.app",
-            "Sec-Fetch-Site": "same-site",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Dest": "empty",
-            "Referer": "https://saveclip.app/",
+#        token = requests.get("https://saveclip.app/en", headers=headers)
+#        cs = re.search(',k_exp="(.*?)",k_token="(.*?)"', token.text)
+#        headers = {
+#            "Host": "v3.saveclip.app",
+#            "Content-Length": "194",
+#            "Accept": "*/*",
+#            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+#            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+#            "Origin": "https://saveclip.app",
+#            "Sec-Fetch-Site": "same-site",
+#            "Sec-Fetch-Mode": "cors",
+#            "Sec-Fetch-Dest": "empty",
+#            "Referer": "https://saveclip.app/",
 #    "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        }
+#            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+#        }
 
 # Data payload
-        data = {
-            "k_exp": cs.group(1),
-            "k_token": cs.group(2),
-            "q": url,
-            "t": "media",
-            "lang": "en",
-            "v": "v2",
-        }
-        res = requests.post("https://v3.saveclip.app/api/ajaxSearch", headers=headers, data=data)
-        encoded_string, code_string, c1, c2, c3, c4 = find_asu(urllib.parse.unquote(res.json()["data"]))
-        decoded_result = decode(str(encoded_string), int(c1),f"{code_string}",int(c2),int(c3),int(c4))
-        inner_html_match = re.search(r'innerHTML = "(.*?)";', decoded_result)
-        decoded_url = urllib.parse.unquote(inner_html_match.group(1))
-        code_html = parser(decoded_url, "html.parser")
-        list = ([a.get("href") for a in code_html.find_all("a")])
-        url_t, url_d = list[0], list[1]
-        url_rt = (url_t.replace('"', '').replace("\\", ""))
-        url_rd = (url_d.replace('"', '').replace("\\", ""))
+#        data = {
+#            "k_exp": cs.group(1),
+#            "k_token": cs.group(2),
+#            "q": url,
+#            "t": "media",
+#            "lang": "en",
+#            "v": "v2",
+#        }
+#        res = requests.post("https://v3.saveclip.app/api/ajaxSearch", headers=headers, data=data)
+#        encoded_string, code_string, c1, c2, c3, c4 = find_asu(urllib.parse.unquote(res.json()["data"]))
+#        decoded_result = decode(str(encoded_string), int(c1),f"{code_string}",int(c2),int(c3),int(c4))
+#        inner_html_match = re.search(r'innerHTML = "(.*?)";', decoded_result)
+#        decoded_url = urllib.parse.unquote(inner_html_match.group(1))
+#        code_html = parser(decoded_url, "html.parser")
+#        list = ([a.get("href") for a in code_html.find_all("a")])
+#        url_t, url_d = list[0], list[1]
+#        url_rt = (url_t.replace('"', '').replace("\\", ""))
+#        url_rd = (url_d.replace('"', '').replace("\\", ""))
+        params = {"url": url}
+        headers = {"accept": "application/json"}
+        url_rd = requests.get("https://api.tioo.eu.org/download/igdl", headers=headers, params=params).json()["result"][0]["url"]
         return jsonify({
             "creator": "AmmarBN",
             "result": url_rd,
