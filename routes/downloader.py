@@ -499,121 +499,57 @@ class DownloadlaheluResource(Resource):
                 }
             )
 
-class BigConv:
-    BASE_URL = "https://dd-n01.yt2api.com/api/v4"
+def ytmp3andmp4(youtube_url, format="mp4", audio_bitrate="128", video_quality="720", v_codec="h264"):
+    """
+    Convert YouTube video to MP3 or MP4 format.
 
-    HEADERS = {
-        'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:131.0) Gecko/131.0 Firefox/131.0',
-        'Accept': 'application/json',
-        'accept-language': 'id-ID',
-        'referer': 'https://bigconv.com/',
-        'origin': 'https://bigconv.com',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'cross-site',
-        'priority': 'u=0',
-        'te': 'trailers'
+    Args:
+        youtube_url (str): The URL of the YouTube video.
+        format (str): Desired format ("mp3" or "mp4"). Default is "mp4".
+        audio_bitrate (str): Bitrate for audio. Default is "128".
+        video_quality (str): Quality of the video. Default is "720".
+        v_codec (str): Video codec. Default is "h264".
+    
+    Returns:
+        dict: Response from the API containing the download link or error message.
+    """
+    # Step 1: Fetch the API key
+    headers = {
+        "Host": "api.mp3youtube.cc",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+        "Content-Type": "application/json",
+        "Accept": "*/*",
+        "Origin": "https://iframe.y2meta-uk.com",
+        "Sec-Fetch-Site": "cross-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Referer": "https://iframe.y2meta-uk.com/",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "If-None-Match": 'W/"7e-3ZPGIytlLAa5LUUpFaSY1bbvtTU-gzip"'
     }
+    response = requests.get("https://api.mp3youtube.cc/v2/sanity/key", headers=headers)
+    key = response.json().get("key", None)
+    
+    if not key:
+        return None
 
-    def extract_video_id(self, url):
-        regex = r'(?:https?://)?(?:www\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([a-zA-Z0-9_-]{11})'
-        match = re.match(regex, url)
-        return match.group(1) if match else None
-
-    def get_token(self, url):
-        video_id = self.extract_video_id(url)
-        if not video_id:
-            return {"status": "error", "message": "ID video tidak ditemukan. Pastikan link YouTube benar."}
-        
-        try:
-            response = requests.get(f"{self.BASE_URL}/info/{video_id}", headers=self.HEADERS)
-            response.raise_for_status()
-            data = response.json()
-
-            cookies = response.headers.get("set-cookie", "").split(";")[0] if "set-cookie" in response.headers else ""
-            authorization = response.headers.get("authorization", "")
-
-            return {
-                "status": "success",
-                "data": data,
-                "cookie": cookies,
-                "authorization": authorization
-            }
-        except Exception as e:
-            return {"status": "error", "message": str(e)}
-
-    def convert(self, url, format, quality):
-        token_data = self.get_token(url)
-        if token_data["status"] != "success":
-            return token_data
-
-        formats = token_data["data"]["formats"]
-        try:
-            if format == "audio":
-                audio_options = formats["audio"]["mp3"]
-                selected_audio = next((opt for opt in audio_options if opt["quality"] == quality), None)
-                if not selected_audio:
-                    return {"status": "error", "message": f"Kualitas audio {quality} tidak tersedia."}
-                token = selected_audio["token"]
-            elif format == "video":
-                video_options = formats["video"]["mp4"]
-                selected_video = next((opt for opt in video_options if opt["quality"] == quality), None)
-                if not selected_video:
-                    return {"status": "error", "message": f"Kualitas video {quality} tidak tersedia."}
-                token = selected_video["token"]
-            else:
-                return {"status": "error", "message": 'Format tidak dikenali. Gunakan "audio" atau "video".'}
-
-            payload = {"token": token}
-            headers = {
-                **self.HEADERS,
-                'Content-Type': 'application/json',
-                'Cookie': token_data["cookie"],
-                'authorization': token_data["authorization"]
-            }
-
-            response = requests.post(f"{self.BASE_URL}/convert", json=payload, headers=headers)
-            response.raise_for_status()
-
-            return {
-                "status": "success",
-                "jobId": response.json()["id"],
-                "cookie": token_data["cookie"],
-                "authorization": token_data["authorization"]
-            }
-        except Exception as e:
-            return {"status": "error", "message": str(e)}
-
-    def download(self, url, format, quality):
-        convert_data = self.convert(url, format, quality)
-        if convert_data["status"] != "success":
-            return convert_data
-
-        job_id = convert_data["jobId"]
-        cookie = convert_data["cookie"]
-        authorization = convert_data["authorization"]
-
-        headers = {
-            **self.HEADERS,
-            'Cookie': cookie,
-            'authorization': authorization
-        }
-
-        for xs in range(15):
-            try:
-                response = requests.get(f"{self.BASE_URL}/status/{job_id}", headers=headers)
-                response.raise_for_status()
-                data = response.json()
-
-                if data["status"] == "completed":
-                    return data['download']
-                elif data["status"] == "failed":
-                    return {"status": "error", "message": "Conversion failed."}
-                else:
-                    time.sleep(5)
-            except Exception as e:
-                return {"status": "error", "message": str(e)}
-
+    headers.update({
+        "Key": key,
+        "Content-Type": "application/x-www-form-urlencoded"
+    })
+    data = {
+        "link": youtube_url,
+        "format": format,
+        "audioBitrate": audio_bitrate,
+        "videoQuality": video_quality,
+        "vCodec": v_codec
+    }
+    conv_response = requests.post("https://api.mp3youtube.cc/v2/converter", headers=headers, data=data)
+    
+    if conv_response.status_code == 200:
+        return conv_response.json()
+    else:
+        return None
 
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
@@ -634,9 +570,8 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            bigconv = BigConv()
-            resl = bigconv.download(url, "video", "720p")
-            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
+            resl = ytmp3andmp4(url, format="mp4")
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl.get("url")})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -659,9 +594,8 @@ class Downloadytmp3Resource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            bigconv = BigConv()
-            resl = bigconv.download(url, "audio", 320)
-            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
+            resl = ytmp3andmp4(url, format="mp3")
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl.get("url")})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
