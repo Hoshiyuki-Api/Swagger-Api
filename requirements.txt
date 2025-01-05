@@ -28,7 +28,6 @@ pytube==15.0.0
 referencing==0.35.1
 requests==2.32.3
 requests-toolbelt==1.0.0
-rpds-py==0.18.1
 six==1.16.0
 soupsieve==2.5
 urllib3==2.2.1
