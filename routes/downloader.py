@@ -164,45 +164,38 @@ class DownloadttResource(Resource):
         except requests.exceptions.RequestException as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)})
 
-def find_asu(text):
-    # Menemukan semua pola dalam tanda kutip
-    matches, code = re.findall(r'(\d+)', text), re.findall(r'"([^"]*)"', text)
-    return code[-2], code[-1], matches[-4], matches[-3], matches[-2], matches[-1]
-    
-def base_convert(d, e, f):
-    g = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
-    h = g[:e]
-    i = g[:f]
-    j = 0
-    for c, char in enumerate(reversed(d)):
-        if char in h:
-            j += h.index(char) * (e ** c)
-    
-    k = ""
-    while j > 0:
-        k = i[j % f] + k
-        j //= f
-    
-    return k or "0"
+def igdl(url):
+    form_data = {
+        "url": url,
+        "ajax": "1",
+        "lang": "en"
+    }
 
-def decode(encoded, u, n, t, e, r):
-    r = ""
-    i = 0
-    while i < len(encoded):
-        s = ""
-        while encoded[i] != n[e]:
-            s += encoded[i]
-            i += 1
-        i += 1  # Move past the separator
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "origin": "https://ins1d.net",
+        "referer": "https://ins1d.net/en/",
+        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+        "x-requested-with": "XMLHttpRequest"
+    }
+
+    res = requests.post("https://ins1d.net/mates/en/analyze/ajax?retry=undefined&platform=instagram", data=form_data, headers=headers)
+    soup = BeautifulSoup(res.json()['result'], 'html.parser')
+    hrefs = []
+
+    for a in soup.select('.download-bottom a'):
+        caption = a.text
+        type_match = "Photo" if "Download Photo" in caption else "Video" if "Download Video" in caption else "Tidak Diketahui"
+        href = a.get('href')
         
-        for j in range(len(n)):
-            s = s.replace(n[j], str(j))
-        
-        decoded_char = chr(int(base_convert(s, e, 10)) - t)
-        r += decoded_char
-    
-    return r
-    
+        hrefs.append({
+            "type": type_match,
+            "url": href
+        })
+
+    return hrefs
+
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
     @instagramdlrek.doc(params={
@@ -214,67 +207,10 @@ class DownloadigResource(Resource):
         if not url:
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' is required."})
 
-
-        # Siapkan request ke API baru
-        #resp = requests.get(f"https://widipe.com/download/igdl?url={url}")
-        #urls = resp.json()["result"][0]["url"]
-        
-        # api baru
-#        headers = {
-#            "Host": "saveclip.app",
-#            "Cache-Control": "max-age=0",
-#            "Upgrade-Insecure-Requests": "1",
-#            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-#            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-#            "Sec-Fetch-Site": "none",
-#            "Sec-Fetch-Mode": "navigate",
-#            "Sec-Fetch-User": "?1",
-#            "Sec-Fetch-Dest": "document",
-#            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-#        }
-
-#        token = requests.get("https://saveclip.app/en", headers=headers)
-#        cs = re.search(',k_exp="(.*?)",k_token="(.*?)"', token.text)
-#        headers = {
-#            "Host": "v3.saveclip.app",
-#            "Content-Length": "194",
-#            "Accept": "*/*",
-#            "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-#            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-#            "Origin": "https://saveclip.app",
-#            "Sec-Fetch-Site": "same-site",
-#            "Sec-Fetch-Mode": "cors",
-#            "Sec-Fetch-Dest": "empty",
-#            "Referer": "https://saveclip.app/",
-#    "Accept-Encoding": "gzip, deflate, br",
-#            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-#        }
-
-# Data payload
-#        data = {
-#            "k_exp": cs.group(1),
-#            "k_token": cs.group(2),
-#            "q": url,
-#            "t": "media",
-#            "lang": "en",
-#            "v": "v2",
-#        }
-#        res = requests.post("https://v3.saveclip.app/api/ajaxSearch", headers=headers, data=data)
-#        encoded_string, code_string, c1, c2, c3, c4 = find_asu(urllib.parse.unquote(res.json()["data"]))
-#        decoded_result = decode(str(encoded_string), int(c1),f"{code_string}",int(c2),int(c3),int(c4))
-#        inner_html_match = re.search(r'innerHTML = "(.*?)";', decoded_result)
-#        decoded_url = urllib.parse.unquote(inner_html_match.group(1))
-#        code_html = parser(decoded_url, "html.parser")
-#        list = ([a.get("href") for a in code_html.find_all("a")])
-#        url_t, url_d = list[0], list[1]
-#        url_rt = (url_t.replace('"', '').replace("\\", ""))
-#        url_rd = (url_d.replace('"', '').replace("\\", ""))
-        params = {"url": url}
-        headers = {"accept": "application/json"}
-        url_rd = requests.get("https://api.tioo.eu.org/download/igdl", headers=headers, params=params).json()["result"][0]["url"]
+        result = igdl(url)
         return jsonify({
             "creator": "AmmarBN",
-            "result": url_rd,
+            "result": result,
             "status": True
         })
         
