@@ -487,6 +487,63 @@ def ytmp3andmp4(youtube_url, format="mp4", audio_bitrate="128", video_quality="7
     else:
         return None
 
+def ytdl4(video_url, type):
+    headers = {
+        "Host": "s42.notube.net",
+        "Connection": "keep-alive",
+        "Content-Length": "194",
+        "Accept": "text/html, */*; q=0.01",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Origin": "https://notube.net",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Referer": "https://notube.net/",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+    }
+
+    data1 = {
+        "url": video_url,
+        "format": type,
+        "lang": "id",
+        "subscribed": "false"
+    }
+
+    response1 = requests.post("https://s42.notube.net/recover_weight.php", headers=headers, data=data1)
+
+    url = "https://s62.notube.net/recover_file.php?lang=id"
+    headers = {
+        "Host": "s62.notube.net",
+        "Connection": "keep-alive",
+        "Content-Length": "194",
+        "Accept": "text/html, */*; q=0.01",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Origin": "https://notube.net",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Referer": "https://notube.net/",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+    }
+    data = {
+        "url": video_url,
+        "format": type,
+        "name_mp4": response1.json()["name_mp4"],
+        "lang": "id",
+        "token": response1.json()["token"],
+        "subscribed": "false",
+        "playlist": "false",
+        "adblock": "false"
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+    response2 = requests.get(f"https://notube.net/id/download?token={response1.json()['token']}")
+    return re.search('id="downloadButton" class="btn btn-success btn-lg" href="(.*?)"', response2.text).group(1)
+
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
     @ytdlmp4rek.doc(params={
@@ -506,8 +563,8 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            resl = ytmp3andmp4(url, format="mp4")
-            return jsonify({'creator': 'AmmarBN','status': True,'result': resl.get("url")})
+            resl = ytdl4(url, "mp4") #ytmp3andmp4(url, format="mp4")
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
             
@@ -530,8 +587,8 @@ class Downloadytmp3Resource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            resl = ytmp3andmp4(url, format="mp3")
-            return jsonify({'creator': 'AmmarBN','status': True,'result': resl.get("url")})
+            resl = resl = ytdl4(url, "mp3") #ytmp3andmp4(url, format="mp3")
+            return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
