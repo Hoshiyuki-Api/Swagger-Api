@@ -188,13 +188,8 @@ def igdl(url):
         caption = a.text
         type_match = "Photo" if "Download Photo" in caption else "Video" if "Download Video" in caption else "Tidak Diketahui"
         href = a.get('href')
-        
-        hrefs.append({
-            "type": type_match,
-            "url": href
-        })
 
-    return hrefs
+    return href
 
 @instagramdlrek.route('')
 class DownloadigResource(Resource):
