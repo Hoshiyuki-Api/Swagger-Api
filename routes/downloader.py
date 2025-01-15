@@ -18,6 +18,7 @@ ytdlmp3_bp = Blueprint('youtubedl3', __name__)
 spoty_bp = Blueprint('spoty', __name__)
 trera_bp = Blueprint('terabox', __name__)
 bilibili_bp = Blueprint('bilibili', __name__)
+xiaou_bp = Blueprint('xiaohongshu', __name
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -109,6 +110,7 @@ ytdlmp3rek = Namespace('downloader', description='Downloader Api')
 spotyrek = Namespace('downloader', description='Downloader Api')
 terarek = Namespace('downloader', description='Downloader Api')
 bilibilirek = Namespace('downloader', description='Downloader Api')
+xiaourek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -821,3 +823,28 @@ class DownloadbilibiliResource(Resource):
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
+
+@xiaourek.route('')
+class DownloadxiaohongshuResource(Resource):
+    @xiaourek.doc(params={
+        'url': 'Url Xiaohongshu'
+    })
+    def get(self):
+        """
+        Downloader Xiaohongshu.
+
+        Parameters:
+        - url: Url Xiaohongshu (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            requ  = requests.get(url).text
+            video = re.search('"masterUrl":"(.*?)"', requ).group(1)
+            return jsonify({'creator': 'AmmarBN','status': True,'result': video.encode('utf-8').decode('unicode_escape'))})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
