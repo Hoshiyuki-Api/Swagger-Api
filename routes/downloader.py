@@ -845,6 +845,6 @@ class DownloadxiaohongshuResource(Resource):
         try:
             requ  = requests.get(url).text
             video = re.search('"masterUrl":"(.*?)"', requ).group(1)
-            return jsonify({'creator': 'AmmarBN','status': True,'result': video.encode('utf-8').decode('unicode_escape'))})
+            return jsonify({'creator': 'AmmarBN','status': True,'result': video.encode('utf-8').decode('unicode_escape')})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
