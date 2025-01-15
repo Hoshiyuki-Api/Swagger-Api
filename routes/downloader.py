@@ -843,7 +843,20 @@ class DownloadxiaohongshuResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            requ  = requests.get(url).text
+            headers = {
+                "Host": "www.xiaohongshu.com",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                "sec-fetch-site": "none",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-user": "?1",
+                "sec-fetch-dest": "document",
+                #"accept-encoding": "gzip, deflate, br",
+                "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+                "cookie": "abRequestId=e6c36b4e-2be7-5024-a245-fdddb65e84b2; a1=1946654595buyt0sfxs73xmnov6gnc45njwh1jm1b20000327546; webId=6c7bd28b1a5564464fcfc8bb7158df75; gid=yj4KK224KqIyyj4KK242jVV62D7v98MiCMWqEyDC6IlhKxJ8kIS42y888qJW24K8SiqSi0YJ; websectiga=3fff3a6f9f07284b62c0f2ebf91a3b10193175c06e4f71492b60e056edcdebb2; acw_tc=0a00da8417369352235923678e59ea6fdc8c83b0d117b9bc117e508dd9feab; webBuild=4.54.0; xsecappid=login; sec_poison_id=a236bed8-a9c6-4d82-921b-eaa51f2b2fe4"
+            }
+            requ  = requests.get(url, headers=headers).text
             video = re.search('"masterUrl":"(.*?)"', requ).group(1)
             return jsonify({'creator': 'AmmarBN','status': True,'result': video.encode('utf-8').decode('unicode_escape')})
         except Exception as e:
