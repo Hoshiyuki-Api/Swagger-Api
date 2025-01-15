@@ -18,7 +18,7 @@ ytdlmp3_bp = Blueprint('youtubedl3', __name__)
 spoty_bp = Blueprint('spoty', __name__)
 trera_bp = Blueprint('terabox', __name__)
 bilibili_bp = Blueprint('bilibili', __name__)
-xiaou_bp = Blueprint('xiaohongshu', __name
+xiaou_bp = Blueprint('xiaohongshu', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
