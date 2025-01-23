@@ -440,7 +440,8 @@ def ytall(url, type):
         headers = {"Content-type": "application/json", "Accept": "application/json"},
         params = {"url": url}
     )
-    return resp.json()["downloads"]["url"]
+    result = json.loads(resp.text)
+    return result["downloads"]["url"]
 
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
