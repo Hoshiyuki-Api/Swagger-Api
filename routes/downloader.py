@@ -432,178 +432,15 @@ class DownloadlaheluResource(Resource):
                 }
             )
 
-def ytmp3andmp4(youtube_url, format="mp4", audio_bitrate="128", video_quality="720", v_codec="h264"):
-    """
-    Convert YouTube video to MP3 or MP4 format.
-
-    Args:
-        youtube_url (str): The URL of the YouTube video.
-        format (str): Desired format ("mp3" or "mp4"). Default is "mp4".
-        audio_bitrate (str): Bitrate for audio. Default is "128".
-        video_quality (str): Quality of the video. Default is "720".
-        v_codec (str): Video codec. Default is "h264".
-    
-    Returns:
-        dict: Response from the API containing the download link or error message.
-    """
-    # Step 1: Fetch the API key
-    headers = {
-        "Host": "api.mp3youtube.cc",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "Content-Type": "application/json",
-        "Accept": "*/*",
-        "Origin": "https://iframe.y2meta-uk.com",
-        "Sec-Fetch-Site": "cross-site",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Dest": "empty",
-        "Referer": "https://iframe.y2meta-uk.com/",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        "If-None-Match": 'W/"7e-3ZPGIytlLAa5LUUpFaSY1bbvtTU-gzip"'
-    }
-    response = requests.get("https://api.mp3youtube.cc/v2/sanity/key", headers=headers)
-    key = response.json().get("key", None)
-    
-    if not key:
-        return None
-
-    headers.update({
-        "Key": key,
-        "Content-Type": "application/x-www-form-urlencoded"
-    })
-    data = {
-        "link": youtube_url,
-        "format": format,
-        "audioBitrate": audio_bitrate,
-        "videoQuality": video_quality,
-        "vCodec": v_codec
-    }
-    conv_response = requests.post("https://api.mp3youtube.cc/v2/converter", headers=headers, data=data)
-    
-    if conv_response.status_code == 200:
-        return conv_response.json()
-    else:
-        return None
-
-def ytdl4(video_url, type):
-    headers = {
-        "Host": "s42.notube.net",
-        "Connection": "keep-alive",
-        "Content-Length": "194",
-        "Accept": "text/html, */*; q=0.01",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "https://notube.net",
-        "Sec-Fetch-Site": "same-site",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Dest": "empty",
-        "Referer": "https://notube.net/",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-    }
-
-    data1 = {
-        "url": video_url,
-        "format": type,
-        "lang": "id",
-        "subscribed": "false"
-    }
-
-    response1 = requests.post("https://s42.notube.net/recover_weight.php", headers=headers, data=data1)
-
-    url = "https://s62.notube.net/recover_file.php?lang=id"
-    headers = {
-        "Host": "s62.notube.net",
-        "Connection": "keep-alive",
-        "Content-Length": "194",
-        "Accept": "text/html, */*; q=0.01",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "https://notube.net",
-        "Sec-Fetch-Site": "same-site",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Dest": "empty",
-        "Referer": "https://notube.net/",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
-    }
-    data = {
-        "url": video_url,
-        "format": type,
-        "name_mp4": response1.json()["name_mp4"],
-        "lang": "id",
-        "token": response1.json()["token"],
-        "subscribed": "false",
-        "playlist": "false",
-        "adblock": "false"
-    }
-
-    response = requests.post(url, headers=headers, data=data)
-    response2 = requests.get(f"https://notube.net/id/download?token={response1.json()['token']}")
-    return re.search('id="downloadButton" class="btn btn-success btn-lg" href="(.*?)"', response2.text).group(1)
-
-def ytdl(video_url):
-    headers_youtubemp4 = {
-        "Host": "youtubemp4.kim",
-        "accept": "application/json, text/javascript, */*; q=0.01",
-        "x-requested-with": "XMLHttpRequest",
-        "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "origin": "https://youtubemp4.kim",
-        "sec-fetch-site": "same-origin",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-dest": "empty",
-        "referer": "https://youtubemp4.kim/en6/",
-        "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        "cookie": "fpestid=_tfSsdYUbKftcskRpe30TL2jhsmP7nJfGrnEP4ZE44s3zi_hfUYejWUkBzxuQXrdWXaJ-Q; _cc_id=21b977873718a1ec6bce7c62f11151ce; panoramaId_expiry=1737481524823; panoramaId=9db0a72a473b351c3f6ab9a71c1916d53938ed02068a115931556d36cea6de1d; panoramaIdType=panoIndiv; sc_is_visitor_unique=rx12770569.1736876892.6707C99B9A0C4F44BEB8A4072B443244.1.1.1.1.1.1.1.1.1; prefetchAd_6770411=true"
-    }
-
-    data_youtubemp4 = {
-        "url": video_url,
-        "q_auto": "0",
-        "ajax": "1"
-    }
-
-    response_youtubemp4 = requests.post("https://youtubemp4.kim/mates/en/analyze/ajax", headers=headers_youtubemp4, data=data_youtubemp4)
-    result = response_youtubemp4.json()["result"]
-    soup = parser(result, "html.parser")
-
-    video_id = None
-    for x in soup.find_all("td", {"class": "txt-center"}):
-        vid = x.find("a")
-        if vid and "360" in vid.get("data-fquality", ""):
-            video_id = vid.get("href").replace("https://lbs.crosswordle.cc/#url=", "")
-            break
-
-    if video_id:
-        headers_crosswordle = {
-            "Host": "lbs.crosswordle.cc",
-            "content-length": "1813",
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "x-requested-with": "XMLHttpRequest",
-            "user-agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "origin": "https://lbs.crosswordle.cc",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            "referer": "https://lbs.crosswordle.cc/",
-            "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-            "cookie": ("fpestid=zdyo58TYOrmb7RdHsE87F3fF4Z0ciH_jYZJiCDw0qlgUJdvD8vD8T6BzKdvQ4dbh118pCA; "
-                       "_cc_id=21b977873718a1ec6bce7c62f11151ce; panoramaId_expiry=1737481597877; "
-                       "panoramaId=9db0a72a473b351c3f6ab9a71c1916d53938ed02068a115931556d36cea6de1d; "
-                       "panoramaIdType=panoIndiv; prefetchAd_6674030=true; "
-                       "sc_is_visitor_unique=rx12924194.1736876826.864B57C009834F1286C868FADAB83A37.1.1.1.1.1.1.1.1.1")
-        }
-
-        data_crosswordle = {
-            "param": video_id,
-            "ref": "https://youtubemp4.kim/"
-        }
-
-        response_crosswordle = requests.post("https://lbs.crosswordle.cc/", headers=headers_crosswordle, data=data_crosswordle)
-        return response_crosswordle.json()["v_url"]
-    else:
-        return "360p video link not found."
+def ytall(url, type):
+    if type in "video":next = "/api/download/video"
+    else:next = "/api/download/audio"
+    resp = requests.get(
+        "https://ytdl.axeel.my.id" + next,
+        headers = {"Content-type": "application/json", "Accept": "application/json"}
+        params = {"url": url}
+    )
+    return resp.json()["downloads"]["url"]
 
 @ytdlmp4rek.route('')
 class DownloadytResource(Resource):
@@ -624,7 +461,7 @@ class DownloadytResource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            resl = ytdl(url) #ytmp3andmp4(url, format="mp4")
+            resl = ytall(url, "video")
             return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
@@ -648,7 +485,7 @@ class Downloadytmp3Resource(Resource):
             return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
 
         try:
-            resl = resl = ytdl4(url, "mp3") #ytmp3andmp4(url, format="mp3")
+            resl = ytall(url, "audio") #ytmp3andmp4(url, format="mp3")
             return jsonify({'creator': 'AmmarBN','status': True,'result': resl})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
