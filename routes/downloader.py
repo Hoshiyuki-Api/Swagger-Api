@@ -1,4 +1,4 @@
-import requests, re, json, os, base64, urllib.parse, time, random
+import requests, re, json, os, base64, urllib.parse, time, random, cloudscraper
 from pytube import YouTube
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as parser
@@ -435,7 +435,8 @@ class DownloadlaheluResource(Resource):
 def ytall(url, type):
     if type in "video":next = "/api/download/video"
     else:next = "/api/download/audio"
-    resp = requests.get(
+    scraper = cloudscraper.create_scraper()
+    resp = scraper.get(
         "https://ytdl.axeel.my.id" + next,
         headers = {"Content-type": "application/json", "Accept": "application/json"},
         params = {"url": url}
