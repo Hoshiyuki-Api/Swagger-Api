@@ -437,7 +437,7 @@ def ytall(url, type):
     else:next = "/api/download/audio"
     resp = requests.get(
         "https://ytdl.axeel.my.id" + next,
-        headers = {"Content-type": "application/json", "Accept": "application/json"}
+        headers = {"Content-type": "application/json", "Accept": "application/json"},
         params = {"url": url}
     )
     return resp.json()["downloads"]["url"]
