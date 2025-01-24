@@ -21,6 +21,7 @@ bingimg_bp = Blueprint('bingimage', __name__)
 imgtotext_bp = Blueprint('gambartext', __name__)
 claudeai_bp = Blueprint('claudeai', __name__)
 gpt3_bp = Blueprint('gpt3', __name__)
+aiimg_bp = Blueprint('image_generate', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -115,6 +116,7 @@ bingimg = Namespace('ai', description='AI Api')
 imgtotext = Namespace('ai', description='AI Api')
 claudeai = Namespace('ai', description='AI Api')
 gpt3 = Namespace('ai', description='AI Api')
+aiimg = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -1191,3 +1193,100 @@ class Downloadgpt3Resource(Resource):
             })
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
+class Veed:
+    def __init__(self):
+        self.base_url = "https://www.veed.io"
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:131.0) Gecko/131.0 Firefox/131.0',
+            'Content-Type': 'application/json',
+            'Accept-Language': 'id-ID',
+            'Referer': f'{self.base_url}/tools/ai-image-generator',
+            'Origin': self.base_url,
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'Priority': 'u=0',
+            'TE': 'trailers'
+        }
+
+    def queue(self, prompt, resolution):
+        try:
+            data = {
+                "prompt": prompt,
+                "resolution": resolution
+            }
+            response = requests.post(
+                f"{self.base_url}/api/v1/ai-images",
+                headers=self.headers,
+                json=data
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return None
+
+    def convrt_img(self, url):
+        img_response = requests.get(
+             url,
+             headers = {
+               "Host": "cdn-user-temp.veed.io",
+               "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+               "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+               "Sec-Fetch-Site": "same-site",
+               "Sec-Fetch-Mode": "no-cors",
+               "Sec-Fetch-Dest": "image",
+               "Referer": "https://www.veed.io/",
+             }
+        )
+        if img_response.status_code == 200:
+              img_encode = base64.b64encode(img_response.content).decode("utf-8")
+              return img_encode
+        else:return None
+
+    def get_job(self, prompt, resolution):
+        try:
+            queue_response = self.queue(prompt, resolution)
+            if queue_response:
+                asset_id = queue_response["data"][0]["assetId"]
+                job_response = requests.get(
+                    f"{self.base_url}/api/v1/asset/{asset_id}",
+                    headers=self.headers
+                )
+                job_response.raise_for_status()
+                return self.convrt_img(job_response.json()["data"]["cdnUrl"])
+            else:
+                return None
+        except requests.exceptions.RequestException as e:
+            return None
+
+
+@aiimg.route('')
+class DownloadaigimgResource(Resource):
+    @aiimg.doc(params={
+        'prompt': 'Input Prompt',
+    })
+    def get(self):
+        """
+        Ai Image Generator.
+
+        Parameters:
+        - prompt: Prompt (required)
+        """
+        text = request.args.get('prompt')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'prompt' diperlukan."})
+
+        try:
+            veed = Veed()
+            result = veed.get_job(text, "Res256")
+            return jsonify({
+                'creator': 'AmmarBN',
+                'type_enc': 'base64',
+                'result': result,
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
