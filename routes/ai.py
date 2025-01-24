@@ -1281,12 +1281,8 @@ class DownloadaigimgResource(Resource):
         try:
             veed = Veed()
             result = veed.get_job(text, "Res256")
-            return jsonify({
-                'creator': 'AmmarBN',
-                'type_enc': 'base64',
-                'result': result,
-                'status': True
-            })
+            decoded_image = base64.b64decode(result)
+            return Response(decoded_image, mimetype='image/png')
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
