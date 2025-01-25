@@ -1351,7 +1351,7 @@ class DownloadaigimgResource(Resource):
             if result:
                return jsonify({
                 'creator': 'AmmarBN',
-                'result': reslt,
+                'result': result,
                 'status': True
                })
             else:return jsonify({"creator": "AmmarBN", "error": "tidak ada result"}), 500
