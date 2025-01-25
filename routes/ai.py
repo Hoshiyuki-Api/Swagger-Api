@@ -119,6 +119,7 @@ claudeai = Namespace('ai', description='AI Api')
 gpt3 = Namespace('ai', description='AI Api')
 aiimg = Namespace('ai', description='AI Api')
 imgdec = Namespace('ai', description='AI Api')
+
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
     @aivoicerek.doc(params={
@@ -1287,10 +1288,10 @@ class DownloadaigimgResource(Resource):
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
-def describe(image_url):
+def describe(s_image_url):
     try:
         # Fetch the image as binary data
-        image_response = requests.get(image_url) #, stream=True)
+        image_response = requests.get(s_image_url, stream=True)
         image_response.raise_for_status()
         image_data = image_response.content
 
@@ -1330,7 +1331,7 @@ def describe(image_url):
         return None
         
 @imgdec.route('')
-class DownloadaigimgdecResource(Resource):
+class DownloadimgdecaiResource(Resource):
     @imgdec.doc(params={
         'url': 'Input url image',
     })
@@ -1354,7 +1355,7 @@ class DownloadaigimgdecResource(Resource):
                 'result': result,
                 'status': True
                })
-            else:return jsonify({"creator": "AmmarBN", "error": "tidak ada result"}), 500
+            else:return jsonify({"creator": "AmmarBN", "error": "tidak ada result"})
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
