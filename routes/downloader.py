@@ -19,6 +19,7 @@ spoty_bp = Blueprint('spoty', __name__)
 trera_bp = Blueprint('terabox', __name__)
 bilibili_bp = Blueprint('bilibili', __name__)
 xiaou_bp = Blueprint('xiaohongshu', __name__)
+capcut_bp = Blueprint('capcut', __name__)
 # Path ke file database users
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -111,6 +112,7 @@ spotyrek = Namespace('downloader', description='Downloader Api')
 terarek = Namespace('downloader', description='Downloader Api')
 bilibilirek = Namespace('downloader', description='Downloader Api')
 xiaourek = Namespace('downloader', description='Downloader Api')
+capcutrek = Namespace('downloader', description='Downloader Api')
 # Model untuk response user agents
 # user_agent_model = api.model('Downloader', {
 #    'user_agents': fields.List(fields.String, description='List of generated User-Agents'),
@@ -762,5 +764,78 @@ class DownloadxiaohongshuResource(Resource):
             requ  = requests.get(url, headers=headers).text
             #video = re.search('"masterUrl":"(.*?)"', requ).group(1)
             return jsonify({'creator': 'AmmarBN','status': True,'result': [requ]}) # video.encode('utf-8').decode('unicode_escape')})
+        except Exception as e:
+            return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
+
+def capcutdl(url):
+    try:
+        # Fetch the webpage content
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        html = response.text
+
+        # Parse the HTML content
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Extract the video and other details
+        video_element = soup.select_one('video.player-o3g3Ag')
+        video_src = video_element['src'] if video_element else None
+        poster_src = video_element['poster'] if video_element else None
+
+        title = soup.select_one('h1.template-title').text.strip() if soup.select_one('h1.template-title') else None
+        actions_detail = soup.select_one('p.actions-detail').text.strip() if soup.select_one('p.actions-detail') else None
+        if actions_detail:
+            date, uses, likes = [item.strip() for item in actions_detail.split(',')]
+        else:
+            date, uses, likes = None, None, None
+
+        author_avatar = soup.select_one('span.lv-avatar-image img')['src'] if soup.select_one('span.lv-avatar-image img') else None
+        author_name = soup.select_one('span.lv-avatar-image img')['alt'] if soup.select_one('span.lv-avatar-image img') else None
+
+        # Validate extracted elements
+        if not all([video_src, poster_src, title, date, uses, likes, author_avatar, author_name]):
+            raise ValueError('Some essential elements are missing from the page.')
+        return video_src
+        # Return the extracted details
+#        return {
+#            "title": title,
+#            "date": date,
+#            "pengguna": uses,
+#            "likes": likes,
+#            "author": {
+#                "name": author_name,
+#                "avatarUrl": author_avatar
+#            },
+#            "videoUrl": video_src,
+#            "posterUrl": poster_src
+#        }
+
+    except Exception as e:
+        return None
+
+
+@capcutrek.route('')
+class DownloadcapcutResource(Resource):
+    @capcutrek.doc(params={
+        'url': 'Url Capxut'
+    })
+    def get(self):
+        """
+        Downloader Capcut.
+
+        Parameters:
+        - url: Url Capcut (required)
+        """
+        url = request.args.get('url')
+        
+        # Parameter validation
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."}), 400
+
+        try:
+            result = capcutdl(url)
+            if result:
+               return jsonify({'creator': 'AmmarBN','status': True,'result': result})
+            else:return jsonify({'status': False, 'msg': f'url not found '})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
