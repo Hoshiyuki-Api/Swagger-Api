@@ -1,4 +1,4 @@
-.import requests, re, base64
+import requests, re, base64
 import json
 import os, time, random
 from bs4 import BeautifulSoup
@@ -22,7 +22,7 @@ imgtotext_bp = Blueprint('gambartext', __name__)
 claudeai_bp = Blueprint('claudeai', __name__)
 gpt3_bp = Blueprint('gpt3', __name__)
 aiimg_bp = Blueprint('image_generate', __name__)
-imgdec_bp = Blueprint('image_description', __name__)
+imgdeci_bp = Blueprint('image_description', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -118,7 +118,7 @@ imgtotext = Namespace('ai', description='AI Api')
 claudeai = Namespace('ai', description='AI Api')
 gpt3 = Namespace('ai', description='AI Api')
 aiimg = Namespace('ai', description='AI Api')
-imgdec = Namespace('ai', description='AI Api')
+imgdeci = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -1330,9 +1330,9 @@ def describe(s_image_url):
     except requests.exceptions.RequestException as e:
         return None
         
-@imgdec.route('')
+@imgdeci.route('')
 class DownloadimgdecaiResource(Resource):
-    @imgdec.doc(params={
+    @imgdeci.doc(params={
         'url': 'Input url image',
     })
     def get(self):
@@ -1349,13 +1349,11 @@ class DownloadimgdecaiResource(Resource):
 
         try:
             result = describe(url)
-            if result:
-               return jsonify({
+            return jsonify({
                 'creator': 'AmmarBN',
                 'result': result,
                 'status': True
-               })
-            else:return jsonify({"creator": "AmmarBN", "error": "tidak ada result"})
+            })
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
