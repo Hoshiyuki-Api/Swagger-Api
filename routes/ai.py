@@ -1,4 +1,4 @@
-import requests, re, base64
+.import requests, re, base64
 import json
 import os, time, random
 from bs4 import BeautifulSoup
@@ -22,6 +22,7 @@ imgtotext_bp = Blueprint('gambartext', __name__)
 claudeai_bp = Blueprint('claudeai', __name__)
 gpt3_bp = Blueprint('gpt3', __name__)
 aiimg_bp = Blueprint('image_generate', __name__)
+imgdec_bp = Blueprint('image_description', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -117,7 +118,7 @@ imgtotext = Namespace('ai', description='AI Api')
 claudeai = Namespace('ai', description='AI Api')
 gpt3 = Namespace('ai', description='AI Api')
 aiimg = Namespace('ai', description='AI Api')
-
+imgdec = Namespace('ai', description='AI Api')
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
     @aivoicerek.doc(params={
@@ -1283,6 +1284,77 @@ class DownloadaigimgResource(Resource):
             result = veed.get_job(text, "Res256")
             decoded_image = base64.b64decode(result)
             return Response(decoded_image, mimetype='image/png')
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
+def describe(image_url):
+    try:
+        # Fetch the image as binary data
+        image_response = requests.get(image_url) #, stream=True)
+        image_response.raise_for_status()
+        image_data = image_response.content
+
+        # Convert the image to base64
+        base64_image = base64.b64encode(image_data).decode('utf-8')
+
+        # Prepare the JSON payload
+        data = {
+            "type": "description",
+            "image": base64_image
+        }
+
+        # Define request headers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:131.0) Gecko/131.0 Firefox/131.0',
+            'Content-Type': 'application/json',
+            'Accept-Language': 'id-ID',
+            'Referer': 'https://docsbot.ai/tools/image/description-generator',
+            'Origin': 'https://docsbot.ai',
+            'Alt-Used': 'docsbot.ai',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'Priority': 'u=0',
+            'TE': 'trailers'
+        }
+
+        # Make the POST request
+        response = requests.post(
+            "https://docsbot.ai/api/tools/image-prompter",
+            headers=headers,
+            json=data
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return None
+        
+@imgdec.route('')
+class DownloadaigimgResource(Resource):
+    @imgdec.doc(params={
+        'url': 'Input url image',
+    })
+    def get(self):
+        """
+        Ai Image Description.
+
+        Parameters:
+        - url: url (required)
+        """
+        url = request.args.get('url')
+
+        if not url:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'url' diperlukan."})
+
+        try:
+            result = describe(url)
+            if result:
+               return jsonify({
+                'creator': 'AmmarBN',
+                'result': reslt,
+                'status': True
+               })
+            else:return jsonify({"creator": "AmmarBN", "error": "tidak ada result"}), 500
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
