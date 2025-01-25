@@ -752,8 +752,8 @@ class DownloadxiaohongshuResource(Resource):
         try:
             scraper = cloudscraper.create_scraper()
             requ  = scraper.get(url)
-            #video = re.search('"masterUrl":"(.*?)"', requ).group(1)
-            return jsonify({'creator': 'AmmarBN','status': True,'result': [requ.text]}) #video.encode('utf-8').decode('unicode_escape')})
+            video = re.search('"masterUrl":"(.*?)"', requ.text).group(1)
+            return jsonify({'creator': 'AmmarBN','status': True,'result': video.encode('utf-8').decode('unicode_escape')})
         except Exception as e:
             return jsonify({'status': False, 'msg': f'Error: {str(e)}'})
 
