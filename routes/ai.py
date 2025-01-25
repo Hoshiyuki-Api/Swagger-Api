@@ -1330,7 +1330,7 @@ def describe(image_url):
         return None
         
 @imgdec.route('')
-class DownloadaigimgResource(Resource):
+class DownloadaigimgdecResource(Resource):
     @imgdec.doc(params={
         'url': 'Input url image',
     })
