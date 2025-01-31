@@ -25,7 +25,7 @@ from routes.useragent import useragent_bp, api as useragent_ns
 # Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
-from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, claudeai_bp, gpt3_bp, aiimg_bp, imgdeci_bp, aivoicerek as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns, claudeai as claudeai_ns, gpt3 as gpt3_ns, aiimg as aiimg_ns, imgdeci as imgdeci_ns
+from routes.ai import aivoice_bp, hercai_bp, blackbox_bp, deepai_bp, simi_bp, osmage_bp, claudeai_bp, gpt3_bp, aiimg_bp, imgdeci_bp, deepseek_bp, aivoicerek as aivoice_ns, hercairek as hercai_ns, blackboxrek as blackbox_ns, deepairek as deepai_ns, simirek as simi_ns, osmagerek as osmage_ns, claudeai as claudeai_ns, gpt3 as gpt3_ns, aiimg as aiimg_ns, imgdeci as imgdeci_ns, deepseek as deepseek_ns
 from routes.ai import textti_bp, animediff_bp, bingimg_bp, imgtotext_bp, fluxdiff_bp, texttirek as textti_ns, animediff as animediff_ns, bingimg as bingimg_ns, imgtotext as imgtotext_ns, fluxdiff as fluxdiff_ns
 
 app = Flask(__name__)
@@ -96,6 +96,7 @@ app.register_blueprint(fluxdiff_bp, url_prefix='/api/fluxdiff')
 app.register_blueprint(gpt3_bp, url_prefix='/api/gpt3')
 app.register_blueprint(aiimg_bp, url_prefix='/api/ai-image-generator')
 app.register_blueprint(imgdeci_bp, url_prefix='/api/ai-image-description')
+app.register_blueprint(deepseek_bp, url_prefix='/api/deepseek-v3')
 # Initialize Flask-RESTX
 api = Api(app, version='1.0.21', title='Hoshiyuki-API',
           description='A Simple Documentation API Created Using Flask-RestX\nThx For Xenzi-XN1 & YukiSmall',
@@ -146,5 +147,6 @@ api.add_namespace(fluxdiff_ns, path='/api/fluxdiff')
 api.add_namespace(gpt3_ns, path='/api/gpt3')
 api.add_namespace(aiimg_ns, path='/api/ai-image-generator')
 api.add_namespace(imgdeci_ns, path='/api/ai-image-description')
+api.add_namespace(deepseek_ns, path='/api/deepseek-v3')
 if __name__ == '__main__':
     app.run(debug=True)
