@@ -1459,7 +1459,7 @@ def you_com(search):
              json_obj = json.loads(json_str[0])
              if 'youChatToken' in json_obj:
                  json_list.append(json_obj['youChatToken'])
-
+    return json_list
 
 @youcom.route('')
 class DownloadyoucomaiResource(Resource):
