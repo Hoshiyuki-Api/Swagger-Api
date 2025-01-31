@@ -1,4 +1,4 @@
-cfscrape
+cfscrape==2.1.1
 cloudscraper
 translate
 Brotli==1.1.0
