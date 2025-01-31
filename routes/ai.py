@@ -23,6 +23,7 @@ claudeai_bp = Blueprint('claudeai', __name__)
 gpt3_bp = Blueprint('gpt3', __name__)
 aiimg_bp = Blueprint('image_generate', __name__)
 imgdeci_bp = Blueprint('image_description', __name__)
+deepseek_bp = Blueprint('deepseekv3', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -119,6 +120,7 @@ claudeai = Namespace('ai', description='AI Api')
 gpt3 = Namespace('ai', description='AI Api')
 aiimg = Namespace('ai', description='AI Api')
 imgdeci = Namespace('ai', description='AI Api')
+deepseek = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -1357,3 +1359,48 @@ class DownloadimgdecaiResource(Resource):
         except Exception as e:
             return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
 
+
+
+def deepsex(query):
+    url = "https://api.blackbox.ai/api/chat"
+    payload = {
+        "messages": [{
+            "role": "user",
+            "content": query
+        }],
+        "userSelectedModel": "deepseek-v3",
+        "validated": "10f37b34-a166-4efb-bce5-1312d87f2f94"
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    return response.text
+
+@deepseek.route('')
+class DownloaddeepseekaiResource(Resource):
+    @deepseek.doc(params={
+        'text': 'Input Text',
+    })
+    def get(self):
+        """
+        Ai deepseek-v3.
+
+        Parameters:
+        - text: text (required)
+        """
+        text = request.args.get('text')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+            result = deepsex(text)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': result,
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
