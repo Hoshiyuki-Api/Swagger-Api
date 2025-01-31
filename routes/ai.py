@@ -1452,13 +1452,13 @@ def you_com(search):
     }
     scraper = cfscrape.create_scraper()
     response = scraper.get("https://you.com/api/streamingSearch", headers=headers, params=params)
-    json_list = []
-    for line in response.iter_lines():
-         json_str = re.findall(r'\{.*\}', line.decode('utf-8'))
-         if json_str:
-             json_obj = json.loads(json_str[0])
-             if 'youChatToken' in json_obj:
-                 json_list.append(json_obj['youChatToken'])
+    json_list = [response.text]
+#    for line in response.iter_lines():
+#         json_str = re.findall(r'\{.*\}', line.decode('utf-8'))
+#         if json_str:
+#             json_obj = json.loads(json_str[0])
+#             if 'youChatToken' in json_obj:
+#                 json_list.append(json_obj['youChatToken'])
     return json_list
 
 @youcom.route('')
