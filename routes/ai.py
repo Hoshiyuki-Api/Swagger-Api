@@ -1,4 +1,5 @@
 import requests, re, base64
+import cloudscraper
 import json, uuid
 import cfscrape
 import os, time, random
@@ -1434,7 +1435,7 @@ def you_com(search):
         "isSmallMediumDevice": "true",
         "selectedChatMode": "default",
         "enable_agent_clarification_questions": "true",
-        "traceId": f"{uuid.uuid4()}|{uuid.uuid4()}|{now_iso}",
+        "traceId": f"{uuid.uuid4()}|{uuid.uuid4()}|2025-01-30T21:09:03.233Z",
         "use_nested_youchat_updates": "true",
         "q": search,
         "chat": "[]"
@@ -1451,7 +1452,7 @@ def you_com(search):
         "Sec-Fetch-Dest": "empty",
         "Referer": f"https://you.com/search?q={search.replace(' ', '+')}&fromSearchBar=true&tbm=youchat",
     }
-    scraper = cfscrape.create_scraper()
+    scraper = cloudscraper.create_scraper()
     response = scraper.get("https://you.com/api/streamingSearch", headers=headers, params=params)
     json_list = [response.text]
 #    for line in response.iter_lines():
