@@ -25,7 +25,7 @@ gpt3_bp = Blueprint('gpt3', __name__)
 aiimg_bp = Blueprint('image_generate', __name__)
 imgdeci_bp = Blueprint('image_description', __name__)
 deepseek_bp = Blueprint('deepseekv3', __name__)
-youcom_bp = Blueprint('you.com.ai', __name__)
+youcom_bp = Blueprint('you_com_ai', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
