@@ -1,5 +1,6 @@
 import requests, re, base64
 import json
+import cfscrape
 import os, time, random
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
@@ -24,6 +25,7 @@ gpt3_bp = Blueprint('gpt3', __name__)
 aiimg_bp = Blueprint('image_generate', __name__)
 imgdeci_bp = Blueprint('image_description', __name__)
 deepseek_bp = Blueprint('deepseekv3', __name__)
+youcom_bp = Blueprint('you.com.ai', __name__)
 # Path to the database users file
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
@@ -121,6 +123,7 @@ gpt3 = Namespace('ai', description='AI Api')
 aiimg = Namespace('ai', description='AI Api')
 imgdeci = Namespace('ai', description='AI Api')
 deepseek = Namespace('ai', description='AI Api')
+youcom = Namespace('ai', description='AI Api')
 
 @aivoicerek.route('')
 class DownloadaivoiceResource(Resource):
@@ -1397,6 +1400,87 @@ class DownloaddeepseekaiResource(Resource):
 
         try:
             result = deepsex(text)
+            return jsonify({
+                'creator': 'AmmarBN',
+                'result': result,
+                'status': True
+            })
+        except Exception as e:
+            return jsonify({"creator": "AmmarBN", "error": str(e)}), 500
+
+def clean_text(text_list):
+    """
+    Menggabungkan daftar string menjadi teks yang lebih bersih dan terstruktur.
+    Menghapus spasi yang tidak perlu dan menyatukan kata yang terpisah.
+    """
+    cleaned_text = ''.join(text_list)  # Menggabungkan daftar menjadi satu string
+    cleaned_text = cleaned_text.replace('\n', '\n').strip()  # Menghapus spasi ekstra di awal dan akhir
+    return cleaned_text
+
+def you_com(search):
+    params = {
+    	"page": 1,
+        "count": 10,
+        "safeSearch": "Moderate",
+        "mkt": "en-ID",
+        "enable_worklow_generation_ux": "true",
+        "domain": "youchat",
+        "use_personalization_extraction": "true",
+        "queryTraceId": "44096b38-aecc-492f-9583-7722b655a3b9",
+        "chatId": "44096b38-aecc-492f-9583-7722b655a3b9",
+        "conversationTurnId": "7046d364-10e6-44b7-8bd5-b9de2df76f67",
+        "pastChatLength": 0,
+        "isSmallMediumDevice": "true",
+        "selectedChatMode": "default",
+        "enable_agent_clarification_questions": "true",
+        "traceId": "44096b38-aecc-492f-9583-7722b655a3b9|7046d364-10e6-44b7-8bd5-b9de2df76f67|2025-01-30T21:09:03.233Z",
+        "use_nested_youchat_updates": "true",
+        "q": search,
+        "chat": "[]"
+    }
+
+    headers = {
+        "Host": "you.com",
+        "Connection": "keep-alive",
+        "Accept": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 11; SM-A207F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Referer": f"https://you.com/search?q={search.replace(' ', '+')}&fromSearchBar=true&tbm=youchat",
+    }
+    scraper = cfscrape.create_scraper()
+    response = scraper.get("https://you.com/api/streamingSearch", headers=headers, params=params)
+    json_list = []
+    for line in response.iter_lines():
+         json_str = re.findall(r'\{.*\}', line.decode('utf-8'))
+         if json_str:
+             json_obj = json.loads(json_str[0])
+             if 'youChatToken' in json_obj:
+                 json_list.append(json_obj['youChatToken'])
+
+
+@youcom.route('')
+class DownloadyoucomaiResource(Resource):
+    @youcom.doc(params={
+        'text': 'Input text',
+    })
+    def get(self):
+        """
+        Ai You_com.
+
+        Parameters:
+        - text: text (required)
+        """
+        text = request.args.get('text')
+
+        if not text:
+            return jsonify({"creator": "AmmarBN", "error": "Parameter 'text' diperlukan."})
+
+        try:
+            respon = you_com(text)
+            result = clean_text(respon)
             return jsonify({
                 'creator': 'AmmarBN',
                 'result': result,
