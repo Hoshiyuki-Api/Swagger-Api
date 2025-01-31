@@ -1,5 +1,5 @@
 import requests, re, base64
-import json
+import json, uuid
 import cfscrape
 import os, time, random
 from bs4 import BeautifulSoup
@@ -1418,6 +1418,7 @@ def clean_text(text_list):
     return cleaned_text
 
 def you_com(search):
+    now_iso = datetime.utcnow().isoformat() + "Z"
     params = {
     	"page": 1,
         "count": 10,
@@ -1426,14 +1427,14 @@ def you_com(search):
         "enable_worklow_generation_ux": "true",
         "domain": "youchat",
         "use_personalization_extraction": "true",
-        "queryTraceId": "44096b38-aecc-492f-9583-7722b655a3b9",
-        "chatId": "44096b38-aecc-492f-9583-7722b655a3b9",
-        "conversationTurnId": "7046d364-10e6-44b7-8bd5-b9de2df76f67",
+        "queryTraceId": uuid.uuid4(),
+        "chatId": uuid.uuid4(),
+        "conversationTurnId": uuid.uuid4(),
         "pastChatLength": 0,
         "isSmallMediumDevice": "true",
         "selectedChatMode": "default",
         "enable_agent_clarification_questions": "true",
-        "traceId": "44096b38-aecc-492f-9583-7722b655a3b9|7046d364-10e6-44b7-8bd5-b9de2df76f67|2025-01-30T21:09:03.233Z",
+        "traceId": f"{uuid.uuid4()}|{uuid.uuid4()}|{now_iso}",
         "use_nested_youchat_updates": "true",
         "q": search,
         "chat": "[]"
