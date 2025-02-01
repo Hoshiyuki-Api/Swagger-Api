@@ -1452,7 +1452,7 @@ def you_com(search):
         "Sec-Fetch-Dest": "empty",
         "Referer": f"https://you.com/search?q={search.replace(' ', '+')}&fromSearchBar=true&tbm=youchat",
     }
-    scraper = cloudscraper.create_scraper()
+    scraper = cfscrape.create_scraper()
     response = scraper.get("https://you.com/api/streamingSearch", headers=headers, params=params)
     json_list = [response.text]
 #    for line in response.iter_lines():
