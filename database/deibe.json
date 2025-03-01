@@ -3,7 +3,7 @@
     "No": 1,
     "Status": "Premium",
     "Id": "u0_a374",
-    "Token": "Testing_Token_1",
+    "Token": "Testing_token_1",
     "Expired": "2026-02-20"
   },
   {
@@ -15,7 +15,7 @@
   },
   {
     "Public": {
-      "public_token": "Public_Token"
+      "public_token": "7703326085:thnCJM8"
     }
   }
 ]
