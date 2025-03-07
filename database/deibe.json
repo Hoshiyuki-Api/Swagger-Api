@@ -31,6 +31,14 @@
     "phone": "+62 821-1620-6767"
   },
   {
+    "No": 5,
+    "Status": "Premium",
+    "Id": "u0_a62",
+    "Token": "7926255244:UgXwh08q",
+    "Expired": "2025-04-29",
+    "phone": "+62 815-6451-971"
+  },
+  {
     "Public": {
       "public_token": "7703326085:thn9CJM8"
     }
