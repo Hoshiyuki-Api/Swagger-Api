@@ -7,10 +7,6 @@ jadwalsholat_bp = Blueprint('jadwalsholat', __name__)
 
 users_db = os.path.join(os.path.dirname(__file__), '..', 'database', 'users.json')
 
-# Fungsi untuk menghasilkan user agent
-def generate_user_agent():
-    return user_agent.generate_user_agent()
-
 # Helper function to check if apikey is expired
 def check_apikey_expiry(apikey):
     # Read existing users data
