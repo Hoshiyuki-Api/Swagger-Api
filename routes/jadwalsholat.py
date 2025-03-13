@@ -79,7 +79,7 @@ def check_and_update_request_limit(apikey):
     return None
 
 # Namespace untuk Flask-RESTX
-api = Namespace('JadwalSholat', description='API untuk mendapatkan jadwal sholat berdasarkan kota')
+sholat = Namespace('JadwalSholat', description='API untuk mendapatkan jadwal sholat berdasarkan kota')
 
 # Model untuk response jadwal sholat
 jadwal_sholat_model = api.model('JadwalSholat', {
