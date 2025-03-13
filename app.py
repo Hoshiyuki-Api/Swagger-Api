@@ -22,6 +22,7 @@ from routes.downloader import facebook_bp, mediafire_bp, pinterestvid_bp, lahelu
 from routes.tools import igstalk_bp, remove_bp, cuaca_bp, ffstalk_bp, removebg2_bp, ssweb_bp, wape_bp, brat_bp, theater_bp, glimg_bp, stalkigrek as stalkig_ns, removebgrek as removebg_ns, cuacarek as cuaca_ns, ffstalkgrek as ffstalk_ns, removebg2grek as remove2_ns, sswebgrek as ssweb_ns, wapegrek as wape_ns, bratgrek as brat_ns, theatergrek as theater_ns, glimggrek as glimg_ns
 # Routes api
 from routes.useragent import useragent_bp, api as useragent_ns
+from routes.jadwalsholat import jadwalsholat_bp as jadwalsholat_ns
 # Routes Checker
 from routes.dash_check import check_bp, api as check_ns
 # Routes AI
@@ -54,6 +55,7 @@ app.register_blueprint(dashboard_bp)
 # Register Blueprints
 app.register_blueprint(useragent_bp, url_prefix='/api')
 app.register_blueprint(check_bp, url_prefix='/api')
+app.register_blueprint(jadwalsholat_bp, url_prefix='/api')
 # Register Downloader
 app.register_blueprint(tiktok_bp, url_prefix='/api')
 app.register_blueprint(igdl_bp, url_prefix='/api')
@@ -106,6 +108,7 @@ api = Api(app, version='1.0.21', title='Hoshiyuki-API',
 # Add namespaces
 api.add_namespace(useragent_ns, path='/user-agent')
 api.add_namespace(check_ns, path='/check/apikey')
+api.add_namespace(jadwalsholat_ns, path='/api/jadwalsholat')
 # NameSpace Downloader
 api.add_namespace(tiktok_ns, path='/api/tiktok')  # Namespace untuk TikTok
 api.add_namespace(igdl_ns, path='/api/igdl')      # Namespace untuk Instagram
