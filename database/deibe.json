@@ -39,6 +39,14 @@
     "phone": "+62 815-6451-971"
   },
   {
+    "No": 6,
+    "Status": "Premium",
+    "Id": "u0_a309",
+    "Token": "8042639486:3aGiv3QI",
+    "Expired": "2025-04-29",
+    "phone": "+62 851-9860-4967"
+  },
+  {
     "Public": {
       "public_token": "8035094287:KWLERwKd"
     }
