@@ -79,6 +79,14 @@
     "phone": "+62 821-3349-9757"
   },
   {
+    "No": 11,
+    "Status": "Premium",
+    "Id": "u0_a222",
+    "Token": "7776481563:NroS21av",
+    "Expired": "2025-05-29",
+    "phone": "+62 812-1962-9018"
+  },
+  {
     "Public": {
       "public_token": "8035094287:KWLERwKd"
     }
