@@ -87,6 +87,14 @@
     "phone": "+62 812-1962-9018"
   },
   {
+    "No": 12,
+    "Status": "Premium",
+    "Id": "u0_a250",
+    "Token": "7776481563:NroS21av",
+    "Expired": "2025-05-29",
+    "phone": "+62 859-6017-1000"
+  },
+  {
     "Public": {
       "public_token": "8035094287:KWLERwKd"
     }
