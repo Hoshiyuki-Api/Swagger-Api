@@ -111,6 +111,14 @@
     "phone": "+62 822-8143-3445"
   },
   {
+    "No": 15,
+    "Status": "Premium",
+    "Id": "u0_a103",
+    "Token": "7776481563:NroS21av",
+    "Expired": "2025-05-29",
+    "phone": "+62 853-4395-0032"
+  },
+  {
     "Public": {
       "public_token": "8035094287:KWLERwKd"
     }
