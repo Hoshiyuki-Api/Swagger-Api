@@ -119,6 +119,14 @@
     "phone": "+62 853-4395-0032"
   },
   {
+    "No": 16,
+    "Status": "Premium",
+    "Id": "u0_a241",
+    "Token": "7776481563:NroS21av",
+    "Expired": "2025-05-29",
+    "phone": "+62 812-9391-7753"
+  },
+  {
     "Public": {
       "public_token": "8035094287:KWLERwKd"
     }
