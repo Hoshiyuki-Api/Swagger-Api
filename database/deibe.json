@@ -135,6 +135,22 @@
     "phone": "+62 821-8133-7457"
   },
   {
+    "No": 17,
+    "Status": "Premium",
+    "Id": "u0_a239",
+    "Token": "7855429376:fHSMbJhc",
+    "Expired": "2025-05-29",
+    "phone": "+62 838-9148-5884"
+  },
+  {
+    "No": 18,
+    "Status": "Premium",
+    "Id": "u0_a357",
+    "Token": "7855429376:fHSMbJhc",
+    "Expired": "2025-05-29",
+    "phone": "+62 818-0775-4890"
+  },
+  {
     "Public": {
       "public_token": "8015856658:Qx6NVHyx"
     }
